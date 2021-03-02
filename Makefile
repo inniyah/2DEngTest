@@ -49,8 +49,8 @@ CYFLAGS= \
 	-X language_level=3 \
 	-X boundscheck=False
 
-CSTD=-std=c11
-CPPSTD=-std=c++11
+CSTD=-std=c17
+CPPSTD=-std=c++17
 
 OPTS= -O2 -g
 
@@ -79,9 +79,19 @@ C_SRCS= \
 	src/tmx/tmx_mem.c \
 	src/tmx/tmx_utils.c \
 	src/tmx/tmx_xml.c \
-	src/test_sdl/sdl.c
+	src/tmxlite/detail/miniz.c
 
-CPP_SRCS= 
+CPP_SRCS= \
+	src/tmxlite/FreeFuncs.cpp \
+	src/tmxlite/LayerGroup.cpp \
+	src/tmxlite/ObjectGroup.cpp \
+	src/tmxlite/TileLayer.cpp \
+	src/tmxlite/ImageLayer.cpp \
+	src/tmxlite/Map.cpp \
+	src/tmxlite/Object.cpp \
+	src/tmxlite/Property.cpp \
+	src/tmxlite/Tileset.cpp \
+	src/tmxlite/detail/pugixml.cpp
 
 PYX_CPPS= $(subst .pyx,.cpp,$(PYX_SRCS))
 PYX_OBJS= $(subst .pyx,.o,$(PYX_SRCS))
