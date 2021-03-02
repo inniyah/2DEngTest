@@ -61,7 +61,9 @@ DEFS= \
 
 INCS= -Isrc/tmx
 
-CYINCS= -Isrc/sdl2_cython
+CYINCS= \
+	-Isrc/sdl2_cython \
+	-Isrc/tmx_cython
 
 LIBS=
 

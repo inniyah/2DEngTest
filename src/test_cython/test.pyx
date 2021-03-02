@@ -1,4 +1,5 @@
 cimport SDL2
+cimport tmx
 
 import sys
 
