@@ -79,3 +79,7 @@ cdef extern from "tmx.h" nogil:
         VA_CENTER
         VA_BOTTOM
 
+    ctypedef void* (*tmx_img_load_func) (const char *path)
+
+    ctypedef void  (*tmx_img_free_func) (void *address)
+
