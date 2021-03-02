@@ -1,5 +1,8 @@
 #!/usr/bin/make -f
 
+# sudo apt install pkg-config cython3 libpython3-dev zlib1g-dev libzstd-dev \
+#     libxml2-dev libsdl2-dev libsdl2-image-dev
+
 PACKAGES= python3-embed zlib libzstd libxml-2.0 sdl2 SDL2_image
 
 CC= gcc
@@ -62,9 +65,8 @@ LIBS=
 
 all: test
 
-PYX_SRCS= 
-PYX_CPPS= $(subst .pyx,.cpp,$(PYX_SRCS))
-PYX_OBJS= $(subst .pyx,.o,$(PYX_SRCS))
+PYX_SRCS= \
+	src/test_cython/test.pyx
 
 C_SRCS= \
 	src/tmx/tmx.c \
@@ -76,6 +78,9 @@ C_SRCS= \
 	src/test_sdl/sdl.c
 
 CPP_SRCS= 
+
+PYX_CPPS= $(subst .pyx,.cpp,$(PYX_SRCS))
+PYX_OBJS= $(subst .pyx,.o,$(PYX_SRCS))
 
 OBJS= $(PYX_OBJS) $(subst .c,.o,$(C_SRCS)) $(subst .cpp,.o,$(CPP_SRCS))
 
