@@ -61,9 +61,11 @@ DEFS= \
 
 INCS= -Isrc/tmx
 
+CYINCS= -Isrc/sdl2_cython
+
 LIBS=
 
-all: test
+all: test.so
 
 PYX_SRCS= \
 	src/test_cython/test.pyx
@@ -97,7 +99,7 @@ test.so: $(OBJS)
 	$(CC) $(CSTD) $(OPTS) -o $@ -c $< $(DEFS) $(INCS) $(CFLAGS) $(PKG_CONFIG_CFLAGS)
 
 %.cpp: %.pyx
-	$(CYTHON) $(CYFLAGS) -o $@ $<
+	$(CYTHON) $(CYFLAGS) $(CYINCS) -o $@ $<
 
 clean:
 	$(RM) $(OBJS)
