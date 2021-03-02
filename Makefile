@@ -57,13 +57,14 @@ OPTS= -O2 -g
 DEFS= \
 	-DWANT_ZLIB \
 	-DWANT_ZSTD \
+	-DMINIZ_NO_STDIO \
 	-DNDEBUG
 
 INCS= -Isrc/tmx
 
 CYINCS= \
 	-Isrc/sdl2_cython \
-	-Isrc/tmx_cython
+	-Isrc/tmxlite_cython
 
 LIBS=
 
@@ -73,12 +74,6 @@ PYX_SRCS= \
 	src/test_cython/test.pyx
 
 C_SRCS= \
-	src/tmx/tmx.c \
-	src/tmx/tmx_err.c \
-	src/tmx/tmx_hash.c \
-	src/tmx/tmx_mem.c \
-	src/tmx/tmx_utils.c \
-	src/tmx/tmx_xml.c \
 	src/tmxlite/detail/miniz.c
 
 CPP_SRCS= \
