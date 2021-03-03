@@ -96,6 +96,10 @@ cdef class _TmxLayer:
         return TmxLayerType(<int>deref(self.layer).getType())
     def getTypeName(self):
         return self.type_names.get(self.getType(), "Unknown")
+    def getProperties(self):
+        properties = _TmxProperties()
+        properties.properties = &self.layer.getProperties()
+        return properties
 
 cdef class _TmxLayerGroup(_TmxLayer):
     def __cinit__(self):
@@ -127,6 +131,10 @@ cdef class _TmxObject:
         return TmxObjectShape(<int>deref(self.object).getShape())
     def getShapeName(self):
         return self.shape_names.get(self.getShape(), "Unknown")
+    def getProperties(self):
+        properties = _TmxProperties()
+        properties.properties = &self.object.getProperties()
+        return properties
 
 cdef class _TmxObjectGroup(_TmxLayer):
     def __cinit__(self):
@@ -135,6 +143,38 @@ cdef class _TmxObjectGroup(_TmxLayer):
         objects = _TmxObjects()
         objects.objects = self.layer.getLayerAs[tmxlite.ObjectGroup]().getObjects()
         return objects
+
+cdef class _TmxImageLayer(_TmxLayer):
+    def __cinit__(self):
+        pass
+    def getImagePath(self):
+        return self.layer.getLayerAs[tmxlite.ImageLayer]().getImagePath().decode('utf8')
+
+cdef class _TmxTiles:
+    cdef const vector[tmxlite.Tile] * tiles
+    def __cinit__(self):
+        pass
+    def size(self):
+        return self.tiles.size()
+
+cdef class _TmxChunks:
+    cdef const vector[tmxlite.Chunk] * chunks
+    def __cinit__(self):
+        pass
+    def size(self):
+        return self.chunks.size()
+
+cdef class _TmxTileLayer(_TmxLayer):
+    def __cinit__(self):
+        pass
+    def getTiles(self):
+        tiles = _TmxTiles()
+        tiles.tiles = &self.layer.getLayerAs[tmxlite.TileLayer]().getTiles()
+        return tiles
+    def getChunks(self):
+        chunks = _TmxChunks()
+        chunks.chunks = &self.layer.getLayerAs[tmxlite.TileLayer]().getChunks()
+        return chunks
 
 cdef class _TmxLayers:
     cdef vector[tmxlite.Layer.Ptr] layers
@@ -156,12 +196,20 @@ cdef class _TmxLayers:
         layer = _TmxObjectGroup()
         layer.layer = self.layers.at(key).get()
         return layer
+    def getImageLayer(self, size_t key):
+        layer = _TmxImageLayer()
+        layer.layer = self.layers.at(key).get()
+        return layer
+    def getTileLayer(self, size_t key):
+        layer = _TmxTileLayer()
+        layer.layer = self.layers.at(key).get()
+        return layer
     def __getitem__(self, size_t key):
         type = <int>self.layers.at(key).get().getType()
         return {
-            <int>tmxlite.Layer_Type_Tile:   self.getLayer,
+            <int>tmxlite.Layer_Type_Tile:   self.getTileLayer,
             <int>tmxlite.Layer_Type_Object: self.getObjectGroup,
-            <int>tmxlite.Layer_Type_Image:  self.getLayer,
+            <int>tmxlite.Layer_Type_Image:  self.getImageLayer,
             <int>tmxlite.Layer_Type_Group:  self.getLayerGroup,
         }.get(type, self.getLayer)(key)
 
@@ -244,31 +292,65 @@ cdef class _TmxMap:
 
 cdef class _TiledTestApplication:
     def __cinit__(self):
-        self.map = _TmxMap()
-        self.map.load("maps/platform.tmx")
-        print(f"Map version: {self.map.getVersion()}")
-        if self.map.isInfinite():
+        map = _TmxMap()
+        map.load("maps/platform.tmx")
+        print(f"Map version: {map.getVersion()}")
+        if map.isInfinite():
             print("Map is infinite.\n")
-        mapProperties = self.map.getProperties()
+        mapProperties = map.getProperties()
         print(f"Map has {mapProperties.size()} properties")
         for prop in mapProperties:
             print(f"Found property: \"{prop.getName()}\", Type: {prop.getTypeName()}")
-        layers = self.map.getLayers()
+        layers = map.getLayers()
         print(f"Map has {layers.size()} layers")
         for layer in layers:
             print(f"Found Layer: \"{layer.getName()}\", Type: {layer.getTypeName()}")
+
             if layer.getType() == TmxLayerType.Group:
                 sublayers = layer.getLayers()
                 print(f"LayerGroup has {sublayers.size()} sublayers")
                 for sublayer in sublayers:
                     print(f"Found Sublayer: \"{sublayer.getName()}\", Type: {sublayer.getTypeName())}")
+                    if sublayer.getType() == TmxLayerType.Tile:
+                        tiles = sublayer.getTiles()
+                        if tiles:
+                            print(f"TileLayer has {tiles.size()} tiles")
+                        chunks = sublayer.getChunks()
+                        if chunks:
+                            print(f"TileLayer has {tiles.size()} chunks")
+                        tilesProperties = sublayer.getProperties()
+                        if tilesProperties:
+                            print(f"TileLayer has {tilesProperties.size()} properties")
+                            for prop in tilesProperties:
+                                print(f"Found property: \"{prop.getName()}\", Type: {prop.getTypeName()}")
+
             elif layer.getType() == TmxLayerType.Object:
                 objects = layer.getObjects()
                 print(f"Found has {objects.size()} objects in layer")
                 for object in objects:
                     print(f"Object {object.getUID()}, Name: \"{object.getName()}\"")
+                    objProperties = object.getProperties()
+                    if objProperties:
+                        print(f"Object has {objProperties.size()} properties")
+                        for prop in objProperties:
+                            print(f"Found property: \"{prop.getName()}\", Type: {prop.getTypeName()}")
+
+            elif layer.getType() == TmxLayerType.Image:
+                print(f"ImagePath: \"{layer.getImagePath()}\"")
+
             elif layer.getType() == TmxLayerType.Tile:
                 print(f"OOK3")
+                tiles = layer.getTiles()
+                if tiles:
+                    print(f"TileLayer has {tiles.size()} tiles")
+                chunks = sublayer.getChunks()
+                if chunks:
+                    print(f"TileLayer has {tiles.size()} chunks")
+                tilesProperties = layer.getProperties()
+                if tilesProperties:
+                    print(f"TileLayer has {tilesProperties.size()} properties")
+                    for prop in tilesProperties:
+                        print(f"Found property: \"{prop.getName()}\", Type: {prop.getTypeName()}")
 
 class TiledTestApplication(_TiledTestApplication):
     pass

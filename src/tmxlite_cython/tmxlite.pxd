@@ -10,6 +10,16 @@ from libcpp.string cimport string
 from libcpp.vector cimport vector
 from cpython.ref cimport PyObject
 
+cdef extern from "Types.hpp" namespace "tmx" nogil:
+    cdef cppclass Vector2[T]:
+        Vector2() except +
+        Vector2(T x, T y) except +
+        T x
+        T y
+    ctypedef Vector2[float]    Vector2f
+    ctypedef Vector2[int]      Vector2i
+    ctypedef Vector2[unsigned] Vector2u
+
 cdef extern from "Property.hpp" namespace "tmx" nogil:
     cdef cppclass Property_Type "tmx::Property::Type":
         pass
@@ -46,6 +56,7 @@ cdef extern from "Layer.hpp" namespace "tmx" nogil:
         const string& getName() const
         ctypedef shared_ptr[Layer] Ptr
         T& getLayerAs[T]() except +
+        const vector[Property]& getProperties() const
 
 cdef extern from "LayerGroup.hpp" namespace "tmx" nogil:
     cdef cppclass LayerGroup(Layer):
@@ -78,7 +89,25 @@ cdef extern from "ObjectGroup.hpp" namespace "tmx" nogil:
     cdef cppclass ObjectGroup(Layer):
         ObjectGroup() except +
         const vector[Object]& getObjects() const
-        const vector[Property]& getProperties() const
+
+cdef extern from "ImageLayer.hpp" namespace "tmx" nogil:
+    cdef cppclass ImageLayer(Layer):
+        ImageLayer() except +
+        const string& getImagePath() const
+
+cdef extern from "TileLayer.hpp" namespace "tmx" nogil:
+    cdef cppclass Tile "tmx::TileLayer::Tile":
+        uint32_t ID
+        uint8_t flipFlags
+    cdef cppclass Chunk "tmx::TileLayer::Chunk":
+        Vector2i position
+        Vector2i size
+        vector[Tile] tiles
+    cdef cppclass TileLayer(Layer):
+        TileLayer() except +
+        const string& getImagePath() const
+        const vector[Tile]& getTiles() const
+        const vector[Chunk]& getChunks() const
 
 cdef extern from "Map.hpp" namespace "tmx" nogil:
     cdef cppclass Version:
