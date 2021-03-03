@@ -113,6 +113,13 @@ cdef extern from "TileLayer.hpp" namespace "tmx" nogil:
         const vector[Tile]& getTiles() const
         const vector[Chunk]& getChunks() const
 
+cdef extern from "Tileset.hpp" namespace "tmx" nogil:
+    cdef cppclass Tileset:
+        Tileset() except +
+        uint32_t getFirstGID() const
+        uint32_t getLastGID() const
+        const string& getName() const
+
 cdef extern from "Map.hpp" namespace "tmx" nogil:
     cdef cppclass Version:
         uint16_t upper
@@ -159,6 +166,7 @@ cdef extern from "Map.hpp" namespace "tmx" nogil:
         RenderOrder getRenderOrder() const
         bool isInfinite() const
         const vector[Layer.Ptr]& getLayers() const
+        const vector[Tileset]& getTilesets() const
         const vector[Property]& getProperties() const
 
 cdef extern from "ObjectGroup.hpp" namespace "tmx" nogil:

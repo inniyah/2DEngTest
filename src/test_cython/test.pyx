@@ -272,6 +272,30 @@ class TmxObjectShape(IntEnum):
     Polyline  = <int>tmxlite.Object_Shape_Polyline
     Text      = <int>tmxlite.Object_Shape_Text
 
+cdef class _TmxTileset:
+    cdef const tmxlite.Tileset * tileset
+    def __cinit__(self):
+        self.tileset = NULL
+    def getFirstGID(self):
+        return <int>deref(self.tileset).getFirstGID()
+    def getLastGID(self):
+        return <int>deref(self.tileset).getLastGID()
+    def getName(self):
+        return deref(self.tileset).getName().decode('utf8')
+
+cdef class _TmxTilesets:
+    cdef const vector[tmxlite.Tileset] * tilesets
+    def __cinit__(self):
+        self.tilesets = NULL
+    def size(self):
+        return deref(self.tilesets).size()
+    def __len__(self):
+        return deref(self.tilesets).size()
+    def __getitem__(self, size_t key):
+        tileset = _TmxTileset()
+        tileset.tileset = &deref(self.tilesets).at(key)
+        return tileset
+
 cdef class _TmxMap:
     cdef tmxlite.Map* map
     def __cinit__(self):
@@ -287,6 +311,10 @@ cdef class _TmxMap:
         layers = _TmxLayers()
         layers.layers = self.map.getLayers()
         return layers
+    def getTilesets(self):
+        tilesets = _TmxTilesets()
+        tilesets.tilesets = &self.map.getTilesets()
+        return tilesets
     def getProperties(self):
         properties = _TmxProperties()
         properties.properties = &self.map.getProperties()
@@ -355,6 +383,11 @@ cdef class _TiledTestApplication:
                     print(f"TileLayer has {tilesProperties.size()} properties")
                     for prop in tilesProperties:
                         print(f"Found property: \"{prop.getName()}\", Type: {prop.getTypeName()}")
+
+        tilesets = map.getTilesets()
+        print(f"Map has {tilesets.size()} tilesets")
+        for tileset in tilesets:
+            print(f"Found Tileset \"{tileset.getName()}\", {tileset.getFirstGID())} - {tileset.getLastGID())}")
 
 class TiledTestApplication(_TiledTestApplication):
     pass
