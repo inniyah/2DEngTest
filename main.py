@@ -3,4 +3,5 @@
 
 import test
 
-app = test.SDL2TestApplication()
+#~ app = test.SDL2TestApplication()
+app = test.TiledTestApplication()

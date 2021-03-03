@@ -1,4 +1,13 @@
 cimport SDL2
+cimport tmxlite
+
+from libc.stdint cimport uint32_t, uint16_t, uint8_t
+from libcpp cimport bool
+from libcpp.memory cimport unique_ptr, shared_ptr, make_shared, allocator
+from libcpp.string cimport string
+from libcpp.vector cimport vector
+from cpython.ref cimport PyObject
+from cython.operator cimport dereference
 
 import sys
 
@@ -62,4 +71,36 @@ cdef class _SDL2TestApplication:
         SDL2.SDL_Quit()
 
 class SDL2TestApplication(_SDL2TestApplication):
+    pass
+
+cdef class _TiledTestApplication:
+    cdef tmxlite.Map* map
+    cdef vector[tmxlite.Layer.Ptr] sublayers
+
+    def __cinit__(self):
+        self.map = new tmxlite.Map()
+        if not self.map.load(b"maps/platform.tmx"):
+            raise SystemExit("Error loading map")
+        print(f"Loaded Map version: ({self.map.getVersion().upper}, {self.map.getVersion().lower})")
+        if self.map.isInfinite():
+            print("Map is infinite.\n")
+        mapProperties = self.map.getProperties()
+        print(f"Map has {mapProperties.size()} properties")
+        for prop in mapProperties:
+            print(f"Found property: \"{prop.getName().decode('utf8')}\", Type: {<int>prop.getType()}")
+        layers = self.map.getLayers()
+        print(f"Map has {layers.size()} layers")
+        for layer_ptr in layers:
+            print(f"Found Layer: \"{dereference(layer_ptr).getName().decode('utf8')}\", Type: {<int>(dereference(layer_ptr).getType())}")
+            if dereference(layer_ptr).getType() == tmxlite.Layer_Type_Group:
+                self.sublayers = dereference(layer_ptr).getLayerAs[tmxlite.LayerGroup]().getLayers()
+                print(f"LayerGroup has {self.sublayers.size()} sublayers")
+                for sublayer_ptr in self.sublayers:
+                    print(f"Found Sublayer: \"{dereference(sublayer_ptr).getName().decode('utf8')}\", Type: {<int>(dereference(sublayer_ptr).getType())}")
+            elif dereference(layer_ptr).getType() == tmxlite.Layer_Type_Object:
+                print(f"OOK2")
+            elif dereference(layer_ptr).getType() == tmxlite.Layer_Type_Tile:
+                print(f"OOK3")
+
+class TiledTestApplication(_TiledTestApplication):
     pass

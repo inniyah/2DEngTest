@@ -60,7 +60,8 @@ DEFS= \
 	-DMINIZ_NO_STDIO \
 	-DNDEBUG
 
-INCS= -Isrc/tmx
+INCS= \
+	-Isrc/tmxlite
 
 CYINCS= \
 	-Isrc/sdl2_cython \
