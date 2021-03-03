@@ -47,7 +47,7 @@ cdef extern from "Layer.hpp" namespace "tmx" nogil:
         ctypedef shared_ptr[Layer] Ptr
         T& getLayerAs[T]() except +
 
-cdef extern from "Layer.hpp" namespace "tmx" nogil:
+cdef extern from "LayerGroup.hpp" namespace "tmx" nogil:
     cdef cppclass LayerGroup(Layer):
         LayerGroup() except +
         const vector[Layer.Ptr]& getLayers() const
@@ -103,9 +103,6 @@ cdef extern from "Map.hpp" namespace "tmx" nogil:
 cdef extern from "ObjectGroup.hpp" namespace "tmx" nogil:
     cdef cppclass ObjectGroup(Layer):
         ObjectGroup() except +
-
-cdef extern from "LayerGroup.hpp" namespace "tmx" nogil:
-    pass
 
 cdef extern from "TileLayer.hpp" namespace "tmx" nogil:
     pass

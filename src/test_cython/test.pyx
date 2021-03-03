@@ -7,7 +7,8 @@ from libcpp.memory cimport unique_ptr, shared_ptr, make_shared, allocator
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 from cpython.ref cimport PyObject
-from cython.operator cimport dereference
+from cython.operator cimport dereference as deref
+from enum import IntEnum
 
 import sys
 
@@ -73,33 +74,141 @@ cdef class _SDL2TestApplication:
 class SDL2TestApplication(_SDL2TestApplication):
     pass
 
-cdef class _TiledTestApplication:
-    cdef tmxlite.Map* map
-    cdef vector[tmxlite.Layer.Ptr] sublayers
+class TmxLayerType(IntEnum):
+    Tile   = <int>tmxlite.Layer_Type_Tile
+    Object = <int>tmxlite.Layer_Type_Object
+    Image  = <int>tmxlite.Layer_Type_Image
+    Group  = <int>tmxlite.Layer_Type_Group
 
+cdef class _TmxLayer:
+    cdef tmxlite.Layer * layer
+    type_names = {
+        <int>tmxlite.Layer_Type_Tile:   "Tile",
+        <int>tmxlite.Layer_Type_Object: "Object",
+        <int>tmxlite.Layer_Type_Image:  "Image",
+        <int>tmxlite.Layer_Type_Group:  "Group",
+    }
     def __cinit__(self):
+        self.layer = NULL
+    def getName(self):
+        return deref(self.layer).getName().decode('utf8')
+    def getType(self):
+        return TmxLayerType(<int>deref(self.layer).getType())
+    def getTypeName(self):
+        return self.type_names.get(self.getType(), "Unknown")
+
+cdef class _TmxLayerGroup(_TmxLayer):
+    def __cinit__(self):
+        pass
+    def getLayers(self):
+        layers = _TmxLayers()
+        layers.layers = self.layer.getLayerAs[tmxlite.LayerGroup]().getLayers()
+        return layers
+
+cdef class _TmxLayers:
+    cdef vector[tmxlite.Layer.Ptr] layers
+    def __cinit__(self):
+        pass
+    def size(self):
+        return self.layers.size()
+    def __len__(self):
+        return self.layers.size()
+    def getLayer(self, size_t key):
+        layer = _TmxLayer()
+        layer.layer = self.layers.at(key).get()
+        return layer
+    def getLayerGroup(self, size_t key):
+        layer = _TmxLayerGroup()
+        layer.layer = self.layers.at(key).get()
+        return layer
+    def __getitem__(self, size_t key):
+        type = <int>self.layers.at(key).get().getType()
+        return {
+            <int>tmxlite.Layer_Type_Tile:   self.getLayer,
+            <int>tmxlite.Layer_Type_Object: self.getLayer,
+            <int>tmxlite.Layer_Type_Image:  self.getLayer,
+            <int>tmxlite.Layer_Type_Group:  self.getLayerGroup,
+        }.get(type, self.getLayer)(key)
+
+cdef class _TmxProperty:
+    cdef const tmxlite.Property * property
+    type_names = {
+        <int>tmxlite.Property_Type_Boolean: "Boolean",
+        <int>tmxlite.Property_Type_Float:   "Float",
+        <int>tmxlite.Property_Type_Int:     "Int",
+        <int>tmxlite.Property_Type_String:  "String",
+        <int>tmxlite.Property_Type_Colour:  "Colour",
+        <int>tmxlite.Property_Type_File:    "File",
+        <int>tmxlite.Property_Type_Object:  "Object",
+        <int>tmxlite.Property_Type_Undef:   "Undef",
+    }
+    def __cinit__(self):
+        self.property = NULL
+    def getName(self):
+        return deref(self.property).getName().decode('utf8')
+    def getType(self):
+        return <int>deref(self.property).getType()
+    def getTypeName(self):
+        return self.type_names.get(self.getType(), "Unknown")
+
+cdef class _TmxProperties:
+    cdef const vector[tmxlite.Property] * properties
+    def __cinit__(self):
+        self.properties = NULL
+    def size(self):
+        return deref(self.properties).size()
+    def __len__(self):
+        return deref(self.properties).size()
+    def __getitem__(self, size_t key):
+        property = _TmxProperty()
+        property.property = &deref(self.properties).at(key)
+        return property
+
+cdef class _TmxMap:
+    cdef tmxlite.Map* map
+    def __cinit__(self):
+        self.map = NULL
+    def load(self, path):
         self.map = new tmxlite.Map()
-        if not self.map.load(b"maps/platform.tmx"):
+        if not self.map.load(path.encode('utf8')):
             raise SystemExit("Error loading map")
-        print(f"Loaded Map version: ({self.map.getVersion().upper}, {self.map.getVersion().lower})")
+    def getVersion(self):
+        version = self.map.getVersion()
+        return (version.upper, version.lower)
+    def getLayers(self):
+        layers = _TmxLayers()
+        layers.layers = self.map.getLayers()
+        return layers
+    def getProperties(self):
+        properties = _TmxProperties()
+        properties.properties = &self.map.getProperties()
+        return properties
+    def isInfinite(self):
+        return self.map.isInfinite()
+
+cdef class _TiledTestApplication:
+    def __cinit__(self):
+        self.map = _TmxMap()
+        self.map.load("maps/platform.tmx")
+        print(f"Map version: {self.map.getVersion()}")
         if self.map.isInfinite():
             print("Map is infinite.\n")
         mapProperties = self.map.getProperties()
         print(f"Map has {mapProperties.size()} properties")
         for prop in mapProperties:
-            print(f"Found property: \"{prop.getName().decode('utf8')}\", Type: {<int>prop.getType()}")
+            print(f"Found property: \"{prop.getName()}\", Type: {prop.getTypeName()}")
         layers = self.map.getLayers()
         print(f"Map has {layers.size()} layers")
-        for layer_ptr in layers:
-            print(f"Found Layer: \"{dereference(layer_ptr).getName().decode('utf8')}\", Type: {<int>(dereference(layer_ptr).getType())}")
-            if dereference(layer_ptr).getType() == tmxlite.Layer_Type_Group:
-                self.sublayers = dereference(layer_ptr).getLayerAs[tmxlite.LayerGroup]().getLayers()
-                print(f"LayerGroup has {self.sublayers.size()} sublayers")
-                for sublayer_ptr in self.sublayers:
-                    print(f"Found Sublayer: \"{dereference(sublayer_ptr).getName().decode('utf8')}\", Type: {<int>(dereference(sublayer_ptr).getType())}")
-            elif dereference(layer_ptr).getType() == tmxlite.Layer_Type_Object:
+        for layer in layers:
+            print(f"Found Layer: \"{layer.getName()}\", Type: {layer.getTypeName()}")
+            if layer.getType() == TmxLayerType.Group:
+                sublayers = layer.getLayers()
+                print(f"LayerGroup has {sublayers.size()} sublayers")
+                for sublayer in sublayers:
+                    print(f"Found Sublayer: \"{sublayer.getName()}\", Type: {sublayer.getTypeName())}")
+            elif layer.getType() == TmxLayerType.Object:
                 print(f"OOK2")
-            elif dereference(layer_ptr).getType() == tmxlite.Layer_Type_Tile:
+            elif layer.getType() == TmxLayerType.Tile:
                 print(f"OOK3")
 
 class TiledTestApplication(_TiledTestApplication):
