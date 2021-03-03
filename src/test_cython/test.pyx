@@ -153,16 +153,20 @@ cdef class _TmxImageLayer(_TmxLayer):
 cdef class _TmxTiles:
     cdef const vector[tmxlite.Tile] * tiles
     def __cinit__(self):
-        pass
+        self.tiles = NULL
     def size(self):
         return self.tiles.size()
 
 cdef class _TmxChunks:
     cdef const vector[tmxlite.Chunk] * chunks
     def __cinit__(self):
-        pass
+        self.chunks = NULL
     def size(self):
         return self.chunks.size()
+    def getTiles(self, size_t key):
+        tiles = _TmxTiles()
+        tiles.tiles = &self.chunks.at(key).tiles
+        return tiles
 
 cdef class _TmxTileLayer(_TmxLayer):
     def __cinit__(self):

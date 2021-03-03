@@ -96,6 +96,10 @@ cdef extern from "ImageLayer.hpp" namespace "tmx" nogil:
         const string& getImagePath() const
 
 cdef extern from "TileLayer.hpp" namespace "tmx" nogil:
+    ctypedef enum FlipFlag "tmx::TileLayer::FlipFlag":
+        Horizontal "tmx::TileLayer::Horizontal"
+        Vertical "tmx::TileLayer::Vertical"
+        Diagonal "tmx::TileLayer::Diagonal"
     cdef cppclass Tile "tmx::TileLayer::Tile":
         uint32_t ID
         uint8_t flipFlags
