@@ -105,6 +105,37 @@ cdef class _TmxLayerGroup(_TmxLayer):
         layers.layers = self.layer.getLayerAs[tmxlite.LayerGroup]().getLayers()
         return layers
 
+cdef class _TmxObject:
+    cdef tmxlite.Object * object
+    shape_names = {
+        <int>tmxlite.Object_Shape_Rectangle: "Rectangle",
+        <int>tmxlite.Object_Shape_Ellipse:   "Ellipse",
+        <int>tmxlite.Object_Shape_Point:     "Point",
+        <int>tmxlite.Object_Shape_Polygon:   "Polygon",
+        <int>tmxlite.Object_Shape_Polyline:  "Polyline",
+        <int>tmxlite.Object_Shape_Text:      "Text",
+    }
+    def __cinit__(self):
+        self.object = NULL
+    def getUID(self):
+        return <int>deref(self.object).getUID()
+    def getName(self):
+        return deref(self.object).getName().decode('utf8')
+    def getType(self):
+        return deref(self.object).getName().decode('utf8')
+    def getShape(self):
+        return TmxObjectShape(<int>deref(self.object).getShape())
+    def getShapeName(self):
+        return self.shape_names.get(self.getShape(), "Unknown")
+
+cdef class _TmxObjectGroup(_TmxLayer):
+    def __cinit__(self):
+        pass
+    def getObjects(self):
+        objects = _TmxObjects()
+        objects.objects = self.layer.getLayerAs[tmxlite.ObjectGroup]().getObjects()
+        return objects
+
 cdef class _TmxLayers:
     cdef vector[tmxlite.Layer.Ptr] layers
     def __cinit__(self):
@@ -121,14 +152,31 @@ cdef class _TmxLayers:
         layer = _TmxLayerGroup()
         layer.layer = self.layers.at(key).get()
         return layer
+    def getObjectGroup(self, size_t key):
+        layer = _TmxObjectGroup()
+        layer.layer = self.layers.at(key).get()
+        return layer
     def __getitem__(self, size_t key):
         type = <int>self.layers.at(key).get().getType()
         return {
             <int>tmxlite.Layer_Type_Tile:   self.getLayer,
-            <int>tmxlite.Layer_Type_Object: self.getLayer,
+            <int>tmxlite.Layer_Type_Object: self.getObjectGroup,
             <int>tmxlite.Layer_Type_Image:  self.getLayer,
             <int>tmxlite.Layer_Type_Group:  self.getLayerGroup,
         }.get(type, self.getLayer)(key)
+
+cdef class _TmxObjects:
+    cdef vector[tmxlite.Object] objects
+    def __cinit__(self):
+        pass
+    def size(self):
+        return self.objects.size()
+    def __len__(self):
+        return self.objects.size()
+    def __getitem__(self, size_t key):
+        object = _TmxObject()
+        object.object = &self.objects.at(key)
+        return object
 
 cdef class _TmxProperty:
     cdef const tmxlite.Property * property
@@ -163,6 +211,14 @@ cdef class _TmxProperties:
         property = _TmxProperty()
         property.property = &deref(self.properties).at(key)
         return property
+
+class TmxObjectShape(IntEnum):
+    Rectangle = <int>tmxlite.Object_Shape_Rectangle
+    Ellipse   = <int>tmxlite.Object_Shape_Ellipse
+    Point     = <int>tmxlite.Object_Shape_Point
+    Polygon   = <int>tmxlite.Object_Shape_Polygon
+    Polyline  = <int>tmxlite.Object_Shape_Polyline
+    Text      = <int>tmxlite.Object_Shape_Text
 
 cdef class _TmxMap:
     cdef tmxlite.Map* map
@@ -207,7 +263,10 @@ cdef class _TiledTestApplication:
                 for sublayer in sublayers:
                     print(f"Found Sublayer: \"{sublayer.getName()}\", Type: {sublayer.getTypeName())}")
             elif layer.getType() == TmxLayerType.Object:
-                print(f"OOK2")
+                objects = layer.getObjects()
+                print(f"Found has {objects.size()} objects in layer")
+                for object in objects:
+                    print(f"Object {object.getUID()}, Name: \"{object.getName()}\"")
             elif layer.getType() == TmxLayerType.Tile:
                 print(f"OOK3")
 

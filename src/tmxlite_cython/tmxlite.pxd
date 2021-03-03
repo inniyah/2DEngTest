@@ -52,6 +52,34 @@ cdef extern from "LayerGroup.hpp" namespace "tmx" nogil:
         LayerGroup() except +
         const vector[Layer.Ptr]& getLayers() const
 
+cdef extern from "Object.hpp" namespace "tmx" nogil:
+    cdef cppclass Object_Shape "tmx::Object::Shape":
+        pass
+
+    cdef bool operator==(const Object_Shape&, const Object_Shape&)
+
+    cdef Object_Shape Object_Shape_Rectangle "tmx::Object::Shape::Rectangle"
+    cdef Object_Shape Object_Shape_Ellipse   "tmx::Object::Shape::Ellipse"
+    cdef Object_Shape Object_Shape_Point     "tmx::Object::Shape::Point"
+    cdef Object_Shape Object_Shape_Polygon   "tmx::Object::Shape::Polygon"
+    cdef Object_Shape Object_Shape_Polyline  "tmx::Object::Shape::Polyline"
+    cdef Object_Shape Object_Shape_Text      "tmx::Object::Shape::Text"
+
+    cdef cppclass Object:
+        Object() except +
+        Layer_Type getType()
+        uint32_t getUID() const
+        const string& getName() const
+        const string& getType() const
+        Object_Shape getShape() const
+        const vector[Property]& getProperties() const
+
+cdef extern from "ObjectGroup.hpp" namespace "tmx" nogil:
+    cdef cppclass ObjectGroup(Layer):
+        ObjectGroup() except +
+        const vector[Object]& getObjects() const
+        const vector[Property]& getProperties() const
+
 cdef extern from "Map.hpp" namespace "tmx" nogil:
     cdef cppclass Version:
         uint16_t upper
