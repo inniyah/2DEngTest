@@ -317,7 +317,7 @@ cdef class _TiledTestApplication:
                             print(f"TileLayer has {tiles.size()} tiles")
                         chunks = sublayer.getChunks()
                         if chunks:
-                            print(f"TileLayer has {tiles.size()} chunks")
+                            print(f"TileLayer has {chunks.size()} chunks")
                         tilesProperties = sublayer.getProperties()
                         if tilesProperties:
                             print(f"TileLayer has {tilesProperties.size()} properties")
@@ -345,7 +345,7 @@ cdef class _TiledTestApplication:
                     print(f"TileLayer has {tiles.size()} tiles")
                 chunks = sublayer.getChunks()
                 if chunks:
-                    print(f"TileLayer has {tiles.size()} chunks")
+                    print(f"TileLayer has {chunks.size()} chunks")
                 tilesProperties = layer.getProperties()
                 if tilesProperties:
                     print(f"TileLayer has {tilesProperties.size()} properties")
