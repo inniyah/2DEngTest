@@ -151,7 +151,7 @@ cdef class _TmxImageLayer(_TmxLayer):
         return self.layer.getLayerAs[tmxlite.ImageLayer]().getImagePath().decode('utf8')
 
 cdef class _TmxTiles:
-    cdef const vector[tmxlite.Tile] * tiles
+    cdef const vector[tmxlite.TileLayer_Tile] * tiles
     def __cinit__(self):
         self.tiles = NULL
     def size(self):

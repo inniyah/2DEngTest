@@ -8,6 +8,9 @@ from libcpp cimport bool
 from libcpp.memory cimport unique_ptr, shared_ptr, allocator
 from libcpp.string cimport string
 from libcpp.vector cimport vector
+from libcpp.map cimport map
+from libcpp.unordered_map cimport unordered_map
+from libcpp.utility cimport pair
 from cpython.ref cimport PyObject
 
 cdef extern from "Types.hpp" namespace "tmx" nogil:
@@ -160,31 +163,83 @@ cdef extern from "ImageLayer.hpp" namespace "tmx" nogil:
     cdef cppclass ImageLayer(Layer):
         ImageLayer() except +
         const string& getImagePath() const
+        const Colour& getTransparencyColour() const
+        bool hasTransparency() const
+        const Vector2u& getImageSize() const
 
 cdef extern from "TileLayer.hpp" namespace "tmx" nogil:
     ctypedef enum FlipFlag "tmx::TileLayer::FlipFlag":
         Horizontal "tmx::TileLayer::Horizontal"
         Vertical "tmx::TileLayer::Vertical"
         Diagonal "tmx::TileLayer::Diagonal"
-    cdef cppclass Tile "tmx::TileLayer::Tile":
+
+    cdef cppclass TileLayer_Tile "tmx::TileLayer::Tile":
         uint32_t ID
         uint8_t flipFlags
+
     cdef cppclass Chunk "tmx::TileLayer::Chunk":
         Vector2i position
         Vector2i size
-        vector[Tile] tiles
+        vector[TileLayer_Tile] tiles
+
     cdef cppclass TileLayer(Layer):
         TileLayer() except +
         const string& getImagePath() const
-        const vector[Tile]& getTiles() const
+        const vector[TileLayer_Tile]& getTiles() const
         const vector[Chunk]& getChunks() const
 
+cdef extern from "<array>" namespace "std" nogil:
+    cdef cppclass array4 "std::array<std::int32_t, 4u>":
+        array4() except+
+        int& operator[](size_t)
+
 cdef extern from "Tileset.hpp" namespace "tmx" nogil:
+    cdef cppclass Terrain:
+        string name
+        uint32_t tileID
+        vector[Property] properties
+
+    cdef cppclass Tileset_Tile_Frame:
+        uint32_t tileID
+        uint32_t duration
+        bool operator == (const Tileset_Tile_Frame& other) const
+        bool operator != (const Tileset_Tile_Frame& other) const
+
+    cdef cppclass Tileset_Tile_Animation:
+        vector[Tileset_Tile_Frame] frames;
+
+    cdef cppclass Tileset_Tile:
+        uint32_t ID
+        array4 terrainIndices
+        uint32_t probability
+
+        vector[Property] properties;
+        ObjectGroup objectGroup;
+        string imagePath;
+        Vector2u imageSize;
+        Vector2u imagePosition;
+        string type;
+
     cdef cppclass Tileset:
         Tileset() except +
         uint32_t getFirstGID() const
         uint32_t getLastGID() const
         const string& getName() const
+        const Vector2u& getTileSize() const
+        uint32_t getSpacing() const
+        uint32_t getMargin() const
+        uint32_t getTileCount() const
+        uint32_t getColumnCount() const
+        const Vector2u& getTileOffset() const
+        const vector[Property]& getProperties() const
+        const string getImagePath() const
+        const Vector2u& getImageSize() const
+        const Colour& getTransparencyColour() const
+        bool hasTransparency() const
+        const vector[Terrain]& getTerrainTypes() const
+        const vector[Tileset_Tile]& getTiles() const
+        bool hasTile(uint32_t id) const
+        const Tileset_Tile* getTile(uint32_t id) const
 
 cdef extern from "Map.hpp" namespace "tmx" nogil:
     cdef cppclass Version:
@@ -226,16 +281,29 @@ cdef extern from "Map.hpp" namespace "tmx" nogil:
     cdef StaggerIndex StaggerIndex_None "tmx::StaggerIndex::None"
 
     cdef cppclass Map:
-        bool load(const string&);
+        bool load(const string&)
+        bool loadFromString(const string& data, const string& workingDir)
         const Version& getVersion() const
         Orientation getOrientation() const
         RenderOrder getRenderOrder() const
-        bool isInfinite() const
-        const vector[Layer.Ptr]& getLayers() const
+        const Vector2u& getTileCount() const
+        const Vector2u& getTileSize() const
+        FloatRect getBounds() const
+        float getHexSideLength() const
+        StaggerAxis getStaggerAxis() const
+        StaggerIndex getStaggerIndex() const
+        const Colour& getBackgroundColour() const
         const vector[Tileset]& getTilesets() const
+        const vector[Layer.Ptr]& getLayers() const
         const vector[Property]& getProperties() const
+        const map[uint32_t, Tileset_Tile]& getAnimatedTiles() const
+        const string& getWorkingDirectory() const
+        unordered_map[string, Object]& getTemplateObjects()
+        const unordered_map[string, Object]& getTemplateObjects() const
+        unordered_map[string, Tileset]& getTemplateTilesets()
+        const unordered_map[string, Tileset]& getTemplateTilesets() const
+        bool isInfinite() const
 
 cdef extern from "ObjectGroup.hpp" namespace "tmx" nogil:
     cdef cppclass ObjectGroup(Layer):
         ObjectGroup() except +
-
