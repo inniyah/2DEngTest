@@ -19,6 +19,18 @@ cdef extern from "Types.hpp" namespace "tmx" nogil:
     ctypedef Vector2[float]    Vector2f
     ctypedef Vector2[int]      Vector2i
     ctypedef Vector2[unsigned] Vector2u
+    cdef cppclass Rectangle[T]:
+        Rectangle() except +
+        Rectangle(T l, T t, T w, T h) except +
+        Rectangle(Vector2[T] position, Vector2[T] size) except +
+    ctypedef Rectangle[float] FloatRect
+    ctypedef Rectangle[int]   IntRect
+    cdef cppclass Colour:
+        Colour() except +
+        Colour(uint8_t red, uint8_t green, uint8_t blue) except +
+        Colour(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) except +
+        bool operator == (const Colour& other)
+        bool operator != (const Colour& other)
 
 cdef extern from "Property.hpp" namespace "tmx" nogil:
     cdef cppclass Property_Type "tmx::Property::Type":
@@ -39,6 +51,14 @@ cdef extern from "Property.hpp" namespace "tmx" nogil:
         Property_Type getType() const
         const string& getName() const
 
+        bool getBoolValue() const
+        float getFloatValue() const
+        int getIntValue() const
+        const string& getStringValue() const
+        const Colour& getColourValue() const
+        const string& getFileValue() const
+        int getObjectValue() const
+
 cdef extern from "Layer.hpp" namespace "tmx" nogil:
     cdef cppclass Layer_Type "tmx::Layer::Type":
         pass
@@ -56,6 +76,10 @@ cdef extern from "Layer.hpp" namespace "tmx" nogil:
         const string& getName() const
         ctypedef shared_ptr[Layer] Ptr
         T& getLayerAs[T]() except +
+        float getOpacity() const
+        bool getVisible() const
+        const Vector2i& getOffset() const
+        const Vector2u& getSize() const
         const vector[Property]& getProperties() const
 
 cdef extern from "LayerGroup.hpp" namespace "tmx" nogil:
@@ -64,6 +88,30 @@ cdef extern from "LayerGroup.hpp" namespace "tmx" nogil:
         const vector[Layer.Ptr]& getLayers() const
 
 cdef extern from "Object.hpp" namespace "tmx" nogil:
+    cdef cppclass Text_HAlign "tmx::Text::HAlign":
+        pass
+    cdef Text_HAlign Text_HAlign_Left   "tmx::Text::HAlign::Left"
+    cdef Text_HAlign Text_HAlign_Centre "tmx::Text::HAlign::Centre"
+    cdef Text_HAlign Text_HAlign_Right  "tmx::Text::HAlign::Right"
+
+    cdef cppclass Text_HAlign "tmx::Text::VAlign":
+        pass
+    cdef Text_HAlign Text_VAlign_Top    "tmx::Text::VAlign::Top"
+    cdef Text_HAlign Text_VAlign_Centre "tmx::Text::VAlign::Centre"
+    cdef Text_HAlign Text_VAlign_Bottom "tmx::Text::VAlign::Bottom"
+
+    cdef cppclass Text "tmx::Text":
+        string fontFamily
+        uint32_t pixelSize
+        bool wrap
+        Colour colour
+        bool bold
+        bool italic
+        bool underline
+        bool strikethough
+        bool kerning
+        string content
+
     cdef cppclass Object_Shape "tmx::Object::Shape":
         pass
 
@@ -82,12 +130,30 @@ cdef extern from "Object.hpp" namespace "tmx" nogil:
         uint32_t getUID() const
         const string& getName() const
         const string& getType() const
+        const Vector2f& getPosition()
+        const FloatRect& getAABB()
+        float getRotation() const
+        uint32_t getTileID() const
+        uint8_t getFlipFlags() const
+        bool visible() const
         Object_Shape getShape() const
+        const vector[Vector2f]& getPoints() const
         const vector[Property]& getProperties() const
+        const Text& getText() const
+        Text& getText()
+        const string& getTilesetName() const
 
 cdef extern from "ObjectGroup.hpp" namespace "tmx" nogil:
+    cdef cppclass DrawOrder "tmx::DrawOrder":
+        pass
+    cdef DrawOrder DrawOrder_Index   "tmx::DrawOrder::Index"
+    cdef DrawOrder DrawOrder_TopDown "tmx::DrawOrder::TopDown"
+
     cdef cppclass ObjectGroup(Layer):
         ObjectGroup() except +
+        const Colour& getColour()
+        DrawOrder getDrawOrder() const
+        const vector[Property]& getProperties() const
         const vector[Object]& getObjects() const
 
 cdef extern from "ImageLayer.hpp" namespace "tmx" nogil:
@@ -173,5 +239,3 @@ cdef extern from "ObjectGroup.hpp" namespace "tmx" nogil:
     cdef cppclass ObjectGroup(Layer):
         ObjectGroup() except +
 
-cdef extern from "TileLayer.hpp" namespace "tmx" nogil:
-    pass
