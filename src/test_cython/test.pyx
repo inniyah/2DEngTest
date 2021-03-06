@@ -1,5 +1,5 @@
-cimport SDL2
-cimport tmxlite
+cimport sdl2.SDL2 as SDL2
+cimport tmxlite.tmxlite as tmxlite
 
 from libc.stdint cimport uint32_t, uint16_t, uint8_t
 from libcpp cimport bool
