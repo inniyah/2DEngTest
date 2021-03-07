@@ -64,8 +64,7 @@ INCS= \
 	-Isrc/tmxlite
 
 CYINCS= \
-	-Isrc/sdl2_cython \
-	-Isrc/tmxlite_cython
+	-Isrc/cython
 
 LIBS=
 
