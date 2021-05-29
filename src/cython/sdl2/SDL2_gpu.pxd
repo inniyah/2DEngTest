@@ -57,6 +57,9 @@ cdef extern from "SDL_gpu.h" nogil:
     ctypedef Uint32 GPU_RendererEnum
 
     cdef enum:
+        GPU_RENDERER_ORDER_MAX
+
+    cdef enum:
         GPU_RENDERER_UNKNOWN
         GPU_RENDERER_OPENGL_1_BASE
         GPU_RENDERER_OPENGL_1

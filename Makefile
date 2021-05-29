@@ -3,7 +3,7 @@
 # sudo apt install pkg-config cython3 libpython3-dev zlib1g-dev libzstd-dev \
 #     libxml2-dev libsdl2-dev libsdl2-image-dev
 
-PACKAGES= python3-embed zlib libzstd libxml-2.0 sdl2 SDL2_image
+PACKAGES= python3-embed zlib libzstd libxml-2.0 sdl2 SDL2_image SDL2_gpu
 
 CC= gcc
 CXX= g++
