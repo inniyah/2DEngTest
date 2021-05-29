@@ -1,5 +1,5 @@
 /*********************************************************************
-Matt Marchant 2016
+Matt Marchant 2016 - 2021
 http://trederia.blogspot.com
 
 tmxlite - Zlib license.
@@ -66,10 +66,20 @@ namespace tmx
         Property();
         ~Property() = default;
 
+        static Property fromBoolean(bool value);
+        static Property fromFloat(float value);
+        static Property fromInt(int value);
+        static Property fromString(const std::string& value);
+        static Property fromColour(const Colour& value);
+        static Property fromFile(const std::string& value);
+        static Property fromObject(int value);
+
         /*!
         \brief Attempts to parse the given node as a property
+        \param isObjectTypes Set to true if the parsing is done from an object types files.
         */
-        void parse(const pugi::xml_node&);
+        void parse(const pugi::xml_node&, bool isObjectTypes = false);
+
         /*!
         \brief Returns the type of data stored in the property.
         This should generally be called first before trying to

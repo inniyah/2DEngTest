@@ -1,5 +1,5 @@
 /*********************************************************************
-Matt Marchant 2016
+Matt Marchant 2016 - 2021
 http://trederia.blogspot.com
 
 tmxlite - Zlib license.
@@ -172,7 +172,7 @@ namespace tmx
         working directory. Use this to load the texture required by whichever
         method you choose to render the map.
         */
-        const std::string getImagePath() const { return m_imagePath; }
+        const std::string& getImagePath() const { return m_imagePath; }
         /*!
         \brief Returns the size of the tile set image in pixels.
          */

@@ -84,6 +84,7 @@ CPP_SRCS= \
 	src/tmxlite/ImageLayer.cpp \
 	src/tmxlite/Map.cpp \
 	src/tmxlite/Object.cpp \
+	src/tmxlite/ObjectTypes.cpp \
 	src/tmxlite/Property.cpp \
 	src/tmxlite/Tileset.cpp \
 	src/tmxlite/detail/pugixml.cpp
