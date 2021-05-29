@@ -54,6 +54,21 @@ cdef extern from "Property.hpp" namespace "tmx" nogil:
         Property_Type getType() const
         const string& getName() const
 
+        @staticmethod
+        Property fromBoolean(bool value)
+        @staticmethod
+        Property fromFloat(float value)
+        @staticmethod
+        Property fromInt(int value)
+        @staticmethod
+        Property fromString(const string& value)
+        @staticmethod
+        Property fromColour(const Colour& value)
+        @staticmethod
+        Property fromFile(const string& value)
+        @staticmethod
+        Property fromObject(int value)
+
         bool getBoolValue() const
         float getFloatValue() const
         int getIntValue() const
@@ -89,6 +104,18 @@ cdef extern from "LayerGroup.hpp" namespace "tmx" nogil:
     cdef cppclass LayerGroup(Layer):
         LayerGroup() except +
         const vector[Layer.Ptr]& getLayers() const
+
+cdef extern from "ObjectTypes.hpp" namespace "tmx" nogil:
+    cdef cppclass ObjectTypes_Type "tmx::ObjectTypes::Type":
+        string name
+        Colour colour;
+        vector[Property] properties
+
+    cdef cppclass ObjectTypes:
+        ObjectTypes() except +
+        bool load(const string&)
+        bool loadFromString(const string& data, const string& workingDir)
+        const vector[ObjectTypes_Type]& getTypes() const
 
 cdef extern from "Object.hpp" namespace "tmx" nogil:
     cdef cppclass Text_HAlign "tmx::Text::HAlign":
