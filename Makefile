@@ -41,7 +41,10 @@ LDFLAGS= \
 	-Wl,-z,relro \
 	-Wl,--as-needed \
 	-Wl,--no-undefined \
-	-Wl,--no-allow-shlib-undefined
+	-Wl,--no-allow-shlib-undefined \
+	-Wl,-Bsymbolic-functions \
+	-Wl,--dynamic-list-cpp-new \
+	-Wl,--dynamic-list-cpp-typeinfo
 
 CYFLAGS= \
 	-3 \
