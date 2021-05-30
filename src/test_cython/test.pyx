@@ -8,6 +8,7 @@ from libcpp cimport bool
 from libcpp.memory cimport unique_ptr, shared_ptr, make_shared, allocator
 from libcpp.string cimport string
 from libcpp.vector cimport vector
+from libcpp.utility cimport pair
 from cpython.ref cimport PyObject
 from cython.operator cimport dereference as deref
 from enum import IntEnum
@@ -462,10 +463,18 @@ cdef class _SdlGpuTest:
             SDL2_gpu.GPU_LogError("GPU_Init Failed!")
             return -1
 
-    def run(self):
+    def quit(self):
+        SDL2_gpu.GPU_Quit()
+
+    def test01(self):
         cdef int maxSprites = 50000
         cdef int numSprites = 101
         cdef float dt = 0.010
+
+        cdef mt19937 dice_gen = mt19937(5)
+        cdef vector[double] dice_values = [1, 2, 3, 4, 5, 6] # autoconvert vector from Python list
+        cdef discrete_distribution[int] dd = discrete_distribution[int](dice_values.begin(), dice_values.end())
+        print("Dice: ", dd(dice_gen))
 
         cdef float * x = <float*>malloc(sizeof(float) * maxSprites)
         cdef float * y = <float*>malloc(sizeof(float) * maxSprites)
@@ -543,8 +552,107 @@ cdef class _SdlGpuTest:
                 frameCount = 0
                 startTime = SDL2.SDL_GetTicks()
 
-    def quit(self):
+    # See: https://glusoft.com/tutorials/sdl2/sprite-animations
+    def test02(self):
+        SDL2.SDL_Init(SDL2.SDL_INIT_VIDEO)
+        cdef SDL2_gpu.GPU_Target * window = SDL2_gpu.GPU_InitRenderer(SDL2_gpu.GPU_RENDERER_OPENGL_3, 200, 200, SDL2_gpu.GPU_DEFAULT_INIT_FLAGS)
+        cdef SDL2_gpu.GPU_Image * hero = SDL2_gpu.GPU_LoadImage("img/adventurer-sheet.png")
+
+        cdef vector[SDL2_gpu.GPU_Rect] rects
+        cdef size_t nbRow = 11
+        cdef size_t nbCol = 7
+        cdef size_t widthSpr = 50
+        cdef size_t heightSpr = 37
+
+        for i in range(nbRow):
+            for j in range(nbCol):
+                rects.push_back(SDL2_gpu.GPU_Rect(<float> (j * widthSpr), <float> (i * heightSpr), <float> widthSpr, <float> heightSpr))
+
+        idle1   = [ (0, 0), (0, 1), (0, 2), (0, 3) ]
+        crouch  = [ (0, 4), (0, 5), (0, 6), (1, 0) ]
+        run     = [ (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6) ]
+        jump    = [ (2, 0), (2, 1), (2, 2), (2, 3) ]
+        mid     = [ (2, 4), (2, 5), (2, 6), (3, 0) ]
+        fall    = [ (3, 1), (3, 2) ]
+        slide   = [ (3, 3), (3, 4), (3, 5), (3, 6), (4, 0) ]
+        grab    = [ (4, 1), (4, 2), (4, 3), (4, 4) ]
+        climb   = [ (4, 5), (4, 6), (5, 0), (5, 1), (5, 2) ]
+        idle2   = [ (5, 3), (5, 4), (5, 5), (5, 6) ]
+        attack1 = [ (6, 0), (6, 1), (6, 2), (6, 3), (6, 4) ]
+        attack2 = [ (6, 5), (6, 6), (7, 0), (7, 1), (7, 2), (7, 3) ]
+        attack3 = [ (7, 4), (7, 5), (7, 6), (8, 0), (8, 1), (8, 2) ]
+        hurt    = [ (8, 3), (8, 4), (8, 5) ]
+        die     = [ (8, 6), (9, 0), (9, 1), (9, 2), (9, 3), (9, 4), (9, 5) ]
+        jump2   = [ (9, 6), (10, 0), (10, 1) ]
+
+        current = idle1
+        cdef int current_index = 0
+
+        cdef double maxDuration = 150
+        cdef double timeBuffer = 0
+        cdef double timeElapsed = 0
+        cdef SDL2.SDL_Event event
+
+        done = False
+
+        cdef SDL2.Uint32 startTime = SDL2.SDL_GetTicks()
+        while not done:
+            while SDL2.SDL_PollEvent(&event):
+                if event.type == SDL2.SDL_QUIT:
+                    done = True
+                elif event.type == SDL2.SDL_KEYDOWN:
+                    if event.key.keysym.sym == SDL2.SDLK_ESCAPE:
+                        done = True
+                    if event.key.keysym.scancode == SDL2.SDL_SCANCODE_Q:
+                        current = idle1
+                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_W:
+                        current = crouch
+                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_E:
+                        current = run
+                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_R:
+                        current = jump
+                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_T:
+                        current = mid
+                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_Y:
+                        current = fall
+                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_U:
+                        current = slide
+                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_I:
+                        current = grab
+                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_O:
+                        current = climb
+                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_P:
+                        current = idle2
+                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_A:
+                        current = attack1
+                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_S:
+                        current = attack2
+                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_D:
+                        current = attack3
+                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_F:
+                        current = hurt
+                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_G:
+                        current = die
+                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_H:
+                        current = jump
+                    current_index = 0
+
+            SDL2_gpu.GPU_Clear(window)
+            currentPair = current[current_index]
+            position = currentPair[0] + currentPair[1] * nbCol
+            SDL2_gpu.GPU_BlitTransformX(hero, &rects[position], window, 75, 75, 0, 0, 0, 1, 1)
+            SDL2_gpu.GPU_Flip(window)
+
+            if SDL2.SDL_GetTicks() > startTime + maxDuration:
+                startTime = SDL2.SDL_GetTicks()
+                current_index += 1
+                if current_index >= len(current):
+                    current_index = 0
+
+        SDL2_gpu.GPU_FreeImage(hero)
+        SDL2_gpu.GPU_FreeTarget(window)
         SDL2_gpu.GPU_Quit()
+        SDL2.SDL_Quit()
 
 class SdlGpuTest(_SdlGpuTest):
     pass
