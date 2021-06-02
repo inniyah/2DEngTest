@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="100" height="50" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="watertileset3qb2tg0" tilewidth="32" tileheight="32">
+  <image source="watertileset3qb2tg0.png" width="410" height="331"/>
+ </tileset>
+ <layer name="Tile Layer 2" width="100" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt0FVTFVAYRuEj3SgC0ogImKB0h6B02IEgJd3981n8hL1vmDmsNfPcvRfffImEmVly9+CuD0jybv+bglSkIR0ZyEQWspGDXORF7C2sfBSgEA/xCEV4jGKUoBRPUBaxt7DKUYFKVKEaNajFU9ThGerxPGJvYTWgEU14gZd4hdd4g7doRgveRewtrPdoRRva0YFOdKEbPehFH/oj9hbWAAYxhGGM4ANGMYaP+IRxTETsLaxJTGEaM5jFHOaxgM/4gq/4FrG3sL7jB37iF37jDxbxF0tYxj+sROwtrFWsYR0b+I9NbGEbO9jFHvYj9hbWAQ5xhGOc4BRnOMcFLnGF64i9mZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZ2X3tBhh2OLo=
+  </data>
+ </layer>
+</map>
