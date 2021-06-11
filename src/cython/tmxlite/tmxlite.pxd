@@ -247,6 +247,20 @@ cdef extern from "Tileset.hpp" namespace "tmx" nogil:
         Vector2u imagePosition;
         string type;
 
+    cdef cppclass Tileset_ObjectAlignment:
+        pass
+
+    cdef Tileset_ObjectAlignment Tileset_ObjectAlignment_Unspecified    "tmx::Tileset::ObjectAlignment::Unspecified"
+    cdef Tileset_ObjectAlignment Tileset_ObjectAlignment_TopLeft        "tmx::Tileset::ObjectAlignment::TopLeft"
+    cdef Tileset_ObjectAlignment Tileset_ObjectAlignment_Top            "tmx::Tileset::ObjectAlignment::Top"
+    cdef Tileset_ObjectAlignment Tileset_ObjectAlignment_TopRight       "tmx::Tileset::ObjectAlignment::TopRight"
+    cdef Tileset_ObjectAlignment Tileset_ObjectAlignment_Left           "tmx::Tileset::ObjectAlignment::Left"
+    cdef Tileset_ObjectAlignment Tileset_ObjectAlignment_Center         "tmx::Tileset::ObjectAlignment::Center"
+    cdef Tileset_ObjectAlignment Tileset_ObjectAlignment_Right          "tmx::Tileset::ObjectAlignment::Right"
+    cdef Tileset_ObjectAlignment Tileset_ObjectAlignment_BottomLeft     "tmx::Tileset::ObjectAlignment::BottomLeft"
+    cdef Tileset_ObjectAlignment Tileset_ObjectAlignment_Bottom         "tmx::Tileset::ObjectAlignment::Bottom"
+    cdef Tileset_ObjectAlignment Tileset_ObjectAlignment_BottomRight    "tmx::Tileset::ObjectAlignment::BottomRight"
+
     cdef cppclass Tileset:
         Tileset() except +
         uint32_t getFirstGID() const
@@ -257,6 +271,7 @@ cdef extern from "Tileset.hpp" namespace "tmx" nogil:
         uint32_t getMargin() const
         uint32_t getTileCount() const
         uint32_t getColumnCount() const
+        Tileset_ObjectAlignment getObjectAlignment() const
         const Vector2u& getTileOffset() const
         const vector[Property]& getProperties() const
         const string getImagePath() const
