@@ -41,7 +41,9 @@ Tileset::Tileset(const std::string& workingDir)
     m_margin                (0),
     m_tileCount             (0),
     m_columnCount           (0),
-    m_transparencyColour    (0, 0, 0, 0)
+    m_objectAlignment       (ObjectAlignment::Unspecified),
+    m_transparencyColour    (0, 0, 0, 0),
+    m_hasTransparency       (false)
 {
 
 }
@@ -117,6 +119,51 @@ void Tileset::parse(pugi::xml_node node, Map* map)
     m_tileCount = node.attribute("tilecount").as_int();
     m_columnCount = node.attribute("columns").as_int();
 
+    std::string objectAlignment = node.attribute("objectalignment").as_string();
+    if (!objectAlignment.empty())
+    {
+        if (objectAlignment == "unspecified")
+        {
+            m_objectAlignment = ObjectAlignment::Unspecified;
+        }
+        else if (objectAlignment == "topleft")
+        {
+            m_objectAlignment = ObjectAlignment::TopLeft;
+        }
+        else if (objectAlignment == "top")
+        {
+            m_objectAlignment = ObjectAlignment::Top;
+        }
+        else if (objectAlignment == "topright")
+        {
+            m_objectAlignment = ObjectAlignment::TopRight;
+        }
+        else if (objectAlignment == "left")
+        {
+            m_objectAlignment = ObjectAlignment::Left;
+        }
+        else if (objectAlignment == "center")
+        {
+            m_objectAlignment = ObjectAlignment::Center;
+        }
+        else if (objectAlignment == "right")
+        {
+            m_objectAlignment = ObjectAlignment::Right;
+        }
+        else if (objectAlignment == "bottomleft")
+        {
+            m_objectAlignment = ObjectAlignment::BottomLeft;
+        }
+        else if (objectAlignment == "bottom")
+        {
+            m_objectAlignment = ObjectAlignment::Bottom;
+        }
+        else if (objectAlignment == "bottomright")
+        {
+            m_objectAlignment = ObjectAlignment::BottomRight;
+        }
+    }
+
     const auto& children = node.children();
     for (const auto& node : children)
     {
@@ -138,6 +185,7 @@ void Tileset::parse(pugi::xml_node node, Map* map)
             {
                 attribString = node.attribute("trans").as_string();
                 m_transparencyColour = colourFromString(attribString);
+                m_hasTransparency = true;
             }
             if (node.attribute("width") && node.attribute("height"))
             {
@@ -212,10 +260,12 @@ void Tileset::reset()
     m_margin = 0;
     m_tileCount = 0;
     m_columnCount = 0;
+    m_objectAlignment = ObjectAlignment::Unspecified;
     m_tileOffset = { 0,0 };
     m_properties.clear();
     m_imagePath = "";
     m_transparencyColour = { 0, 0, 0, 0 };
+    m_hasTransparency = false;
     m_terrainTypes.clear();
     m_tiles.clear();
 }
@@ -349,6 +399,7 @@ void Tileset::parseTileNode(const pugi::xml_node& node, Map* map)
             {
                 attribString = child.attribute("trans").as_string();
                 m_transparencyColour = colourFromString(attribString);
+                m_hasTransparency = true;
             }
             if (child.attribute("width"))
             {
