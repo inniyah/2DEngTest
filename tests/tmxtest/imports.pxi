@@ -1,5 +1,6 @@
 from libc.stdint cimport uint32_t, uint16_t, uint8_t
 from libc.stdlib cimport calloc, malloc, free
+from libc.math cimport floor, ceil, round
 from libcpp cimport bool
 from libcpp.memory cimport unique_ptr, shared_ptr, make_shared, allocator
 from libcpp.string cimport string

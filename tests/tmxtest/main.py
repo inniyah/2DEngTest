@@ -33,7 +33,10 @@ def main():
     if not args.test is None:
         logging.info(f"Running test: {args.test}")
         if  args.test == 'tmx':
-            app = test.TiledTestApplication()
+            tmxapp = test.TiledTestApplication()
+            lay1 = tmxapp.getLayer(0)
+            lay1 = tmxapp.getLayer(1)
+            lay1 = tmxapp.getLayer(2)
         elif args.test == 'gpu':
             gpu_test = test.SdlGpuContext()
             gpu_test.printRenderers()

@@ -26,8 +26,12 @@ cdef extern from "Types.hpp" namespace "tmx" nogil:
         Rectangle() except +
         Rectangle(T l, T t, T w, T h) except +
         Rectangle(Vector2[T] position, Vector2[T] size) except +
+        T left
+        T top
+        T width
+        T height
     ctypedef Rectangle[float] FloatRect
-    ctypedef Rectangle[int]   IntRect
+    ctypedef Rectangle[int] IntRect
     cdef cppclass Colour:
         Colour() except +
         Colour(uint8_t red, uint8_t green, uint8_t blue) except +

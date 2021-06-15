@@ -282,7 +282,8 @@ cdef class _TmxMap:
 cdef class _TiledTestApplication:
     def __cinit__(self):
         map = _TmxMap()
-        map.load("maps/platform.tmx")
+        map.load("assets/demo.tmx")
+        #~ map.load("maps/platform.tmx")
         #~ map.load("data/001-1.tmx")
         print(f"Map version: {map.getVersion()}")
         if map.isInfinite():
@@ -329,7 +330,6 @@ cdef class _TiledTestApplication:
                 print(f"ImagePath: \"{layer.getImagePath()}\"")
 
             elif layer.getType() == TmxLayerType.Tile:
-                print(f"OOK3")
                 tiles = layer.getTiles()
                 if tiles:
                     print(f"TileLayer has {tiles.size()} tiles")
@@ -351,5 +351,4 @@ cdef class _TiledTestApplication:
             tiles = tileset.getTiles()
             #~ print([( tile.getID(), tile.getImagePath(), tile.getType() ) for tile in tiles])
 
-class TiledTestApplication(_TiledTestApplication):
-    pass
+        self.map = map
