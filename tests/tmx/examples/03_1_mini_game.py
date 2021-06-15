@@ -51,8 +51,7 @@ def demo_pygame(file_name):
 
     # init pygame and set up a screen
     pygame.init()
-    pygame.display.set_caption("tiledtmxloader - " + file_name + \
-                                                        " - keys: arrows, 0-9")
+    pygame.display.set_caption("tiledtmxloader - " + file_name + " - keys: arrows, 0-9")
     screen_width = min(1024, world_map.pixel_width)
     screen_height = min(768, world_map.pixel_height)
     screen = pygame.display.set_mode((screen_width, screen_height))
@@ -78,8 +77,7 @@ def demo_pygame(file_name):
     cam_world_pos_y = hero.rect.centery
 
     # set initial cam position and size
-    renderer.set_camera_position_and_size(cam_world_pos_x, cam_world_pos_y, \
-                                        screen_width, screen_height)
+    renderer.set_camera_position_and_size(cam_world_pos_x, cam_world_pos_y, screen_width, screen_height)
 
     # retrieve the layers
     sprite_layers = helperspygame.get_layers_from_map(resources)
@@ -179,7 +177,4 @@ def create_hero(start_pos_x, start_pos_y):
 #  -----------------------------------------------------------------------------
 
 if __name__ == '__main__':
-
     main()
-
-

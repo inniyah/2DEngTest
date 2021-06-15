@@ -2,14 +2,18 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import logging
-import os
 import json
+import logging
+import math
+import os
 import sys
 
 from funcs import printAsJson
 
-MY_PATH = os.path.normpath(os.path.abspath(os.path.dirname(__file__)))
+if not sys.argv[0]:
+    APP_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+else:
+    APP_DIR = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), os.pardir))
 
 logging.basicConfig(level=logging.INFO)
 

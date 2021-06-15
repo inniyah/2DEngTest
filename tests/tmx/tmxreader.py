@@ -200,8 +200,7 @@ class TileMap(object):
                                 [val for val in layer.decoded_content if val])))
                     content = ""
                 else:
-                    raise Exception('unknown data encoding %s' % \
-                                                                (layer.encoding))
+                    raise Exception('unknown data encoding %s' % (layer.encoding))
             else:
                 # in the case of xml the encoded_content already contains a
                 # list of integers
@@ -214,8 +213,7 @@ class TileMap(object):
                 elif layer.compression == 'zlib':
                     content = decompress_zlib(content)
                 else:
-                    raise Exception('unknown data compression %s' % \
-                                                            (layer.compression))
+                    raise Exception('unknown data compression %s' % (layer.compression))
         else:
             raise Exception('no encoded content to decode')
 
@@ -327,7 +325,7 @@ class Tile(object):
             the tileset this tile belongs to
     """
 
-# [20:22]	DR0ID_: to sum up: there are two use cases,
+# [20:22]    DR0ID_: to sum up: there are two use cases,
 # if the tile element has a child element 'image' then tile is
 # standalone with its own id and
 # the other case where a tileset is present then it
@@ -356,7 +354,7 @@ class Cell(object):
             the tileset this tile belongs to
     """
 
-# [20:22]	DR0ID_: to sum up: there are two use cases,
+# [20:22]    DR0ID_: to sum up: there are two use cases,
 # if the tile element has a child element 'image' then tile is
 # standalone with its own id and
 # the other case where a tileset is present then it
@@ -423,69 +421,8 @@ class TileLayer(object):
         self.decoded_content = []
         self.visible = True
         self.properties = {} # {name: value}
-        self.is_object_group = False    # ISSUE 9
+        self.is_object_group = False # ISSUE 9
         self._content2D = None
-
-    # def decode(self):
-        # """
-        # Converts the contents in a list of integers which are the gid of the
-        # used tiles. If necessairy it decodes and uncompresses the contents.
-        # """
-        # self.decoded_content = []
-        # if self.encoded_content:
-            # content = self.encoded_content
-            # if self.encoding:
-                # if self.encoding.lower() == 'base64':
-                    # content = decode_base64(content)
-                # elif self.encoding.lower() == 'csv':
-                    # list_of_lines = content.split()
-                    # for line in list_of_lines:
-                        # self.decoded_content.extend(line.split(','))
-                    # self.decoded_content = list(map(int, \
-                                # [val for val in self.decoded_content if val]))
-                    # content = ""
-                # else:
-                    # raise Exception('unknown data encoding %s' % \
-                                                                # (self.encoding))
-            # else:
-                # # in the case of xml the encoded_content already contains a
-                # # list of integers
-                # self.decoded_content = list(map(int, self.encoded_content))
-                # content = ""
-            # if self.compression:
-                # if self.compression == 'gzip':
-                    # content = decompress_gzip(content)
-                # elif self.compression == 'zlib':
-                    # content = decompress_zlib(content)
-                # else:
-                    # raise Exception('unknown data compression %s' % \
-                                                            # (self.compression))
-        # else:
-            # raise Exception('no encoded content to decode')
-
-        # # struc = struct.Struct("<" + "I" * self.width)
-        # # struc_unpack_from = struc.unpack_from
-        # # self_decoded_content_extend = self.decoded_content.extend
-        # # for idx in range(0, len(content), 4 * self.width):
-            # # val = struc_unpack_from(content, idx)
-            # # self_decoded_content_extend(val)
-# ####
-        # struc = struct.Struct("<" + "I" * self.width * self.height)
-        # val = struc.unpack(content) # make Cell
-        # # self.decoded_content.extend(val)
-
-
-        # self.decoded_content = array.array('I')
-        # self.decoded_content.extend(val)
-
-
-        # # arr = array.array('I')
-        # # arr.fromlist(self.decoded_content)
-        # # self.decoded_content = arr
-
-        # # TODO: generate property grid here??
-
-        # self._gen_2D()
 
     def generate_2D(self):
         self.content2D = []
@@ -514,28 +451,6 @@ class TileLayer(object):
         self.pixel_width = self.width * self.tilewidth
         self.pixel_height = self.height * self.tileheight
         self.visible = bool(int(self.visible))
-
-    # def get_visible_tile_range(self, xmin, ymin, xmax, ymax):
-        # tile_w = self.pixel_width / self.width
-        # tile_h = self.pixel_height / self.height
-        # left = int(round(float(xmin) / tile_w)) - 1
-        # right = int(round(float(xmax) / tile_w)) + 2
-        # top = int(round(float(ymin) / tile_h)) - 1
-        # bottom = int(round(float(ymax) / tile_h)) + 2
-        # return (left, top, left - right, top - bottom)
-
-    # def get_tiles(self, xmin, ymin, xmax, ymax):
-        # tiles = []
-        # if self.visible:
-            # for ypos in range(ymin, ymax):
-                # for xpos in range(xmin, xmax):
-                    # try:
-                        # img_idx = self.content2D[xpos][ypos]
-                        # if img_idx:
-                            # tiles.append((xpos, ypos, img_idx))
-                    # except IndexError:
-                        # pass
-        # return tiles
 
 #  -----------------------------------------------------------------------------
 
@@ -648,11 +563,11 @@ def decompress_gzip(in_str, string_encoding='latin-1'):
 
     if sys.version_info > (2, ):
         from io import BytesIO
-        copmressed_stream = BytesIO(in_str)
+        compressed_stream = BytesIO(in_str)
     else:
         # gzip can only handle file object therefore using StringIO
-        copmressed_stream = StringIO(in_str.decode(string_encoding))
-    gzipper = gzip.GzipFile(fileobj=copmressed_stream)
+        compressed_stream = StringIO(in_str.decode(string_encoding))
+    gzipper = gzip.GzipFile(fileobj=compressed_stream)
     content = gzipper.read()
     gzipper.close()
     return content
@@ -1040,202 +955,202 @@ class AbstractResourceLoader(object):
 #  -----------------------------------------------------------------------------
 
 if __name__ == "__main__":
-	import argparse
-	from PIL import Image
+    import argparse
+    from PIL import Image
 
-	class MapResourceLoader(AbstractResourceLoader):
-		def load(self, tile_map):
-			AbstractResourceLoader.load(self, tile_map)
+    class MapResourceLoader(AbstractResourceLoader):
+        def load(self, tile_map):
+            AbstractResourceLoader.load(self, tile_map)
 
-			for layer in self.world_map.layers:
-				if layer.is_object_group:
-					continue
+            for layer in self.world_map.layers:
+                if layer.is_object_group:
+                    continue
 
-				for gid in layer.decoded_content:
-					if gid not in self.indexed_tiles:
-						if gid & self.FLIP_X or gid & self.FLIP_Y or gid & self.FLIP_DIAGONAL:
-							image_gid = gid & ~(self.FLIP_X | self.FLIP_Y | self.FLIP_DIAGONAL)
-							offset_x, offset_y, img = self.indexed_tiles[image_gid]
-							tex = img.get_texture()
-							orig_anchor_x = tex.anchor_x
-							orig_anchor_y = tex.anchor_y
-							tex.anchor_x = tex.width / 2
-							tex.anchor_y = tex.height / 2
-							if gid & self.FLIP_DIAGONAL:
-								if gid & self.FLIP_X:
-									tex2 = tex.get_transform(rotate=90)
-								elif gid & self.FLIP_Y:
-									tex2 = tex.get_transform(rotate=270)
-							else:
-								tex2 = tex.get_transform(flip_x=bool(gid & self.FLIP_X), flip_y=bool(gid & self.FLIP_Y))
-							tex2.anchor_x = tex.anchor_x = orig_anchor_x
-							tex2.anchor_y = tex.anchor_y = orig_anchor_y
-							self.indexed_tiles[gid] = (offset_x, offset_y, tex2)
+                for gid in layer.decoded_content:
+                    if gid not in self.indexed_tiles:
+                        if gid & self.FLIP_X or gid & self.FLIP_Y or gid & self.FLIP_DIAGONAL:
+                            image_gid = gid & ~(self.FLIP_X | self.FLIP_Y | self.FLIP_DIAGONAL)
+                            offset_x, offset_y, img = self.indexed_tiles[image_gid]
+                            tex = img.get_texture()
+                            orig_anchor_x = tex.anchor_x
+                            orig_anchor_y = tex.anchor_y
+                            tex.anchor_x = tex.width / 2
+                            tex.anchor_y = tex.height / 2
+                            if gid & self.FLIP_DIAGONAL:
+                                if gid & self.FLIP_X:
+                                    tex2 = tex.get_transform(rotate=90)
+                                elif gid & self.FLIP_Y:
+                                    tex2 = tex.get_transform(rotate=270)
+                            else:
+                                tex2 = tex.get_transform(flip_x=bool(gid & self.FLIP_X), flip_y=bool(gid & self.FLIP_Y))
+                            tex2.anchor_x = tex.anchor_x = orig_anchor_x
+                            tex2.anchor_y = tex.anchor_y = orig_anchor_y
+                            self.indexed_tiles[gid] = (offset_x, offset_y, tex2)
 
-			#json.dump(self.indexed_tiles, sys.stdout, cls=JSONDebugEncoder, indent=2, sort_keys=True)
+            #json.dump(self.indexed_tiles, sys.stdout, cls=JSONDebugEncoder, indent=2, sort_keys=True)
 
-		def _load_image(self, filename, colorkey=None):
-			img = self._img_cache.get(filename, None)
-			if img is None:
-				print("~ Image: '{}'".format(filename))
-				try:
-					img = Image.open(filename)
-				except FileNotFoundError:
-					img = None
-				self._img_cache[filename] = img
-			return img
+        def _load_image(self, filename, colorkey=None):
+            img = self._img_cache.get(filename, None)
+            if img is None:
+                print("~ Image: '{}'".format(filename))
+                try:
+                    img = Image.open(filename)
+                except FileNotFoundError:
+                    img = None
+                self._img_cache[filename] = img
+            return img
 
-		def _load_image_file_like(self, file_like_obj, colorkey=None):
-			return self._load_image(file_like_obj)
+        def _load_image_file_like(self, file_like_obj, colorkey=None):
+            return self._load_image(file_like_obj)
 
-		def _load_image_part(self, filename, xpos, ypos, width, height, colorkey=None):
-			#print("~ Image Part: '{}' ({}, {}, {}, {}, {})".format(filename, xpos, ypos, width, height, colorkey))
-			source_img = self._load_image(filename, colorkey)
-			crop_rectangle = (xpos, ypos, xpos + width, ypos + height)
-			return self._load_image(filename).crop(crop_rectangle)
+        def _load_image_part(self, filename, xpos, ypos, width, height, colorkey=None):
+            #print("~ Image Part: '{}' ({}, {}, {}, {}, {})".format(filename, xpos, ypos, width, height, colorkey))
+            source_img = self._load_image(filename, colorkey)
+            crop_rectangle = (xpos, ypos, xpos + width, ypos + height)
+            return self._load_image(filename).crop(crop_rectangle)
 
-		def _load_image_parts(self, filename, margin, spacing, tile_width, tile_height, colorkey=None):
-			source_img = self._load_image(filename, colorkey)
-			if not source_img is None:
-				width, height = source_img.size
-			else:
-				width = 0
-				height = 0
-			tile_width_spacing = tile_width + spacing
-			width = (width // tile_width_spacing) * tile_width_spacing
-			tile_height_spacing = tile_height + spacing
-			height = (height // tile_height_spacing) * tile_height_spacing
-			images = []
-			for y_pos in range(margin, height, tile_height_spacing):
-				for x_pos in range(margin, width, tile_width_spacing):
-					img_part = self._load_image_part(filename, x_pos, y_pos, tile_width, tile_height, colorkey)
-					images.append(img_part)
-			return images
+        def _load_image_parts(self, filename, margin, spacing, tile_width, tile_height, colorkey=None):
+            source_img = self._load_image(filename, colorkey)
+            if not source_img is None:
+                width, height = source_img.size
+            else:
+                width = 0
+                height = 0
+            tile_width_spacing = tile_width + spacing
+            width = (width // tile_width_spacing) * tile_width_spacing
+            tile_height_spacing = tile_height + spacing
+            height = (height // tile_height_spacing) * tile_height_spacing
+            images = []
+            for y_pos in range(margin, height, tile_height_spacing):
+                for x_pos in range(margin, width, tile_width_spacing):
+                    img_part = self._load_image_part(filename, x_pos, y_pos, tile_width, tile_height, colorkey)
+                    images.append(img_part)
+            return images
 
-		def get_indexed_tiles(self):
-			return self.indexed_tiles
+        def get_indexed_tiles(self):
+            return self.indexed_tiles
 
-		def save_tile_images(self, directory):
-			os.makedirs(directory, exist_ok=True)
-			for id, (offsetx, neg_offsety, img) in self.indexed_tiles.items():
-				print("~ Tile '{}' ({}, {}): {}".format(id, offsetx, neg_offsety, img))
-				sha1sum = hashlib.sha1()
-				output = io.BytesIO()
-				img.save(output, format='PNG')
-				sha1sum.update(output.getvalue())
-				sha1sum = sha1sum.hexdigest()
-				print("~ SHA1: {}".format(sha1sum))
-				filename = os.path.join(directory, "tile_{}.png".format(sha1sum))
-				with open(filename, 'wb') as f:
-					f.write(output.getvalue())
+        def save_tile_images(self, directory):
+            os.makedirs(directory, exist_ok=True)
+            for id, (offsetx, neg_offsety, img) in self.indexed_tiles.items():
+                print("~ Tile '{}' ({}, {}): {}".format(id, offsetx, neg_offsety, img))
+                sha1sum = hashlib.sha1()
+                output = io.BytesIO()
+                img.save(output, format='PNG')
+                sha1sum.update(output.getvalue())
+                sha1sum = sha1sum.hexdigest()
+                print("~ SHA1: {}".format(sha1sum))
+                filename = os.path.join(directory, "tile_{}.png".format(sha1sum))
+                with open(filename, 'wb') as f:
+                    f.write(output.getvalue())
 
-	def extant_file(x):
-		"""
-		'Type' for argparse - checks that file exists but does not open.
-		"""
-		if not os.path.exists(x):
-			# Argparse uses the ArgumentTypeError to give a rejection message like:
-			# error: argument input: x does not exist
-			raise argparse.ArgumentTypeError("{0} does not exist".format(x))
-		return x
+    def extant_file(x):
+        """
+        'Type' for argparse - checks that file exists but does not open.
+        """
+        if not os.path.exists(x):
+            # Argparse uses the ArgumentTypeError to give a rejection message like:
+            # error: argument input: x does not exist
+            raise argparse.ArgumentTypeError("{0} does not exist".format(x))
+        return x
 
-	arg_parser = argparse.ArgumentParser()
-	arg_parser.add_argument(dest="file", type=extant_file, help="TMX File", metavar="FILE")
-	args = arg_parser.parse_args()
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument(dest="file", type=extant_file, help="TMX File", metavar="FILE")
+    args = arg_parser.parse_args()
 
-	map_filename = str(args.file)
-	print("~ Map: '{}'".format(map_filename))
-	map = TileMapParser().parse_decode(map_filename)
-	resources = MapResourceLoader()
-	resources.load(map)
-	print("~ Orientation: '{}'".format(map.orientation))
-	all_sprite_layers = []
+    map_filename = str(args.file)
+    print("~ Map: '{}'".format(map_filename))
+    map = TileMapParser().parse_decode(map_filename)
+    resources = MapResourceLoader()
+    resources.load(map)
+    print("~ Orientation: '{}'".format(map.orientation))
+    all_sprite_layers = []
 
-	map_tilewidth = map.tilewidth
-	map_tileheight = map.tileheight
-	map_num_tiles_x = map.width
-	map_num_tiles_y = map.height
+    map_tilewidth = map.tilewidth
+    map_tileheight = map.tileheight
+    map_num_tiles_x = map.width
+    map_num_tiles_y = map.height
 
-	print(f"\nTiled Layers ({len(resources.world_map.layers)}):\n")
+    print(f"\nTiled Layers ({len(resources.world_map.layers)}):\n")
 
-	for idx, layer in enumerate(resources.world_map.layers):
-			layer_name = layer.name
-			layer_position_x = layer.x
-			layer_position_y = layer.y
-			layer_is_object_group = layer.is_object_group
-			layer_is_visible = layer.visible
+    for idx, layer in enumerate(resources.world_map.layers):
+            layer_name = layer.name
+            layer_position_x = layer.x
+            layer_position_y = layer.y
+            layer_is_object_group = layer.is_object_group
+            layer_is_visible = layer.visible
 
-			layer_level = int(layer.properties.get('Level', 0))
+            layer_level = int(layer.properties.get('Level', 0))
 
-			if layer.is_object_group:
-				print("Objects Layer '{}' ({}): {}".format(layer.name, 'visible' if layer.visible else 'not visible', layer.properties))
-				#json.dump(layer, sys.stdout, cls=JSONDebugEncoder, indent=2, sort_keys=True)
-				for obj in layer.objects:
-					obj_id = obj.properties.get('Id', None)
-					obj_type = obj.properties.get('Type', None)
-					if obj_type == 'avatar':
-						print("Avatar '{}' ('{}') at x={}, y={}".format(obj_id, obj_type, obj.x, obj.y))
-					else:
-						print("Object '{}' ('{}') at x={}, y={}".format(obj_id, obj_type, obj.x, obj.y))
-			else:
-				layer_is_metadata = layer.properties.get('Metadata', None)
-				layer_is_wall = layer.properties.get('Avatar', None)
-				layer_is_floor = not layer_is_metadata and not layer_is_wall
+            if layer.is_object_group:
+                print("Objects Layer '{}' ({}): {}".format(layer.name, 'visible' if layer.visible else 'not visible', layer.properties))
+                #json.dump(layer, sys.stdout, cls=JSONDebugEncoder, indent=2, sort_keys=True)
+                for obj in layer.objects:
+                    obj_id = obj.properties.get('Id', None)
+                    obj_type = obj.properties.get('Type', None)
+                    if obj_type == 'avatar':
+                        print("Avatar '{}' ('{}') at x={}, y={}".format(obj_id, obj_type, obj.x, obj.y))
+                    else:
+                        print("Object '{}' ('{}') at x={}, y={}".format(obj_id, obj_type, obj.x, obj.y))
+            else:
+                layer_is_metadata = layer.properties.get('Metadata', None)
+                layer_is_wall = layer.properties.get('Avatar', None)
+                layer_is_floor = not layer_is_metadata and not layer_is_wall
 
-				if layer_is_metadata:
-					layer_type = 'metadata'
-				elif layer_is_floor:
-					layer_type = 'floor'
-				elif layer_is_wall:
-					layer_type = 'wall'
-				else:
-					layer_type = 'unknown'
+                if layer_is_metadata:
+                    layer_type = 'metadata'
+                elif layer_is_floor:
+                    layer_type = 'floor'
+                elif layer_is_wall:
+                    layer_type = 'wall'
+                else:
+                    layer_type = 'unknown'
 
-				print("Tiled Layer '{}' ({}): {} ({}x{})".format(
-					layer_name,
-					layer_type,
-					layer.properties,
-					layer.width,
-					layer.height
-				))
-				layer_content = layer.decoded_content # array.array(height*width)
+                print("Tiled Layer '{}' ({}): {} ({}x{})".format(
+                    layer_name,
+                    layer_type,
+                    layer.properties,
+                    layer.width,
+                    layer.height
+                ))
+                layer_content = layer.decoded_content # array.array(height*width)
 
-				layer_sprites = []
+                layer_sprites = []
 
-				bottom_margin = 0
+                bottom_margin = 0
 
-				content2D = [None] * map_num_tiles_y
-				for ypos in range(0, map_num_tiles_y):
-					content2D[ypos] = [None] * map_num_tiles_x
-					for xpos in range(0, map_num_tiles_x):
-						#tile = map.tiles.get(k, None)
-						content2D[ypos][xpos] = None
+                content2D = [None] * map_num_tiles_y
+                for ypos in range(0, map_num_tiles_y):
+                    content2D[ypos] = [None] * map_num_tiles_x
+                    for xpos in range(0, map_num_tiles_x):
+                        #tile = map.tiles.get(k, None)
+                        content2D[ypos][xpos] = None
 
-				#sprite_layer = tiledtmxloader.helperspygame.get_layer_at_index(idx, resources)
-				#all_sprite_layers.append(sprite_layer)
+                #sprite_layer = tiledtmxloader.helperspygame.get_layer_at_index(idx, resources)
+                #all_sprite_layers.append(sprite_layer)
 
-		#resources.save_tile_images('tmp')
+        #resources.save_tile_images('tmp')
 
-	print(f"\nTile Sets ({len(map.tile_sets)}):\n")
+    print(f"\nTile Sets ({len(map.tile_sets)}):\n")
 
-	for tileset in map.tile_sets:
-		print(f"Tile Set '{tileset.name}': {len(tileset.tiles)} tiles, starting at firstgid = {tileset.firstgid}")
+    for tileset in map.tile_sets:
+        print(f"Tile Set '{tileset.name}': {len(tileset.tiles)} tiles, starting at firstgid = {tileset.firstgid}")
 
-	print(f"\nTiles ({len(map.tiles)}):\n")
+    print(f"\nTiles ({len(map.tiles)}):\n")
 
-	for gid, cell in map.tiles.items():
-		print(f"Tile {gid} (from Tile Set '{cell.tile_set.name}') -> {cell.properties}")
+    for gid, cell in map.tiles.items():
+        print(f"Tile {gid} (from Tile Set '{cell.tile_set.name}') -> {cell.properties}")
 
-	print(f"\nLayers ({len(map.layers)}):\n")
+    print(f"\nLayers ({len(map.layers)}):\n")
 
-	for layer in map.layers:
-		print(f"Layer '{layer.name}' ({layer.width}x{layer.height})")
-		contents = layer.decoded_content
-		histogram = {}
-		for gid in contents:
-			try:
-				histogram[gid] += 1
-			except KeyError:
-				histogram[gid] = 1
-		print(f"  - GID Histogram: {', '.join([f'{c} times tile {i}' for i,c in histogram.items()])}")
-		print(f"  - Properties: {layer.properties}")
+    for layer in map.layers:
+        print(f"Layer '{layer.name}' ({layer.width}x{layer.height})")
+        contents = layer.decoded_content
+        histogram = {}
+        for gid in contents:
+            try:
+                histogram[gid] += 1
+            except KeyError:
+                histogram[gid] = 1
+        print(f"  - GID Histogram: {', '.join([f'{c} times tile {i}' for i,c in histogram.items()])}")
+        print(f"  - Properties: {layer.properties}")
