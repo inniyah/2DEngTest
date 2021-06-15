@@ -226,16 +226,16 @@ cdef extern from "Tileset.hpp" namespace "tmx" nogil:
         uint32_t tileID
         vector[Property] properties
 
-    cdef cppclass Tileset_Tile_Frame:
+    cdef cppclass Tileset_Tile_Frame "tmx::Tileset::Tile::Frame":
         uint32_t tileID
         uint32_t duration
         bool operator == (const Tileset_Tile_Frame& other) const
         bool operator != (const Tileset_Tile_Frame& other) const
 
-    cdef cppclass Tileset_Tile_Animation:
+    cdef cppclass Tileset_Tile_Animation "tmx::Tileset::Tile::Animation":
         vector[Tileset_Tile_Frame] frames;
 
-    cdef cppclass Tileset_Tile:
+    cdef cppclass Tileset_Tile "tmx::Tileset::Tile":
         uint32_t ID
         array4 terrainIndices
         uint32_t probability
