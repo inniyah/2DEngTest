@@ -198,6 +198,30 @@ class TmxObjectShape(IntEnum):
     Polyline  = <int>tmxlite.Object_Shape_Polyline
     Text      = <int>tmxlite.Object_Shape_Text
 
+cdef class _TmxTilesetTile:
+    cdef const tmxlite.Tileset_Tile * tileset_tile
+    def __cinit__(self):
+        self.tileset_tile = NULL
+    def getID(self):
+        return <int>deref(self.tileset_tile).ID
+    def getImagePath(self):
+        return deref(self.tileset_tile).imagePath.decode('utf8')
+    def getType(self):
+        return deref(self.tileset_tile).type.decode('utf8')
+
+cdef class _TmxTilesetTiles:
+    cdef const vector[tmxlite.Tileset_Tile] * tileset_tiles
+    def __cinit__(self):
+        self.tileset_tiles = NULL
+    def size(self):
+        return deref(self.tileset_tiles).size()
+    def __len__(self):
+        return deref(self.tileset_tiles).size()
+    def __getitem__(self, size_t key):
+        tileset_tile = _TmxTilesetTile()
+        tileset_tile.tileset_tile = &deref(self.tileset_tiles).at(key)
+        return tileset_tile
+
 cdef class _TmxTileset:
     cdef const tmxlite.Tileset * tileset
     def __cinit__(self):
@@ -211,6 +235,10 @@ cdef class _TmxTileset:
     def getNumTiles(self):
         cdef const vector[tmxlite.Tileset_Tile]* tiles = &deref(self.tileset).getTiles()
         return tiles.size()
+    def getTiles(self):
+        tileset_tiles = _TmxTilesetTiles()
+        tileset_tiles.tileset_tiles = &deref(self.tileset).getTiles()
+        return tileset_tiles
 
 cdef class _TmxTilesets:
     cdef const vector[tmxlite.Tileset] * tilesets
@@ -254,8 +282,8 @@ cdef class _TmxMap:
 cdef class _TiledTestApplication:
     def __cinit__(self):
         map = _TmxMap()
-        #~ map.load("maps/platform.tmx")
-        map.load("data/001-1.tmx")
+        map.load("maps/platform.tmx")
+        #~ map.load("data/001-1.tmx")
         print(f"Map version: {map.getVersion()}")
         if map.isInfinite():
             print("Map is infinite.\n")
@@ -317,8 +345,11 @@ cdef class _TiledTestApplication:
         tilesets = map.getTilesets()
         print(f"Map has {tilesets.size()} tilesets")
         for tileset in tilesets:
-            print(f"Found Tileset \"{tileset.getName()}\", {tileset.getFirstGID()} ({tileset.getNumTiles()})")
-            print(f"Found Tileset \"{tileset.getName()}\", {tileset.getFirstGID()} - {tileset.getLastGID()}")
+            print(f"Found Tileset \"{tileset.getName()}\": "
+                  f"{tileset.getFirstGID()} - {tileset.getLastGID()} "
+                  f"({tileset.getNumTiles()})")
+            tiles = tileset.getTiles()
+            #~ print([( tile.getID(), tile.getImagePath(), tile.getType() ) for tile in tiles])
 
 class TiledTestApplication(_TiledTestApplication):
     pass
