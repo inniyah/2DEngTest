@@ -67,11 +67,11 @@ CYINCS= \
 
 LIBS=
 
-all: test.so
+all: gonlet.so
 
 
 PYX_SRCS= \
-	src/test.pyx
+	src/gonlet.pyx
 
 
 C_SRCS= \
@@ -85,10 +85,10 @@ PYX_OBJS= $(subst .pyx,.o,$(PYX_SRCS))
 
 OBJS= $(PYX_OBJS) $(subst .c,.o,$(C_SRCS)) $(subst .cpp,.o,$(CPP_SRCS))
 
-test: $(OBJS)
+gonlet: $(OBJS)
 	$(CXX) $(CPPSTD) $(CSTD) $(LDFLAGS) $(PKG_CONFIG_LDFLAGS) -o $@ $+ $(LIBS) $(PKG_CONFIG_LIBS)
 
-test.so: $(OBJS)
+gonlet.so: $(OBJS)
 	$(CXX) -shared $(CPPSTD) $(CSTD) $(LDFLAGS) $(PKG_CONFIG_LDFLAGS) -o $@ $+ $(LIBS) $(PKG_CONFIG_LIBS)
 
 %.o: %.cpp
@@ -114,6 +114,5 @@ clean:
 	@find . -name '*.bak' -exec $(RM) {} +
 	@find . -name '*~' -exec $(RM) {} +
 	@$(RM) core
-	@#$(RM) --recursive ~/.cache/CythonOgreTestApp/
 
 .PHONY: all clean

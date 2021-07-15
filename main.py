@@ -16,7 +16,7 @@ MY_PATH = os.path.normpath(os.path.abspath(os.path.dirname(__file__)))
 
 logging.basicConfig(level=logging.INFO)
 
-import test
+import gonlet
 
 def main():
     parser = argparse.ArgumentParser()
@@ -32,16 +32,16 @@ def main():
     if not args.test is None:
         logging.info(f"Running test: {args.test}")
         if args.test == 'sdl2':
-            app = test.SDL2TestApplication()
+            app = gonlet.SDL2TestApplication()
         elif args.test == 'gpu1':
-            gpu_test = test.SdlGpuTest()
+            gpu_test = gonlet.SdlGpuTest()
             gpu_test.printRenderers()
             gpu_test.init()
             gpu_test.printCurrentRenderer()
             gpu_test.test01()
             gpu_test.quit()
         elif args.test == 'gpu2':
-            gpu_test = test.SdlGpuTest()
+            gpu_test = gonlet.SdlGpuTest()
             gpu_test.test02()
 
 if __name__ == "__main__":
