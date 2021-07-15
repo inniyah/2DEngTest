@@ -1,9 +1,8 @@
 #!/usr/bin/make -f
 
-# sudo apt install pkg-config cython3 libpython3-dev zlib1g-dev libzstd-dev \
-#     libxml2-dev libsdl2-dev libsdl2-image-dev
+# sudo apt install pkg-config cython3 libpython3-dev libsdl2-dev libsdl2-image-dev
 
-PACKAGES= python3-embed zlib libzstd libxml-2.0 sdl2 SDL2_image SDL2_gpu
+PACKAGES= python3-embed sdl2 SDL2_image SDL2_gpu
 
 CC= gcc
 CXX= g++
@@ -52,45 +51,34 @@ CYFLAGS= \
 	-X language_level=3 \
 	-X boundscheck=False
 
-CSTD=-std=c17
-CPPSTD=-std=c++17
+CSTD=-std=gnu17
+CPPSTD=-std=gnu++17
 
 OPTS= -O2 -g
 
 DEFS= \
-	-DWANT_ZLIB \
-	-DWANT_ZSTD \
-	-DMINIZ_NO_STDIO \
 	-DNDEBUG
 
 INCS= \
-	-Isrc/tmxlite
+	-Iinclude
 
 CYINCS= \
-	-Isrc/cython
+	-Icython
 
 LIBS=
 
 all: test.so
 
+
 PYX_SRCS= \
-	src/test_cython/test.pyx
+	src/test.pyx
+
 
 C_SRCS= \
-	src/tmxlite/detail/miniz.c
+
 
 CPP_SRCS= \
-	src/tmxlite/FreeFuncs.cpp \
-	src/tmxlite/LayerGroup.cpp \
-	src/tmxlite/ObjectGroup.cpp \
-	src/tmxlite/TileLayer.cpp \
-	src/tmxlite/ImageLayer.cpp \
-	src/tmxlite/Map.cpp \
-	src/tmxlite/Object.cpp \
-	src/tmxlite/ObjectTypes.cpp \
-	src/tmxlite/Property.cpp \
-	src/tmxlite/Tileset.cpp \
-	src/tmxlite/detail/pugixml.cpp
+
 
 PYX_CPPS= $(subst .pyx,.cpp,$(PYX_SRCS))
 PYX_OBJS= $(subst .pyx,.o,$(PYX_SRCS))
