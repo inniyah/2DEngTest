@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import argparse
 import logging
@@ -16,7 +15,15 @@ MY_PATH = os.path.normpath(os.path.abspath(os.path.dirname(__file__)))
 
 logging.basicConfig(level=logging.INFO)
 
-import gonlet
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+from game import Game
+
+def run_game():
+    g = Game()
+    g.run()
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 def main():
     parser = argparse.ArgumentParser()
@@ -30,6 +37,7 @@ def main():
     args = parser.parse_args()
 
     if not args.test is None:
+        import gonlet
         logging.info(f"Running test: {args.test}")
         if args.test == 'sdl2':
             app = gonlet.SDL2TestApplication()
@@ -43,6 +51,10 @@ def main():
         elif args.test == 'gpu2':
             gpu_test = gonlet.SdlGpuTest()
             gpu_test.test02()
+    else:
+        run_game()
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 if __name__ == "__main__":
     main()
