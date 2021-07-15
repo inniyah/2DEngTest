@@ -388,6 +388,16 @@ cdef class _GameEngine:
         SDL2_gpu.GPU_LogInfo(" Shader versions supported: %d to %d\n\n",
             renderer.min_shader_version, renderer.max_shader_version)
 
+    @staticmethod
+    def getTicks():
+        return SDL2.SDL_GetTicks()
+
+    def clearScreen(self):
+        SDL2_gpu.GPU_Clear(self._screen)
+
+    def flipScreen(self):
+        SDL2_gpu.GPU_Flip(self._screen)
+
     def init(self):
         SDL2_gpu.GPU_SetPreInitFlags(SDL2_gpu.GPU_INIT_DISABLE_VSYNC)
         self._screen = SDL2_gpu.GPU_Init(800, 600, SDL2_gpu.GPU_DEFAULT_INIT_FLAGS)
@@ -398,41 +408,10 @@ cdef class _GameEngine:
     def quit(self):
         SDL2_gpu.GPU_Quit()
 
-    def test01(self):
-        cdef int maxSprites = 50000
-        cdef int numSprites = 101
-        cdef float dt = 0.010
-
-        cdef mt19937 dice_gen = mt19937(5)
-        cdef vector[double] dice_values = [1, 2, 3, 4, 5, 6] # autoconvert vector from Python list
-        cdef discrete_distribution[int] dd = discrete_distribution[int](dice_values.begin(), dice_values.end())
-        print("Dice: ", dd(dice_gen))
-
-        cdef float * x = <float*>malloc(sizeof(float) * maxSprites)
-        cdef float * y = <float*>malloc(sizeof(float) * maxSprites)
-        cdef float * velx = <float*>malloc(sizeof(float) * maxSprites)
-        cdef float * vely = <float*>malloc(sizeof(float) * maxSprites)
-
-        cdef SDL2_gpu.GPU_Image * image = SDL2_gpu.GPU_LoadImage("img/small_test.png")
-        if image == NULL:
-            SDL2_gpu.GPU_LogError("GPU_LoadImage Failed!")
-            return -1
-
-        SDL2_gpu.GPU_SetSnapMode(image, SDL2_gpu.GPU_SNAP_NONE)
-
-        cdef mt19937 gen = mt19937(5)
-        cdef uniform_real_distribution[double] dist = uniform_real_distribution[double](0.0, 1.0)
-
-        cdef SDL2.Uint32 startTime = SDL2.SDL_GetTicks()
-        cdef long frameCount = 0
-        for i in range(maxSprites):
-            x[i] = dist(gen) * self._screen.w
-            y[i] = dist(gen) * self._screen.h
-            velx[i] = dist(gen) * self._screen.w / 10.0 - self._screen.w / 20.0
-            vely[i] = dist(gen) * self._screen.h / 10.0 - self._screen.h / 20.0
-
-        done = False
+    def processEvents(self):
         cdef SDL2.SDL_Event event
+        cdef bint done = False
+
         while not done:
             while SDL2.SDL_PollEvent(&event):
                 if event.type == SDL2.SDL_QUIT:
@@ -440,151 +419,6 @@ cdef class _GameEngine:
                 elif event.type == SDL2.SDL_KEYDOWN:
                     if event.key.keysym.sym == SDL2.SDLK_ESCAPE:
                         done = True
-                    elif event.key.keysym.sym == SDL2.SDLK_EQUALS or event.key.keysym.sym == SDL2.SDLK_PLUS:
-                        if numSprites < maxSprites:
-                            numSprites += 100
-                        SDL2_gpu.GPU_LogError("Sprites: %d\n", numSprites)
-                        frameCount = 0
-                        startTime = SDL2.SDL_GetTicks()
-                    elif event.key.keysym.sym == SDL2.SDLK_MINUS:
-                        if numSprites > 1:
-                            numSprites -= 100
-                        if numSprites < 1:
-                            numSprites = 1
-                        SDL2_gpu.GPU_LogError("Sprites: %d\n", numSprites)
-                        frameCount = 0
-                        startTime = SDL2.SDL_GetTicks()
-
-            for i in range(numSprites):
-                x[i] += velx[i] * dt
-                y[i] += vely[i] * dt
-                if x[i] < 0:
-                    x[i] = 0
-                    velx[i] = -velx[i]
-                elif x[i] > self._screen.w:
-                    x[i] = self._screen.w
-                    velx[i] = -velx[i]
-                if y[i] < 0:
-                    y[i] = 0
-                    vely[i] = -vely[i]
-                elif y[i]> self._screen.h:
-                    y[i] = self._screen.h
-                    vely[i] = -vely[i]
-
-            SDL2_gpu.GPU_Clear(self._screen)
-
-            for i in range(numSprites):
-                SDL2_gpu.GPU_Blit(image, NULL, self._screen, x[i], y[i])
-
-            SDL2_gpu.GPU_Flip(self._screen)
-
-            frameCount += 1
-            if SDL2.SDL_GetTicks() - startTime > 5000:
-                SDL2_gpu.GPU_LogError("Average FPS: %.2f\n", 1000.0 * frameCount / (SDL2.SDL_GetTicks() - startTime))
-                frameCount = 0
-                startTime = SDL2.SDL_GetTicks()
-
-    # See: https://glusoft.com/tutorials/sdl2/sprite-animations
-    def test02(self):
-        SDL2.SDL_Init(SDL2.SDL_INIT_VIDEO)
-        cdef SDL2_gpu.GPU_Target * window = SDL2_gpu.GPU_InitRenderer(SDL2_gpu.GPU_RENDERER_OPENGL_3, 200, 200, SDL2_gpu.GPU_DEFAULT_INIT_FLAGS)
-        cdef SDL2_gpu.GPU_Image * hero = SDL2_gpu.GPU_LoadImage("img/adventurer-sheet.png")
-
-        cdef vector[SDL2_gpu.GPU_Rect] rects
-        cdef size_t nbRow = 11
-        cdef size_t nbCol = 7
-        cdef size_t widthSpr = 50
-        cdef size_t heightSpr = 37
-
-        for i in range(nbRow):
-            for j in range(nbCol):
-                rects.push_back(SDL2_gpu.GPU_Rect(<float> (j * widthSpr), <float> (i * heightSpr), <float> widthSpr, <float> heightSpr))
-
-        idle1   = [ (0, 0), (0, 1), (0, 2), (0, 3) ]
-        crouch  = [ (0, 4), (0, 5), (0, 6), (1, 0) ]
-        run     = [ (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6) ]
-        jump    = [ (2, 0), (2, 1), (2, 2), (2, 3) ]
-        mid     = [ (2, 4), (2, 5), (2, 6), (3, 0) ]
-        fall    = [ (3, 1), (3, 2) ]
-        slide   = [ (3, 3), (3, 4), (3, 5), (3, 6), (4, 0) ]
-        grab    = [ (4, 1), (4, 2), (4, 3), (4, 4) ]
-        climb   = [ (4, 5), (4, 6), (5, 0), (5, 1), (5, 2) ]
-        idle2   = [ (5, 3), (5, 4), (5, 5), (5, 6) ]
-        attack1 = [ (6, 0), (6, 1), (6, 2), (6, 3), (6, 4) ]
-        attack2 = [ (6, 5), (6, 6), (7, 0), (7, 1), (7, 2), (7, 3) ]
-        attack3 = [ (7, 4), (7, 5), (7, 6), (8, 0), (8, 1), (8, 2) ]
-        hurt    = [ (8, 3), (8, 4), (8, 5) ]
-        die     = [ (8, 6), (9, 0), (9, 1), (9, 2), (9, 3), (9, 4), (9, 5) ]
-        jump2   = [ (9, 6), (10, 0), (10, 1) ]
-
-        current = idle1
-        cdef int current_index = 0
-
-        cdef double maxDuration = 150
-        cdef double timeBuffer = 0
-        cdef double timeElapsed = 0
-        cdef SDL2.SDL_Event event
-
-        done = False
-
-        cdef SDL2.Uint32 startTime = SDL2.SDL_GetTicks()
-        while not done:
-            while SDL2.SDL_PollEvent(&event):
-                if event.type == SDL2.SDL_QUIT:
-                    done = True
-                elif event.type == SDL2.SDL_KEYDOWN:
-                    if event.key.keysym.sym == SDL2.SDLK_ESCAPE:
-                        done = True
-                    if event.key.keysym.scancode == SDL2.SDL_SCANCODE_Q:
-                        current = idle1
-                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_W:
-                        current = crouch
-                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_E:
-                        current = run
-                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_R:
-                        current = jump
-                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_T:
-                        current = mid
-                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_Y:
-                        current = fall
-                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_U:
-                        current = slide
-                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_I:
-                        current = grab
-                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_O:
-                        current = climb
-                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_P:
-                        current = idle2
-                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_A:
-                        current = attack1
-                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_S:
-                        current = attack2
-                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_D:
-                        current = attack3
-                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_F:
-                        current = hurt
-                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_G:
-                        current = die
-                    elif event.key.keysym.scancode == SDL2.SDL_SCANCODE_H:
-                        current = jump
-                    current_index = 0
-
-            SDL2_gpu.GPU_Clear(window)
-            currentPair = current[current_index]
-            position = currentPair[0] + currentPair[1] * nbCol
-            SDL2_gpu.GPU_BlitTransformX(hero, &rects[position], window, 75, 75, 0, 0, 0, 1, 1)
-            SDL2_gpu.GPU_Flip(window)
-
-            if SDL2.SDL_GetTicks() > startTime + maxDuration:
-                startTime = SDL2.SDL_GetTicks()
-                current_index += 1
-                if current_index >= len(current):
-                    current_index = 0
-
-        SDL2_gpu.GPU_FreeImage(hero)
-        SDL2_gpu.GPU_FreeTarget(window)
-        SDL2_gpu.GPU_Quit()
-        SDL2.SDL_Quit()
 
 class GameEngine(_GameEngine):
     pass

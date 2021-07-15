@@ -16,6 +16,10 @@ class Game:
         logging.info("Starting game!")
         self.game_eng.init()
         self.game_eng.printCurrentRenderer()
-        self.game_eng.test01()
+
+        self.game_eng.clearScreen()
+        self.game_eng.flipScreen()
+        self.game_eng.processEvents()
+
         self.game_eng.quit()
         logging.info("Game finished!")
