@@ -12,6 +12,8 @@ from cpython.ref cimport PyObject
 from cython.operator cimport dereference as deref
 from enum import IntEnum
 
+include "constants.pxi"
+
 # Thread-safe solution using c++11
 # See: https://stackoverflow.com/questions/40976880/canonical-way-to-generate-random-numbers-in-cython
 cdef extern from "<random>" namespace "std":
@@ -408,6 +410,12 @@ cdef class _GameEngine:
     def quit(self):
         SDL2_gpu.GPU_Quit()
 
+    def onKeyDown(self, key):
+        print(f"Key Down: {key}")
+
+    def onKeyUp(self, key):
+        print(f"Key Up: {key}")
+
     def processEvents(self):
         cdef SDL2.SDL_Event event
         cdef bint done = False
@@ -419,6 +427,10 @@ cdef class _GameEngine:
                 elif event.type == SDL2.SDL_KEYDOWN:
                     if event.key.keysym.sym == SDL2.SDLK_ESCAPE:
                         done = True
+                    else:
+                        self.onKeyDown(event.key.keysym.sym)
+                elif event.type == SDL2.SDL_KEYUP:
+                    self.onKeyUp(event.key.keysym.sym)
 
 class GameEngine(_GameEngine):
     pass
