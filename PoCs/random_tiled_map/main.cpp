@@ -59,8 +59,8 @@ struct MapLayer {
 };
 
 struct Map {
-	Map(unsigned int w, unsigned int h, signed int min_elev, signed int max_elev) :
-	Width(w), Height(h), Layers(NULL), MaxElevation(max_elev), MinElevation(min_elev) {
+	Map(unsigned int w, unsigned int h, signed int min_elev, signed int max_elev, unsigned int gaussian_radius=20) :
+	Width(w), Height(h), Layers(NULL), MaxElevation(max_elev), MinElevation(min_elev), GaussianRadius(gaussian_radius) {
 		Cells = new MapCell[h*w];
 		memset(Cells, 0, h*w*sizeof(MapCell));
 	}
@@ -294,7 +294,7 @@ struct Map {
 			}
 		}
 
-		GaussianBlur(5);
+		GaussianBlur(GaussianRadius);
 
 		for(unsigned int y = 0; y < Height; ++y) {
 			for(unsigned int x = 0; x < Width; ++x) {
@@ -434,6 +434,7 @@ struct Map {
 	MapCell *Cells;
 	signed int MaxElevation;
 	signed int MinElevation;
+	unsigned int GaussianRadius;
 };
 
 int main()
