@@ -1,0 +1,107 @@
+{
+  ":seq_info": {
+    "misc": 8
+  },
+  ":type_lists": {
+    "misc": {
+      "1": "hwall_solid.obj",
+      "2": "hwall_straight.obj",
+      "3": "hwall_cross.obj",
+      "4": "hwall_fork.obj",
+      "5": "hwall_corner.obj",
+      "6": "hwall_halfdoor.obj",
+      "7": "caution.obj"
+    }
+  },
+  "caution.obj": {
+    ":attrs_file": "./attributes.json",
+    ":seq_id": 7,
+    "@3DModel": "caution.obj",
+    "@IsoTile1": "caution_1.iso.png",
+    "@IsoTile2": "caution_2.iso.png",
+    "@IsoTile3": "caution_3.iso.png",
+    "@IsoTile4": "caution_4.iso.png",
+    "@TopTile1": "caution_1.top.png",
+    "@TopTile2": "caution_2.top.png",
+    "@TopTile3": "caution_3.top.png",
+    "@TopTile4": "caution_4.top.png"
+  },
+  "hwall_corner.obj": {
+    ":attrs_file": "./attributes.json",
+    ":seq_id": 5,
+    "@3DModel": "hwall_corner.obj",
+    "@IsoTile1": "hwall_corner_1.iso.png",
+    "@IsoTile2": "hwall_corner_2.iso.png",
+    "@IsoTile3": "hwall_corner_3.iso.png",
+    "@IsoTile4": "hwall_corner_4.iso.png",
+    "@TopTile1": "hwall_corner_1.top.png",
+    "@TopTile2": "hwall_corner_2.top.png",
+    "@TopTile3": "hwall_corner_3.top.png",
+    "@TopTile4": "hwall_corner_4.top.png"
+  },
+  "hwall_cross.obj": {
+    ":attrs_file": "./attributes.json",
+    ":seq_id": 3,
+    "@3DModel": "hwall_cross.obj",
+    "@IsoTile1": "hwall_cross_1.iso.png",
+    "@IsoTile2": "hwall_cross_2.iso.png",
+    "@IsoTile3": "hwall_cross_3.iso.png",
+    "@IsoTile4": "hwall_cross_4.iso.png",
+    "@TopTile1": "hwall_cross_1.top.png",
+    "@TopTile2": "hwall_cross_2.top.png",
+    "@TopTile3": "hwall_cross_3.top.png",
+    "@TopTile4": "hwall_cross_4.top.png"
+  },
+  "hwall_fork.obj": {
+    ":attrs_file": "./attributes.json",
+    ":seq_id": 4,
+    "@3DModel": "hwall_fork.obj",
+    "@IsoTile1": "hwall_fork_1.iso.png",
+    "@IsoTile2": "hwall_fork_2.iso.png",
+    "@IsoTile3": "hwall_fork_3.iso.png",
+    "@IsoTile4": "hwall_fork_4.iso.png",
+    "@TopTile1": "hwall_fork_1.top.png",
+    "@TopTile2": "hwall_fork_2.top.png",
+    "@TopTile3": "hwall_fork_3.top.png",
+    "@TopTile4": "hwall_fork_4.top.png"
+  },
+  "hwall_halfdoor.obj": {
+    ":attrs_file": "./attributes.json",
+    ":seq_id": 6,
+    "@3DModel": "hwall_halfdoor.obj",
+    "@IsoTile1": "hwall_halfdoor_1.iso.png",
+    "@IsoTile2": "hwall_halfdoor_2.iso.png",
+    "@IsoTile3": "hwall_halfdoor_3.iso.png",
+    "@IsoTile4": "hwall_halfdoor_4.iso.png",
+    "@TopTile1": "hwall_halfdoor_1.top.png",
+    "@TopTile2": "hwall_halfdoor_2.top.png",
+    "@TopTile3": "hwall_halfdoor_3.top.png",
+    "@TopTile4": "hwall_halfdoor_4.top.png"
+  },
+  "hwall_solid.obj": {
+    ":attrs_file": "./attributes.json",
+    ":seq_id": 1,
+    "@3DModel": "hwall_solid.obj",
+    "@IsoTile1": "hwall_solid_1.iso.png",
+    "@IsoTile2": "hwall_solid_2.iso.png",
+    "@IsoTile3": "hwall_solid_3.iso.png",
+    "@IsoTile4": "hwall_solid_4.iso.png",
+    "@TopTile1": "hwall_solid_1.top.png",
+    "@TopTile2": "hwall_solid_2.top.png",
+    "@TopTile3": "hwall_solid_3.top.png",
+    "@TopTile4": "hwall_solid_4.top.png"
+  },
+  "hwall_straight.obj": {
+    ":attrs_file": "./attributes.json",
+    ":seq_id": 2,
+    "@3DModel": "hwall_straight.obj",
+    "@IsoTile1": "hwall_straight_1.iso.png",
+    "@IsoTile2": "hwall_straight_2.iso.png",
+    "@IsoTile3": "hwall_straight_3.iso.png",
+    "@IsoTile4": "hwall_straight_4.iso.png",
+    "@TopTile1": "hwall_straight_1.top.png",
+    "@TopTile2": "hwall_straight_2.top.png",
+    "@TopTile3": "hwall_straight_3.top.png",
+    "@TopTile4": "hwall_straight_4.top.png"
+  }
+}

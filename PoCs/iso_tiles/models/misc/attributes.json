@@ -1,0 +1,26 @@
+{
+  "": {
+    "Type": "Model"
+  },
+  "caution": {
+    "Collision": "NP"
+  },
+  "hwall_corner": {
+    "Collision": "NP"
+  },
+  "hwall_cross": {
+    "Collision": "NP"
+  },
+  "hwall_fork": {
+    "Collision": "NP"
+  },
+  "hwall_halfdoor": {
+    "Collision": "NP"
+  },
+  "hwall_solid": {
+    "Collision": "NP"
+  },
+  "hwall_straight": {
+    "Collision": "NP"
+  }
+}

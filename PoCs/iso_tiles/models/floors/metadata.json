@@ -1,0 +1,20 @@
+{
+  ":seq_info": {
+    "floors": 2
+  },
+  ":type_lists": {
+    "floors": {
+      "1": "grass.obj"
+    }
+  },
+  "grass.obj": {
+    ":attrs_file": "./attributes.json",
+    ":seq_id": 1,
+    "@3DModel": "grass.obj",
+    "@Texture": "grass.jpg",
+    "@TopTile1": "grass_1.top.png",
+    "@TopTile2": "grass_2.top.png",
+    "@TopTile3": "grass_3.top.png",
+    "@TopTile4": "grass_4.top.png"
+  }
+}

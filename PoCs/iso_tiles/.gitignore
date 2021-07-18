@@ -1,0 +1,8 @@
+tools/TinyRenderer/TinyRenderer
+scripts/__pycache__
+*.o
+*.a
+*.d
+*.pyc
+*.bak
+*~
