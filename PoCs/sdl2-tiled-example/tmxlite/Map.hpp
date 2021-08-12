@@ -1,5 +1,5 @@
 /*********************************************************************
-Matt Marchant 2016 -2021
+Matt Marchant 2016 - 2021
 http://trederia.blogspot.com
 
 tmxlite - Zlib license.
@@ -27,11 +27,11 @@ source distribution.
 
 #pragma once
 
-#include <tmxlite/Tileset.hpp>
-#include <tmxlite/Layer.hpp>
-#include <tmxlite/Property.hpp>
-#include <tmxlite/Types.hpp>
-#include <tmxlite/Object.hpp>
+#include "Tileset.hpp"
+#include "Layer.hpp"
+#include "Property.hpp"
+#include "Types.hpp"
+#include "Object.hpp"
 
 #include <string>
 #include <vector>

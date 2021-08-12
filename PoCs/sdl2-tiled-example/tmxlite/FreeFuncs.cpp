@@ -25,9 +25,9 @@ and must not be misrepresented as being the original software.
 source distribution.
 *********************************************************************/
 
-#include "miniz.h"
-#include <tmxlite/FreeFuncs.hpp>
-#include <tmxlite/detail/Log.hpp>
+#include "FreeFuncs.hpp"
+#include "detail/Log.hpp"
+#include "detail/miniz.h"
 
 #include <cstring>
 

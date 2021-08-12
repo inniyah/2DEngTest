@@ -25,12 +25,12 @@ and must not be misrepresented as being the original software.
 source distribution.
 *********************************************************************/
 
+#include "Object.hpp"
+#include "FreeFuncs.hpp"
+#include "Map.hpp"
+#include "Tileset.hpp"
 #include "detail/pugixml.hpp"
-#include <tmxlite/Object.hpp>
-#include <tmxlite/FreeFuncs.hpp>
-#include <tmxlite/Map.hpp>
-#include <tmxlite/Tileset.hpp>
-#include <tmxlite/detail/Log.hpp>
+#include "detail/Log.hpp"
 
 #include <sstream>
 

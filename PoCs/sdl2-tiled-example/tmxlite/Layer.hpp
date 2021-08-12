@@ -27,9 +27,9 @@ source distribution.
 
 #pragma once
 
-#include <tmxlite/Config.hpp>
-#include <tmxlite/Property.hpp>
-#include <tmxlite/Types.hpp>
+#include "Config.hpp"
+#include "Property.hpp"
+#include "Types.hpp"
 
 #include <string>
 #include <memory>
@@ -55,7 +55,7 @@ namespace tmx
     class TMXLITE_EXPORT_API Layer
     {
     public:
-        using Ptr = std::unique_ptr<Layer>;
+        using Ptr = std::shared_ptr<Layer>;
 
         Layer() : m_opacity(1.f), m_visible(true) {};
         virtual ~Layer() = default;

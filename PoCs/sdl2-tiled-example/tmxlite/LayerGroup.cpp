@@ -25,12 +25,12 @@ source distribution.
 *********************************************************************/
 
 #include "detail/pugixml.hpp"
-#include <tmxlite/LayerGroup.hpp>
-#include <tmxlite/FreeFuncs.hpp>
-#include <tmxlite/ObjectGroup.hpp>
-#include <tmxlite/ImageLayer.hpp>
-#include <tmxlite/TileLayer.hpp>
-#include <tmxlite/detail/Log.hpp>
+#include "LayerGroup.hpp"
+#include "FreeFuncs.hpp"
+#include "ObjectGroup.hpp"
+#include "ImageLayer.hpp"
+#include "TileLayer.hpp"
+#include "detail/Log.hpp"
 
 using namespace tmx;
 

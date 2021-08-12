@@ -25,10 +25,10 @@ and must not be misrepresented as being the original software.
 source distribution.
 *********************************************************************/
 
+#include "FreeFuncs.hpp"
+#include "ObjectGroup.hpp"
 #include "detail/pugixml.hpp"
-#include <tmxlite/FreeFuncs.hpp>
-#include <tmxlite/ObjectGroup.hpp>
-#include <tmxlite/detail/Log.hpp>
+#include "detail/Log.hpp"
 
 using namespace tmx;
 

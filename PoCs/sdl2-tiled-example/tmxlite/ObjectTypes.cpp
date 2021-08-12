@@ -25,9 +25,9 @@ source distribution.
 *********************************************************************/
 
 #include "detail/pugixml.hpp"
-#include <tmxlite/FreeFuncs.hpp>
-#include <tmxlite/ObjectTypes.hpp>
-#include <tmxlite/detail/Log.hpp>
+#include "FreeFuncs.hpp"
+#include "ObjectTypes.hpp"
+#include "detail/Log.hpp"
 
 using namespace tmx;
 

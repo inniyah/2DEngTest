@@ -27,9 +27,9 @@ source distribution.
 
 #pragma once
 
-#include <tmxlite/Config.hpp>
-#include <tmxlite/Property.hpp>
-#include <tmxlite/ObjectGroup.hpp>
+#include "Config.hpp"
+#include "Property.hpp"
+#include "ObjectGroup.hpp"
 
 #include <string>
 #include <vector>

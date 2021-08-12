@@ -27,8 +27,8 @@ source distribution.
 
 #pragma once
 
-#include <tmxlite/Layer.hpp>
-#include <tmxlite/Types.hpp>
+#include "Layer.hpp"
+#include "Types.hpp"
 
 namespace tmx
 {

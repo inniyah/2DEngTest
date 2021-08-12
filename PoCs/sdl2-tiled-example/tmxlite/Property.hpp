@@ -27,8 +27,8 @@ source distribution.
 
 #pragma once
 
-#include <tmxlite/Config.hpp>
-#include <tmxlite/Types.hpp>
+#include "Config.hpp"
+#include "Types.hpp"
 
 #include <string>
 #include <cassert>
