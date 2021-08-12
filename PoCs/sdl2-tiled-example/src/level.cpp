@@ -1,8 +1,8 @@
 #include "level.hpp"
 #include "assets.hpp"
-#include "tmxlite/Map.hpp"
-#include "tmxlite/Layer.hpp"
-#include "tmxlite/TileLayer.hpp"
+#include <tmxlite/Map.hpp>
+#include <tmxlite/Layer.hpp>
+#include <tmxlite/TileLayer.hpp>
 #include <iostream>
 #include <algorithm>
 
