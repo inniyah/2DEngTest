@@ -589,8 +589,9 @@ cdef extern from "SDL_gpu.h" nogil:
     void GPU_SetWrapMode(GPU_Image* image, GPU_WrapEnum wrap_mode_x, GPU_WrapEnum wrap_mode_y)
     GPU_TextureHandle GPU_GetTextureHandle(GPU_Image* image)
 
-    # Conversions
+    # Surface/Image/Target Conversions
     GPU_Image* GPU_CopyImageFromSurface(SDL_Surface* surface)
+    GPU_Image* GPU_CopyImageFromSurfaceRect(SDL_Surface* surface, GPU_Rect* surface_rect);
     GPU_Image* GPU_CopyImageFromTarget(GPU_Target* target)
     SDL_Surface* GPU_CopySurfaceFromTarget(GPU_Target* target)
     SDL_Surface* GPU_CopySurfaceFromImage(GPU_Image* image)
