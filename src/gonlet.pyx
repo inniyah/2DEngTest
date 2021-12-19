@@ -405,9 +405,12 @@ cdef class _GameEngine:
     def flipScreen(self):
         SDL2_gpu.GPU_Flip(self._screen)
 
-    def init(self):
+    def init(self, width : int = 800, height : int = 600, renderer: int = SDL2_gpu.GPU_RENDERER_UNKNOWN):
         SDL2_gpu.GPU_SetPreInitFlags(SDL2_gpu.GPU_INIT_DISABLE_VSYNC)
-        self._screen = SDL2_gpu.GPU_Init(800, 600, SDL2_gpu.GPU_DEFAULT_INIT_FLAGS)
+        if renderer == SDL2_gpu.GPU_RENDERER_UNKNOWN:
+            self._screen = SDL2_gpu.GPU_Init(width, height, SDL2_gpu.GPU_DEFAULT_INIT_FLAGS)
+        else:
+            self._screen = SDL2_gpu.GPU_InitRenderer(<SDL2_gpu.GPU_RendererEnum>renderer, width, height, SDL2_gpu.GPU_DEFAULT_INIT_FLAGS)
         if self._screen == NULL:
             SDL2_gpu.GPU_LogError("GPU_Init Failed!")
             return -1
