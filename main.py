@@ -17,6 +17,7 @@ logging.basicConfig(level=logging.INFO)
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+import gonlet
 from game import Game
 
 def run_game():
@@ -36,23 +37,15 @@ def main():
     parser.add_argument("-t", "--test", dest="test", required=False, help="Test to run", default=None)
     args = parser.parse_args()
 
-    if not args.test is None:
-        import gonlet
-        logging.info(f"Running test: {args.test}")
-        if args.test == 'sdl2':
-            app = gonlet.SDL2TestApplication()
-        elif args.test == 'gpu1':
-            gpu_test = gonlet.SdlGpuTest()
-            gpu_test.printRenderers()
-            gpu_test.init()
-            gpu_test.printCurrentRenderer()
-            gpu_test.test01()
-            gpu_test.quit()
-        elif args.test == 'gpu2':
-            gpu_test = gonlet.SdlGpuTest()
-            gpu_test.test02()
+    if args.test is None:
+        tests = [ 'game' ]
     else:
-        run_game()
+        tests = [ args.test ]
+
+    for test in tests:
+        logging.info(f"Running test: {test}")
+        if test == 'game':
+            run_game()
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
