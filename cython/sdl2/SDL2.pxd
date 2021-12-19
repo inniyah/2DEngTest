@@ -648,6 +648,7 @@ cdef extern from "SDL_scancode.h" nogil:
         SDL_SCANCODE_Y
         SDL_SCANCODE_Z
 
+        SDL_SCANCODE_0
         SDL_SCANCODE_1
         SDL_SCANCODE_2
         SDL_SCANCODE_3
@@ -657,7 +658,6 @@ cdef extern from "SDL_scancode.h" nogil:
         SDL_SCANCODE_7
         SDL_SCANCODE_8
         SDL_SCANCODE_9
-        SDL_SCANCODE_0
 
         SDL_SCANCODE_RETURN
         SDL_SCANCODE_ESCAPE
@@ -702,7 +702,7 @@ cdef extern from "SDL_scancode.h" nogil:
         SDL_SCANCODE_DELETE
         SDL_SCANCODE_END
         SDL_SCANCODE_PAGEDOWN
-        SDL_SCANCODE_RIGH
+        SDL_SCANCODE_RIGHT
         SDL_SCANCODE_LEFT
         SDL_SCANCODE_DOWN
         SDL_SCANCODE_UP
