@@ -352,6 +352,11 @@ cdef class _GameEngine:
     def __cinit__(self):
         self._screen = NULL
 
+    def reset(self):
+        if self._screen == NULL:
+            SDL2_gpu.GPU_FreeTarget(self._screen)
+        self._screen = NULL
+
     def printRenderers(self):
         cdef SDL2_gpu.SDL_version compiled = SDL2_gpu.GPU_GetCompiledVersion()
         cdef SDL2_gpu.SDL_version linked = SDL2_gpu.GPU_GetLinkedVersion()
@@ -420,17 +425,106 @@ cdef class _GameEngine:
         cdef SDL2.SDL_Event event
         cdef bint done = False
 
-        while not done:
-            while SDL2.SDL_PollEvent(&event):
-                if event.type == SDL2.SDL_QUIT:
+        while SDL2.SDL_PollEvent(&event):
+            if event.type == SDL2.SDL_QUIT:
+                done = True
+            elif event.type == SDL2.SDL_KEYDOWN:
+                if event.key.keysym.sym == SDL2.SDLK_ESCAPE:
                     done = True
-                elif event.type == SDL2.SDL_KEYDOWN:
-                    if event.key.keysym.sym == SDL2.SDLK_ESCAPE:
-                        done = True
-                    else:
-                        self.onKeyDown(event.key.keysym.sym)
-                elif event.type == SDL2.SDL_KEYUP:
-                    self.onKeyUp(event.key.keysym.sym)
+                else:
+                    self.onKeyDown(event.key.keysym.sym)
+            elif event.type == SDL2.SDL_KEYUP:
+                self.onKeyUp(event.key.keysym.sym)
+
+        return not done
+
+cdef class _GameImage:
+    cdef SDL2_gpu.GPU_Image * _image
+
+    def __cinit__(self):
+        self._image = NULL
+
+    def reset(self):
+        if self._image == NULL:
+            SDL2_gpu.GPU_FreeImage(self._image)
+        self._image = NULL
+
+    def load(self, filename : str):
+        self.reset()
+
+        self._image = SDL2_gpu.GPU_LoadImage(filename.encode('utf8'))
+        if self._image == NULL:
+            SDL2_gpu.GPU_LogError("GPU_LoadImage Failed!")
+            return -1
+
+        SDL2_gpu.GPU_SetSnapMode(self._image, SDL2_gpu.GPU_SNAP_NONE)
+
+    def blit(self, _GameEngine eng):
+        cdef SDL2_gpu.GPU_Target * screen = eng._screen
+        cdef int pos_x = screen.w // 2
+        cdef int pos_y = screen.h // 2
+        SDL2_gpu.GPU_Blit(self._image, NULL, screen, pos_x, pos_y)
+
+    def draw(self, _GameEngine eng):
+        cdef SDL2_gpu.GPU_Target * screen = eng._screen
+
+        cdef int maxSprites = 50000
+        cdef int numSprites = 101
+        cdef float dt = 0.010
+
+        cdef mt19937 dice_gen = mt19937(5)
+        cdef vector[double] dice_values = [1, 2, 3, 4, 5, 6] # autoconvert vector from Python list
+        cdef discrete_distribution[int] dd = discrete_distribution[int](dice_values.begin(), dice_values.end())
+        print("Dice: ", dd(dice_gen))
+
+        cdef float * x = <float*>malloc(sizeof(float) * maxSprites)
+        cdef float * y = <float*>malloc(sizeof(float) * maxSprites)
+        cdef float * velx = <float*>malloc(sizeof(float) * maxSprites)
+        cdef float * vely = <float*>malloc(sizeof(float) * maxSprites)
+
+        cdef SDL2_gpu.GPU_Image * image = SDL2_gpu.GPU_LoadImage("img/small_test.png")
+        if image == NULL:
+            SDL2_gpu.GPU_LogError("GPU_LoadImage Failed!")
+            return -1
+
+        SDL2_gpu.GPU_SetSnapMode(image, SDL2_gpu.GPU_SNAP_NONE)
+
+        cdef mt19937 gen = mt19937(5)
+        cdef uniform_real_distribution[double] dist = uniform_real_distribution[double](0.0, 1.0)
+
+        cdef SDL2.Uint32 startTime = SDL2.SDL_GetTicks()
+        cdef long frameCount = 0
+        for i in range(maxSprites):
+            x[i] = dist(gen) * screen.w
+            y[i] = dist(gen) * screen.h
+            velx[i] = dist(gen) * screen.w / 10.0 - screen.w / 20.0
+            vely[i] = dist(gen) * screen.h / 10.0 - screen.h / 20.0
+
+        for i in range(numSprites):
+            x[i] += velx[i] * dt
+            y[i] += vely[i] * dt
+            if x[i] < 0:
+                x[i] = 0
+                velx[i] = -velx[i]
+            elif x[i] > screen.w:
+                x[i] = screen.w
+                velx[i] = -velx[i]
+            if y[i] < 0:
+                y[i] = 0
+                vely[i] = -vely[i]
+            elif y[i]> screen.h:
+                y[i] = screen.h
+                vely[i] = -vely[i]
+
+        SDL2_gpu.GPU_Clear(screen)
+
+        for i in range(numSprites):
+            SDL2_gpu.GPU_Blit(image, NULL, screen, x[i], y[i])
+
+        SDL2_gpu.GPU_Flip(screen)
 
 class GameEngine(_GameEngine):
+    pass
+
+class GameImage(_GameImage):
     pass

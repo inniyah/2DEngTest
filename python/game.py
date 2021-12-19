@@ -10,16 +10,21 @@ class Game:
         self.game_eng.printRenderers()
 
     def __del__(self):
-        pass
+        self.game_eng.reset()
+        self.game_eng = None
 
     def run(self):
         logging.info("Starting game!")
         self.game_eng.init()
         self.game_eng.printCurrentRenderer()
 
-        self.game_eng.clearScreen()
-        self.game_eng.flipScreen()
-        self.game_eng.processEvents()
+        img = gonlet.GameImage()
+        img.load("img/small_test.png")
+
+        while self.game_eng.processEvents():
+            self.game_eng.clearScreen()
+            img.blit(self.game_eng)
+            self.game_eng.flipScreen()
 
         self.game_eng.quit()
         logging.info("Game finished!")
