@@ -4,9 +4,18 @@ import logging
 
 import gonlet
 
+class GameEngine(gonlet.GameEngine):
+    def onKeyDown(self, event):
+        sym = event.getKeysymSym()
+        print(f"Key Down: {sym}")
+
+    def onKeyUp(self, event):
+        sym = event.getKeysymSym()
+        print(f"Key Up: {sym}")
+
 class Game:
     def __init__(self):
-        self.game_eng = gonlet.GameEngine()
+        self.game_eng = GameEngine()
         self.game_eng.printRenderers()
 
     def __del__(self):

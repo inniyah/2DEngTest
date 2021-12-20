@@ -37,6 +37,28 @@ print("Hello, Gonlet!")
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+cdef class _Event:
+    cdef SDL2.SDL_Event * _event
+
+    def __cinit__(self):
+        self._event = NULL
+
+    @staticmethod
+    cdef create(SDL2.SDL_Event * event):
+        cdef _Event e = _Event()
+        e._event = event
+        return e
+
+    def getKeysymScancode(self):
+        return self._event.key.keysym.scancode
+
+    def getKeysymSym(self):
+        return self._event.key.keysym.sym
+
+    def getKeysymMod(self):
+        return self._event.key.keysym.mod
+
+
 cdef class _GameEngine:
     cdef SDL2_gpu.GPU_Target * _screen
 
@@ -109,28 +131,36 @@ cdef class _GameEngine:
     def quit(self):
         SDL2_gpu.GPU_Quit()
 
-    def onKeyDown(self, key):
-        print(f"Key Down: {key}")
+    def onKeyDown(self, event):
+        sym = event.getKeysymSym()
+        scancode = event.getKeysymScancode()
+        mod = event.getKeysymMod()
+        print(f"Key Down: {sym} / {scancode} / {mod}")
 
-    def onKeyUp(self, key):
-        print(f"Key Up: {key}")
+    def onKeyUp(self, event):
+        sym = event.getKeysymSym()
+        scancode = event.getKeysymScancode()
+        mod = event.getKeysymMod()
+        print(f"Key Up: {sym} / {scancode} / {mod}")
 
     def processEvents(self):
-        cdef SDL2.SDL_Event event
+        cdef SDL2.SDL_Event sdl_event
         cdef bint done = False
 
-        while SDL2.SDL_PollEvent(&event):
-            if event.type == SDL2.SDL_QUIT:
+        while SDL2.SDL_PollEvent(&sdl_event):
+            event = _Event.create(&sdl_event)
+            if sdl_event.type == SDL2.SDL_QUIT:
                 done = True
-            elif event.type == SDL2.SDL_KEYDOWN:
-                if event.key.keysym.sym == SDL2.SDLK_ESCAPE:
+            elif sdl_event.type == SDL2.SDL_KEYDOWN:
+                if sdl_event.key.keysym.sym == SDL2.SDLK_ESCAPE:
                     done = True
                 else:
-                    self.onKeyDown(event.key.keysym.sym)
-            elif event.type == SDL2.SDL_KEYUP:
-                self.onKeyUp(event.key.keysym.sym)
+                    self.onKeyDown(event)
+            elif sdl_event.type == SDL2.SDL_KEYUP:
+                self.onKeyUp(event)
 
         return not done
+
 
 cdef class _GameImage:
     cdef SDL2_gpu.GPU_Image * _image
@@ -216,6 +246,7 @@ cdef class _GameImage:
             SDL2_gpu.GPU_Blit(image, NULL, screen, x[i], y[i])
 
         SDL2_gpu.GPU_Flip(screen)
+
 
 class GameEngine(_GameEngine):
     pass
