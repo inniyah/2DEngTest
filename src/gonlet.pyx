@@ -38,6 +38,7 @@ print("Hello, Gonlet!")
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 cdef class _Event:
+    # https://wiki.libsdl.org/SDL_Event
     cdef SDL2.SDL_Event * _event
 
     def __cinit__(self):
@@ -49,12 +50,21 @@ cdef class _Event:
         e._event = event
         return e
 
+    # https://wiki.libsdl.org/SDL_KeyboardEvent
+    #   https://wiki.libsdl.org/SDL_Keysym
+    #     https://wiki.libsdl.org/SDL_Scancode
     def getKeysymScancode(self):
         return self._event.key.keysym.scancode
 
+    # https://wiki.libsdl.org/SDL_KeyboardEvent
+    #   https://wiki.libsdl.org/SDL_Keysym
+    #     https://wiki.libsdl.org/SDL_Keycode
     def getKeysymSym(self):
         return self._event.key.keysym.sym
 
+    # https://wiki.libsdl.org/SDL_KeyboardEvent
+    #   https://wiki.libsdl.org/SDL_Keysym
+    #     https://wiki.libsdl.org/SDL_Keymod
     def getKeysymMod(self):
         return self._event.key.keysym.mod
 
@@ -64,11 +74,16 @@ cdef class _GameEngine:
 
     def __cinit__(self):
         self._screen = NULL
+        self._event_manager = self
 
     def reset(self):
         if self._screen == NULL:
             SDL2_gpu.GPU_FreeTarget(self._screen)
         self._screen = NULL
+        self._event_manager = self
+
+    def setEventManager(self, event_manager):
+        self._event_manager = event_manager
 
     def printRenderers(self):
         cdef SDL2_gpu.SDL_version compiled = SDL2_gpu.GPU_GetCompiledVersion()
@@ -111,6 +126,9 @@ cdef class _GameEngine:
     @staticmethod
     def getTicks():
         return SDL2.SDL_GetTicks()
+
+    def getScreenSize(self):
+        return self._screen.w, self._screen.h
 
     def clearScreen(self):
         SDL2_gpu.GPU_Clear(self._screen)
@@ -155,9 +173,9 @@ cdef class _GameEngine:
                 if sdl_event.key.keysym.sym == SDL2.SDLK_ESCAPE:
                     done = True
                 else:
-                    self.onKeyDown(event)
+                    self._event_manager.onKeyDown(event)
             elif sdl_event.type == SDL2.SDL_KEYUP:
-                self.onKeyUp(event)
+                self._event_manager.onKeyUp(event)
 
         return not done
 
@@ -183,10 +201,8 @@ cdef class _GameImage:
 
         SDL2_gpu.GPU_SetSnapMode(self._image, SDL2_gpu.GPU_SNAP_NONE)
 
-    def blit(self, _GameEngine eng):
+    def blit(self, _GameEngine eng, pos_x, pos_y):
         cdef SDL2_gpu.GPU_Target * screen = eng._screen
-        cdef int pos_x = screen.w // 2
-        cdef int pos_y = screen.h // 2
         SDL2_gpu.GPU_Blit(self._image, NULL, screen, pos_x, pos_y)
 
     def draw(self, _GameEngine eng):

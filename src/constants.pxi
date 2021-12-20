@@ -12,6 +12,10 @@ KMOD_RGUI               = SDL2.KMOD_RGUI
 KMOD_NUM                = SDL2.KMOD_NUM
 KMOD_CAPS               = SDL2.KMOD_CAPS
 KMOD_MODE               = SDL2.KMOD_MODE
+KMOD_CTRL               = SDL2.KMOD_CTRL
+KMOD_SHIFT              = SDL2.KMOD_SHIFT
+KMOD_ALT                = SDL2.KMOD_ALT
+KMOD_GUI                = SDL2.KMOD_GUI
 
 # https://wiki.libsdl.org/SDL_Keycode
 
@@ -498,21 +502,3 @@ SDL_SCANCODE_LANG9              = SDL2.SDL_SCANCODE_LANG9
 SDL_SCANCODE_NONUSBACKSLASH     = SDL2.SDL_SCANCODE_NONUSBACKSLASH
 SDL_SCANCODE_NONUSHASH          = SDL2.SDL_SCANCODE_NONUSHASH
 
-# https://wiki.libsdl.org/SDL_Keymod
-
-KMOD_NONE               = SDL2.KMOD_NONE
-KMOD_LSHIFT             = SDL2.KMOD_LSHIFT
-KMOD_RSHIFT             = SDL2.KMOD_RSHIFT
-KMOD_LCTRL              = SDL2.KMOD_LCTRL
-KMOD_RCTRL              = SDL2.KMOD_RCTRL
-KMOD_LALT               = SDL2.KMOD_LALT
-KMOD_RALT               = SDL2.KMOD_RALT
-KMOD_LGUI               = SDL2.KMOD_LGUI
-KMOD_RGUI               = SDL2.KMOD_RGUI
-KMOD_NUM                = SDL2.KMOD_NUM
-KMOD_CAPS               = SDL2.KMOD_CAPS
-KMOD_MODE               = SDL2.KMOD_MODE
-KMOD_CTRL               = SDL2.KMOD_CTRL
-KMOD_SHIFT              = SDL2.KMOD_SHIFT
-KMOD_ALT                = SDL2.KMOD_ALT
-KMOD_GUI                = SDL2.KMOD_GUI
