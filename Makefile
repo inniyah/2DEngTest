@@ -1,11 +1,21 @@
 #!/usr/bin/make -f
 
 # sudo apt install pkg-config cython3 libpython3-dev libsdl2-dev libsdl2-image-dev
+# Also install: libsdl2-gpu-dev libtmxlite-dev
 
-PACKAGES= python3-embed sdl2 SDL2_image SDL2_gpu
+PACKAGES= python3-embed sdl2 SDL2_image SDL2_gpu tmxlite
 
-CC= gcc
-CXX= g++
+NUMCPUS=$(shell grep -c '^processor' /proc/cpuinfo)
+
+TRGT=
+
+CC   = $(TRGT)gcc
+CXX  = $(TRGT)g++
+AS   = $(TRGT)gcc -x assembler-with-cpp
+
+LD   = $(TRGT)g++
+AR   = $(TRGT)ar rvc
+
 RM= rm --force --verbose
 
 PYTHON= python3
@@ -67,29 +77,27 @@ CYINCS= \
 
 LIBS=
 
-all: gonlet.so
+OBJS=
 
+PYX_NAMES= gonlet
 
-PYX_SRCS= \
-	src/gonlet.pyx
-
-
-C_SRCS= \
-
-
-CPP_SRCS= \
-
-
+PYX_SRCS= $(PYX_NAMES:%=src/%.pyx)
 PYX_CPPS= $(subst .pyx,.cpp,$(PYX_SRCS))
 PYX_OBJS= $(subst .pyx,.o,$(PYX_SRCS))
 
-OBJS= $(PYX_OBJS) $(subst .c,.o,$(C_SRCS)) $(subst .cpp,.o,$(CPP_SRCS))
+all: tmxlite.so gonlet.so
 
-gonlet: $(OBJS)
-	$(CXX) $(CPPSTD) $(CSTD) $(LDFLAGS) $(PKG_CONFIG_LDFLAGS) -o $@ $+ $(LIBS) $(PKG_CONFIG_LIBS)
+gonlet.so: src/gonlet.o
+tmxlite.so: src/tmxlite.o
 
-gonlet.so: $(OBJS)
-	$(CXX) -shared $(CPPSTD) $(CSTD) $(LDFLAGS) $(PKG_CONFIG_LDFLAGS) -o $@ $+ $(LIBS) $(PKG_CONFIG_LIBS)
+%.bin:
+	$(LD) $(CPPSTD) $(CSTD) $(LDFLAGS) $(PKG_CONFIG_LDFLAGS) -o $@ $+ $(LIBS) $(PKG_CONFIG_LIBS)
+
+%.so:
+	$(LD) -shared $(CPPSTD) $(CSTD) $(LDFLAGS) $(PKG_CONFIG_LDFLAGS) -o $@ $+ $(LIBS) $(PKG_CONFIG_LIBS)
+
+%.a:
+	$(AR) $@ $+
 
 %.o: %.cpp
 	$(CXX) $(CPPSTD) $(OPTS) -o $@ -c $< $(DEFS) $(INCS) $(CFLAGS) $(PKG_CONFIG_CFLAGS)
@@ -100,8 +108,9 @@ gonlet.so: $(OBJS)
 %.cpp: %.pyx
 	$(CYTHON) $(CYFLAGS) $(CYINCS) -o $@ $<
 
+
 clean:
-	$(RM) $(OBJS)
+	$(RM) $(OBJS) $(PYX_OBJS)
 	$(RM) $(subst .pyx,.cpp,$(PYX_SRCS))
 	$(RM) $(subst .pyx,_api.cpp,$(PYX_SRCS))
 	$(RM) $(subst .pyx,.h,$(PYX_SRCS))

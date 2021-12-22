@@ -13,7 +13,7 @@ from libcpp.unordered_map cimport unordered_map
 from libcpp.utility cimport pair
 from cpython.ref cimport PyObject
 
-cdef extern from "Types.hpp" namespace "tmx" nogil:
+cdef extern from "tmxlite/Types.hpp" namespace "tmx" nogil:
     cdef cppclass Vector2[T]:
         Vector2() except +
         Vector2(T x, T y) except +
@@ -39,7 +39,7 @@ cdef extern from "Types.hpp" namespace "tmx" nogil:
         bool operator == (const Colour& other)
         bool operator != (const Colour& other)
 
-cdef extern from "Property.hpp" namespace "tmx" nogil:
+cdef extern from "tmxlite/Property.hpp" namespace "tmx" nogil:
     cdef cppclass Property_Type "tmx::Property::Type":
         pass
 
@@ -81,7 +81,7 @@ cdef extern from "Property.hpp" namespace "tmx" nogil:
         const string& getFileValue() const
         int getObjectValue() const
 
-cdef extern from "Layer.hpp" namespace "tmx" nogil:
+cdef extern from "tmxlite/Layer.hpp" namespace "tmx" nogil:
     cdef cppclass Layer_Type "tmx::Layer::Type":
         pass
 
@@ -104,12 +104,12 @@ cdef extern from "Layer.hpp" namespace "tmx" nogil:
         const Vector2u& getSize() const
         const vector[Property]& getProperties() const
 
-cdef extern from "LayerGroup.hpp" namespace "tmx" nogil:
+cdef extern from "tmxlite/LayerGroup.hpp" namespace "tmx" nogil:
     cdef cppclass LayerGroup(Layer):
         LayerGroup() except +
         const vector[Layer.Ptr]& getLayers() const
 
-cdef extern from "ObjectTypes.hpp" namespace "tmx" nogil:
+cdef extern from "tmxlite/ObjectTypes.hpp" namespace "tmx" nogil:
     cdef cppclass ObjectTypes_Type "tmx::ObjectTypes::Type":
         string name
         Colour colour;
@@ -121,7 +121,7 @@ cdef extern from "ObjectTypes.hpp" namespace "tmx" nogil:
         bool loadFromString(const string& data, const string& workingDir)
         const vector[ObjectTypes_Type]& getTypes() const
 
-cdef extern from "Object.hpp" namespace "tmx" nogil:
+cdef extern from "tmxlite/Object.hpp" namespace "tmx" nogil:
     cdef cppclass Text_HAlign "tmx::Text::HAlign":
         pass
     cdef Text_HAlign Text_HAlign_Left   "tmx::Text::HAlign::Left"
@@ -177,7 +177,7 @@ cdef extern from "Object.hpp" namespace "tmx" nogil:
         Text& getText()
         const string& getTilesetName() const
 
-cdef extern from "ObjectGroup.hpp" namespace "tmx" nogil:
+cdef extern from "tmxlite/ObjectGroup.hpp" namespace "tmx" nogil:
     cdef cppclass DrawOrder "tmx::DrawOrder":
         pass
     cdef DrawOrder DrawOrder_Index   "tmx::DrawOrder::Index"
@@ -190,7 +190,7 @@ cdef extern from "ObjectGroup.hpp" namespace "tmx" nogil:
         const vector[Property]& getProperties() const
         const vector[Object]& getObjects() const
 
-cdef extern from "ImageLayer.hpp" namespace "tmx" nogil:
+cdef extern from "tmxlite/ImageLayer.hpp" namespace "tmx" nogil:
     cdef cppclass ImageLayer(Layer):
         ImageLayer() except +
         const string& getImagePath() const
@@ -198,7 +198,7 @@ cdef extern from "ImageLayer.hpp" namespace "tmx" nogil:
         bool hasTransparency() const
         const Vector2u& getImageSize() const
 
-cdef extern from "TileLayer.hpp" namespace "tmx" nogil:
+cdef extern from "tmxlite/TileLayer.hpp" namespace "tmx" nogil:
     ctypedef enum FlipFlag "tmx::TileLayer::FlipFlag":
         Horizontal "tmx::TileLayer::Horizontal"
         Vertical "tmx::TileLayer::Vertical"
@@ -224,7 +224,7 @@ cdef extern from "<array>" namespace "std" nogil:
         array4() except+
         int& operator[](size_t)
 
-cdef extern from "Tileset.hpp" namespace "tmx" nogil:
+cdef extern from "tmxlite/Tileset.hpp" namespace "tmx" nogil:
     cdef cppclass Terrain:
         string name
         uint32_t tileID
@@ -287,7 +287,7 @@ cdef extern from "Tileset.hpp" namespace "tmx" nogil:
         bool hasTile(uint32_t id) const
         const Tileset_Tile* getTile(uint32_t id) const
 
-cdef extern from "Map.hpp" namespace "tmx" nogil:
+cdef extern from "tmxlite/Map.hpp" namespace "tmx" nogil:
     cdef cppclass Version:
         uint16_t upper
         uint16_t lower
@@ -350,6 +350,6 @@ cdef extern from "Map.hpp" namespace "tmx" nogil:
         const unordered_map[string, Tileset]& getTemplateTilesets() const
         bool isInfinite() const
 
-cdef extern from "ObjectGroup.hpp" namespace "tmx" nogil:
+cdef extern from "tmxlite/ObjectGroup.hpp" namespace "tmx" nogil:
     cdef cppclass ObjectGroup(Layer):
         ObjectGroup() except +

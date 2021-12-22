@@ -1,5 +1,6 @@
 cimport sdl2.SDL2 as SDL2
 cimport sdl2.SDL2_gpu as SDL2_gpu
+cimport tmxlite.tmxlite as tmxlite
 
 from libc.stdint cimport uint32_t, uint16_t, uint8_t
 from libc.stdlib cimport calloc, malloc, free
@@ -12,7 +13,8 @@ from cpython.ref cimport PyObject
 from cython.operator cimport dereference as deref
 from enum import IntEnum
 
-include "constants.pxi"
+include "tmxlite.pxi"
+include "sdl2_constants.pxi"
 
 # Thread-safe solution using c++11
 # See: https://stackoverflow.com/questions/40976880/canonical-way-to-generate-random-numbers-in-cython
@@ -205,7 +207,7 @@ cdef class _GameImage:
         cdef SDL2_gpu.GPU_Target * screen = eng._screen
         SDL2_gpu.GPU_Blit(self._image, NULL, screen, pos_x, pos_y)
 
-    def draw(self, _GameEngine eng):
+    def test(self, _GameEngine eng):
         cdef SDL2_gpu.GPU_Target * screen = eng._screen
 
         cdef int maxSprites = 50000
@@ -269,3 +271,4 @@ class GameEngine(_GameEngine):
 
 class GameImage(_GameImage):
     pass
+

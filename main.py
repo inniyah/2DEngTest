@@ -46,6 +46,8 @@ def main():
         logging.info(f"Running test: {test}")
         if test == 'game':
             run_game()
+        if test == 'tmx':
+            gonlet.printMapInfo("assets/map/example.tmx")
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
