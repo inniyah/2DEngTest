@@ -18,6 +18,8 @@ logging.basicConfig(level=logging.INFO)
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 import gonlet
+import tmxlite
+
 from game import Game
 
 def run_game():
@@ -27,7 +29,7 @@ def run_game():
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 def printMapInfo(filename : str):
-        map = gonlet.TmxMap()
+        map = tmxlite.TmxMap()
         map.load(filename)
         print(f"Map version: {map.getVersion()}")
         if map.isInfinite():
@@ -41,12 +43,12 @@ def printMapInfo(filename : str):
         for layer in layers:
             print(f"Found Layer: \"{layer.getName()}\", Type: {layer.getTypeName()}")
 
-            if layer.getType() == gonlet.TmxLayerType.Group:
+            if layer.getType() == tmxlite.TmxLayerType.Group:
                 sublayers = layer.getLayers()
                 print(f"LayerGroup has {sublayers.size()} sublayers")
                 for sublayer in sublayers:
                     print(f"Found Sublayer: \"{sublayer.getName()}\", Type: {sublayer.getTypeName()}")
-                    if sublayer.getType() == gonlet.TmxLayerType.Tile:
+                    if sublayer.getType() == tmxlite.TmxLayerType.Tile:
                         tiles = sublayer.getTiles()
                         if tiles:
                             print(f"TileLayer has {tiles.size()} tiles")
@@ -59,7 +61,7 @@ def printMapInfo(filename : str):
                             for prop in tilesProperties:
                                 print(f"Found property: \"{prop.getName()}\", Type: {prop.getTypeName()}")
 
-            elif layer.getType() == gonlet.TmxLayerType.Object:
+            elif layer.getType() == tmxlite.TmxLayerType.Object:
                 objects = layer.getObjects()
                 print(f"Found has {objects.size()} objects in layer")
                 for object in objects:
@@ -70,10 +72,10 @@ def printMapInfo(filename : str):
                         for prop in objProperties:
                             print(f"Found property: \"{prop.getName()}\", Type: {prop.getTypeName()}")
 
-            elif layer.getType() == gonlet.TmxLayerType.Image:
+            elif layer.getType() == tmxlite.TmxLayerType.Image:
                 print(f"ImagePath: \"{layer.getImagePath()}\"")
 
-            elif layer.getType() == gonlet.TmxLayerType.Tile:
+            elif layer.getType() == tmxlite.TmxLayerType.Tile:
                 tiles = layer.getTiles()
                 if tiles:
                     print(f"TileLayer has {tiles.size()} tiles")

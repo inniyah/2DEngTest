@@ -79,7 +79,7 @@ LIBS=
 
 OBJS=
 
-PYX_NAMES= gonlet
+PYX_NAMES= gonlet tmxlite
 
 PYX_SRCS= $(PYX_NAMES:%=src/%.pyx)
 PYX_CPPS= $(subst .pyx,.cpp,$(PYX_SRCS))

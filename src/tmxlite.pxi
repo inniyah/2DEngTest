@@ -1,3 +1,5 @@
+cimport tmxlite.tmxlite as tmxlite
+
 class TmxLayerType(IntEnum):
     Tile   = <int>tmxlite.Layer_Type_Tile
     Object = <int>tmxlite.Layer_Type_Object
@@ -258,4 +260,3 @@ class TmxMap(_TmxMap):
     def __init__(self, filename : str = None):
         if not filename is None:
             self.load(filename)
-
