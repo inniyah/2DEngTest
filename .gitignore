@@ -63,3 +63,7 @@ __pycache__
 *.exe
 *.obj
 *.lib
+
+# Temporary stuff
+tmp
+*.tmp
