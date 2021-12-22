@@ -26,6 +26,73 @@ def run_game():
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+def printMapInfo(filename : str):
+        map = gonlet.TmxMap()
+        map.load(filename)
+        print(f"Map version: {map.getVersion()}")
+        if map.isInfinite():
+            print("Map is infinite.\n")
+        mapProperties = map.getProperties()
+        print(f"Map has {mapProperties.size()} properties")
+        for prop in mapProperties:
+            print(f"Found property: \"{prop.getName()}\", Type: {prop.getTypeName()}")
+        layers = map.getLayers()
+        print(f"Map has {layers.size()} layers")
+        for layer in layers:
+            print(f"Found Layer: \"{layer.getName()}\", Type: {layer.getTypeName()}")
+
+            if layer.getType() == gonlet.TmxLayerType.Group:
+                sublayers = layer.getLayers()
+                print(f"LayerGroup has {sublayers.size()} sublayers")
+                for sublayer in sublayers:
+                    print(f"Found Sublayer: \"{sublayer.getName()}\", Type: {sublayer.getTypeName()}")
+                    if sublayer.getType() == gonlet.TmxLayerType.Tile:
+                        tiles = sublayer.getTiles()
+                        if tiles:
+                            print(f"TileLayer has {tiles.size()} tiles")
+                        chunks = sublayer.getChunks()
+                        if chunks:
+                            print(f"TileLayer has {chunks.size()} chunks")
+                        tilesProperties = sublayer.getProperties()
+                        if tilesProperties:
+                            print(f"TileLayer has {tilesProperties.size()} properties")
+                            for prop in tilesProperties:
+                                print(f"Found property: \"{prop.getName()}\", Type: {prop.getTypeName()}")
+
+            elif layer.getType() == gonlet.TmxLayerType.Object:
+                objects = layer.getObjects()
+                print(f"Found has {objects.size()} objects in layer")
+                for object in objects:
+                    print(f"Object {object.getUID()}, Name: \"{object.getName()}\"")
+                    objProperties = object.getProperties()
+                    if objProperties:
+                        print(f"Object has {objProperties.size()} properties")
+                        for prop in objProperties:
+                            print(f"Found property: \"{prop.getName()}\", Type: {prop.getTypeName()}")
+
+            elif layer.getType() == gonlet.TmxLayerType.Image:
+                print(f"ImagePath: \"{layer.getImagePath()}\"")
+
+            elif layer.getType() == gonlet.TmxLayerType.Tile:
+                tiles = layer.getTiles()
+                if tiles:
+                    print(f"TileLayer has {tiles.size()} tiles")
+                chunks = layer.getChunks()
+                if chunks:
+                    print(f"TileLayer has {chunks.size()} chunks")
+                tilesProperties = layer.getProperties()
+                if tilesProperties:
+                    print(f"TileLayer has {tilesProperties.size()} properties")
+                    for prop in tilesProperties:
+                        print(f"Found property: \"{prop.getName()}\", Type: {prop.getTypeName()}")
+
+        tilesets = map.getTilesets()
+        print(f"Map has {tilesets.size()} tilesets")
+        for tileset in tilesets:
+            print(f"Found Tileset \"{tileset.getName()}\", {tileset.getFirstGID()} - {tileset.getLastGID()}")
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-q", "--quiet", help="set logging to ERROR",
@@ -47,7 +114,7 @@ def main():
         if test == 'game':
             run_game()
         if test == 'tmx':
-            gonlet.printMapInfo("assets/map/example.tmx")
+            printMapInfo("assets/map/example.tmx")
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 

@@ -224,9 +224,17 @@ cdef class _TmxMap:
     cdef tmxlite.Map* map
     def __cinit__(self):
         self.map = NULL
-    def load(self, path):
+    def __dealloc___(self):
+        if self.map != NULL:
+            del self.map
+    def reset(self):
+        if self.map != NULL:
+            del self.map
+        self.map = NULL
+    def load(self, filename):
+        self.reset()
         self.map = new tmxlite.Map()
-        if not self.map.load(path.encode('utf8')):
+        if not self.map.load(filename.encode('utf8')):
             raise SystemExit("Error loading map")
     def getVersion(self):
         version = self.map.getVersion()
@@ -246,67 +254,8 @@ cdef class _TmxMap:
     def isInfinite(self):
         return self.map.isInfinite()
 
-def printMapInfo(filename : str):
-        map = _TmxMap()
-        map.load(filename)
-        print(f"Map version: {map.getVersion()}")
-        if map.isInfinite():
-            print("Map is infinite.\n")
-        mapProperties = map.getProperties()
-        print(f"Map has {mapProperties.size()} properties")
-        for prop in mapProperties:
-            print(f"Found property: \"{prop.getName()}\", Type: {prop.getTypeName()}")
-        layers = map.getLayers()
-        print(f"Map has {layers.size()} layers")
-        for layer in layers:
-            print(f"Found Layer: \"{layer.getName()}\", Type: {layer.getTypeName()}")
+class TmxMap(_TmxMap):
+    def __init__(self, filename : str = None):
+        if not filename is None:
+            self.load(filename)
 
-            if layer.getType() == TmxLayerType.Group:
-                sublayers = layer.getLayers()
-                print(f"LayerGroup has {sublayers.size()} sublayers")
-                for sublayer in sublayers:
-                    print(f"Found Sublayer: \"{sublayer.getName()}\", Type: {sublayer.getTypeName())}")
-                    if sublayer.getType() == TmxLayerType.Tile:
-                        tiles = sublayer.getTiles()
-                        if tiles:
-                            print(f"TileLayer has {tiles.size()} tiles")
-                        chunks = sublayer.getChunks()
-                        if chunks:
-                            print(f"TileLayer has {chunks.size()} chunks")
-                        tilesProperties = sublayer.getProperties()
-                        if tilesProperties:
-                            print(f"TileLayer has {tilesProperties.size()} properties")
-                            for prop in tilesProperties:
-                                print(f"Found property: \"{prop.getName()}\", Type: {prop.getTypeName()}")
-
-            elif layer.getType() == TmxLayerType.Object:
-                objects = layer.getObjects()
-                print(f"Found has {objects.size()} objects in layer")
-                for object in objects:
-                    print(f"Object {object.getUID()}, Name: \"{object.getName()}\"")
-                    objProperties = object.getProperties()
-                    if objProperties:
-                        print(f"Object has {objProperties.size()} properties")
-                        for prop in objProperties:
-                            print(f"Found property: \"{prop.getName()}\", Type: {prop.getTypeName()}")
-
-            elif layer.getType() == TmxLayerType.Image:
-                print(f"ImagePath: \"{layer.getImagePath()}\"")
-
-            elif layer.getType() == TmxLayerType.Tile:
-                tiles = layer.getTiles()
-                if tiles:
-                    print(f"TileLayer has {tiles.size()} tiles")
-                chunks = layer.getChunks()
-                if chunks:
-                    print(f"TileLayer has {chunks.size()} chunks")
-                tilesProperties = layer.getProperties()
-                if tilesProperties:
-                    print(f"TileLayer has {tilesProperties.size()} properties")
-                    for prop in tilesProperties:
-                        print(f"Found property: \"{prop.getName()}\", Type: {prop.getTypeName()}")
-
-        tilesets = map.getTilesets()
-        print(f"Map has {tilesets.size()} tilesets")
-        for tileset in tilesets:
-            print(f"Found Tileset \"{tileset.getName()}\", {tileset.getFirstGID())} - {tileset.getLastGID())}")

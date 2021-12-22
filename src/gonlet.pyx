@@ -78,6 +78,10 @@ cdef class _GameEngine:
         self._screen = NULL
         self._event_manager = self
 
+    def __dealloc___(self):
+        if self._screen == NULL:
+            SDL2_gpu.GPU_FreeTarget(self._screen)
+
     def reset(self):
         if self._screen == NULL:
             SDL2_gpu.GPU_FreeTarget(self._screen)
@@ -187,6 +191,10 @@ cdef class _GameImage:
 
     def __cinit__(self):
         self._image = NULL
+
+    def __dealloc___(self):
+        if self._image == NULL:
+            SDL2_gpu.GPU_FreeImage(self._image)
 
     def reset(self):
         if self._image == NULL:
