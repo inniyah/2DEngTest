@@ -38,6 +38,10 @@ cdef extern from "tmxlite/Types.hpp" namespace "tmx" nogil:
         Colour(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) except +
         bool operator == (const Colour& other)
         bool operator != (const Colour& other)
+        uint8_t r
+        uint8_t g
+        uint8_t b
+        uint8_t a
 
 cdef extern from "tmxlite/Property.hpp" namespace "tmx" nogil:
     cdef cppclass Property_Type "tmx::Property::Type":

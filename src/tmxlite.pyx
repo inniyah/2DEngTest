@@ -6,6 +6,8 @@ from libcpp.string cimport string
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 from cpython.ref cimport PyObject
+from cython cimport view
+cimport cpython.array
 from cython.operator cimport dereference as deref
 from enum import IntEnum
 

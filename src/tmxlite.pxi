@@ -1,5 +1,23 @@
 cimport tmxlite.tmxlite as tmxlite
 
+cdef class _TmxConstColour:
+    cdef const tmxlite.Colour * colour
+    def __cinit__(self):
+        self.colour = NULL
+    @staticmethod
+    cdef create(const tmxlite.Colour * colour):
+        cdef _TmxConstColour self = _TmxConstColour()
+        self.colour = colour
+        return self
+    def red(self):
+        return self.colour.r
+    def green(self):
+        return self.colour.g
+    def blue(self):
+        return self.colour.b
+    def alpha(self):
+        return self.colour.a
+
 class TmxLayerType(IntEnum):
     Tile   = <int>tmxlite.Layer_Type_Tile
     Object = <int>tmxlite.Layer_Type_Object
@@ -181,6 +199,11 @@ cdef class _TmxProperties:
     cdef const vector[tmxlite.Property] * properties
     def __cinit__(self):
         self.properties = NULL
+    @staticmethod
+    cdef create(const vector[tmxlite.Property] * properties):
+        cdef _TmxProperties self = _TmxProperties()
+        self.properties = properties
+        return self
     def size(self):
         return deref(self.properties).size()
     def __len__(self):
@@ -202,12 +225,48 @@ cdef class _TmxTileset:
     cdef const tmxlite.Tileset * tileset
     def __cinit__(self):
         self.tileset = NULL
+    @staticmethod
+    cdef create(const tmxlite.Tileset * tileset):
+        cdef _TmxTileset self = _TmxTileset()
+        self.tileset = tileset
+        return self
     def getFirstGID(self):
         return <int>deref(self.tileset).getFirstGID()
     def getLastGID(self):
         return <int>deref(self.tileset).getLastGID()
     def getName(self):
         return deref(self.tileset).getName().decode('utf8')
+    def getTileSize(self):
+        cdef const tmxlite.Vector2u * tilesize = &deref(self.tileset).getTileSize()
+        return tilesize.x, tilesize.y
+    def getSpacing(self):
+        return deref(self.tileset).getName().getSpacing()
+    def getMargin(self):
+        return deref(self.tileset).getName().getMargin()
+    def getTileCount(self):
+        return deref(self.tileset).getName().getTileCount()
+    def getColumnCount(self):
+        return deref(self.tileset).getName().getColumnCount()
+    #~ Tileset_ObjectAlignment getObjectAlignment() const
+    def getTileOffset(self):
+        cdef const tmxlite.Vector2u * tileoffset = &deref(self.tileset).getTileOffset()
+        return tileoffset.x, tileoffset.y
+    def getProperties(self):
+        return _TmxProperties.create(&deref(self.tileset).getProperties())
+    def getImagePath(self):
+        return deref(self.tileset).getImagePath().decode('utf8')
+    def getImageSize(self):
+        cdef const tmxlite.Vector2u * imagesize = &deref(self.tileset).getImageSize()
+        return imagesize.x, imagesize.y
+    def getTransparencyColour(self):
+        return _TmxConstColour.create(&deref(self.tileset).getTransparencyColour())
+    def hasTransparency(self):
+        return deref(self.tileset).hasTransparency()
+    #~ const vector[Terrain]& getTerrainTypes() const
+    #~ const vector[Tileset_Tile]& getTiles() const
+    def hasTile(self, id : uint32_t):
+        return deref(self.tileset).hasTile(id)
+    #~ const Tileset_Tile* getTile(uint32_t id) const
 
 cdef class _TmxTilesets:
     cdef const vector[tmxlite.Tileset] * tilesets
@@ -218,9 +277,7 @@ cdef class _TmxTilesets:
     def __len__(self):
         return deref(self.tilesets).size()
     def __getitem__(self, size_t key):
-        tileset = _TmxTileset()
-        tileset.tileset = &deref(self.tilesets).at(key)
-        return tileset
+        return _TmxTileset.create(&deref(self.tilesets).at(key))
 
 cdef class _TmxMap:
     cdef tmxlite.Map* map
@@ -255,6 +312,13 @@ cdef class _TmxMap:
         return properties
     def isInfinite(self):
         return self.map.isInfinite()
+    def getTileCount(self):
+        cdef const tmxlite.Vector2u * map_dimensions = &self.map.getTileCount()
+        return map_dimensions.x, map_dimensions.y
+    def getTileSize(self):
+        cdef const tmxlite.Vector2u * tilesize = &self.map.getTileSize()
+        return tilesize.x, tilesize.y
+
 
 class TmxMap(_TmxMap):
     def __init__(self, filename : str = None):
