@@ -169,8 +169,6 @@ cdef class _TmxTileLayer_ConstChunks:
         chnk = _TmxTileLayer_ConstChunk()
         chnk.chnk = &deref(self.chunks).at(key)
         return chnk
-    def getChunkTiles(self, size_t key):
-        return _TmxTileLayer_ConstTiles.create(&self.chunks.at(key).tiles)
 
 cdef class _TmxTileLayer(_TmxLayer):
     def __cinit__(self):

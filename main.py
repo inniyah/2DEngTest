@@ -121,6 +121,11 @@ def loadTmxMap(filename : str):
             for x in range(map_cols):
                 tile_index = x + (y * map_cols)
                 cur_gid = tiles[tile_index].getID();
+                if not cur_gid:
+                    continue
+                for tileset in tilesets:
+                    if tileset.getFirstGID() <= cur_gid and tileset.getLastGID() >= cur_gid:
+                        print(f"  [{x}, {y}]: {cur_gid} -> Tileset \"{tileset.getName()}\" ({tileset.getFirstGID()}-{tileset.getLastGID()})")
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
