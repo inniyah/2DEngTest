@@ -212,7 +212,7 @@ cdef extern from "tmxlite/TileLayer.hpp" namespace "tmx" nogil:
         uint32_t ID
         uint8_t flipFlags
 
-    cdef cppclass Chunk "tmx::TileLayer::Chunk":
+    cdef cppclass TileLayer_Chunk "tmx::TileLayer::Chunk":
         Vector2i position
         Vector2i size
         vector[TileLayer_Tile] tiles
@@ -221,7 +221,7 @@ cdef extern from "tmxlite/TileLayer.hpp" namespace "tmx" nogil:
         TileLayer() except +
         const string& getImagePath() const
         const vector[TileLayer_Tile]& getTiles() const
-        const vector[Chunk]& getChunks() const
+        const vector[TileLayer_Chunk]& getChunks() const
 
 cdef extern from "<array>" namespace "std" nogil:
     cdef cppclass array4 "std::array<std::int32_t, 4u>":

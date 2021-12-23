@@ -40,10 +40,18 @@ cdef class _TmxLayer:
         return TmxLayerType(<int>deref(self.layer).getType())
     def getTypeName(self):
         return self.type_names.get(self.getType(), "Unknown")
+    def getOpacity(self):
+        return deref(self.layer).getOpacity()
+    def getVisible(self):
+        return deref(self.layer).getVisible()
+    def getOffset(self):
+        cdef const tmxlite.Vector2i * offset = &deref(self.layer).getOffset()
+        return offset.x, offset.y
+    def getSize(self):
+        cdef const tmxlite.Vector2u * size = &deref(self.layer).getSize()
+        return size.x, size.y
     def getProperties(self):
-        properties = _TmxProperties()
-        properties.properties = &self.layer.getProperties()
-        return properties
+        return _TmxProperties.create(&self.layer.getProperties())
 
 cdef class _TmxLayerGroup(_TmxLayer):
     def __cinit__(self):
@@ -94,31 +102,52 @@ cdef class _TmxImageLayer(_TmxLayer):
     def getImagePath(self):
         return self.layer.getLayerAs[tmxlite.ImageLayer]().getImagePath().decode('utf8')
 
-cdef class _TmxTiles:
+cdef class _TmxTileLayer_ConstTile:
+    cdef const tmxlite.TileLayer_Tile * tile
+    def __cinit__(self):
+        self.tile = NULL
+    @staticmethod
+    cdef create(const tmxlite.TileLayer_Tile * tile):
+        cdef _TmxTileLayer_ConstTile self = _TmxTileLayer_ConstTile()
+        self.tile = tile
+        return self
+    def getID(self):
+        return deref(self.tile).ID
+    def getFlipFlags(self):
+        return deref(self.tile).flipFlags
+
+cdef class _TmxTileLayer_ConstTiles:
     cdef const vector[tmxlite.TileLayer_Tile] * tiles
     def __cinit__(self):
         self.tiles = NULL
+    @staticmethod
+    cdef create(const vector[tmxlite.TileLayer_Tile] * tiles):
+        cdef _TmxTileLayer_ConstTiles self = _TmxTileLayer_ConstTiles()
+        self.tiles = tiles
+        return self
     def size(self):
-        return self.tiles.size()
+        return deref(self.tiles).size()
+    def __len__(self):
+        return deref(self.tiles).size()
+    def __getitem__(self, size_t key):
+        tile = _TmxTileLayer_ConstTile()
+        tile.tile = &deref(self.tiles).at(key)
+        return tile
 
 cdef class _TmxChunks:
-    cdef const vector[tmxlite.Chunk] * chunks
+    cdef const vector[tmxlite.TileLayer_Chunk] * chunks
     def __cinit__(self):
         self.chunks = NULL
     def size(self):
         return self.chunks.size()
     def getTiles(self, size_t key):
-        tiles = _TmxTiles()
-        tiles.tiles = &self.chunks.at(key).tiles
-        return tiles
+        return _TmxTileLayer_ConstTiles.create(&self.chunks.at(key).tiles)
 
 cdef class _TmxTileLayer(_TmxLayer):
     def __cinit__(self):
         pass
     def getTiles(self):
-        tiles = _TmxTiles()
-        tiles.tiles = &self.layer.getLayerAs[tmxlite.TileLayer]().getTiles()
-        return tiles
+        return _TmxTileLayer_ConstTiles.create(&self.layer.getLayerAs[tmxlite.TileLayer]().getTiles())
     def getChunks(self):
         chunks = _TmxChunks()
         chunks.chunks = &self.layer.getLayerAs[tmxlite.TileLayer]().getChunks()

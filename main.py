@@ -104,10 +104,23 @@ def loadTmxMap(filename : str):
     for tileset in tilesets:
         twidth, theight = tileset.getTileSize()
         iwidth, iheight = tileset.getImageSize()
-        print(f"Tileset \"{tileset.getName()}\" (\"{tileset.getImagePath()}\"): Tiles= {tileset.getFirstGID()} - {tileset.getLastGID()}, Tile Size= {twidth} x {theight}, Image size= {iwidth} x {iheight}")
+        print(f"- Tileset \"{tileset.getName()}\" ({tileset.getFirstGID()}-{tileset.getLastGID()}): Image=\"{tileset.getImagePath()}\" ({iwidth}x{iheight}), Tile Size={twidth}x{theight}")
         for tile in tileset.getTiles():
             tidx = tile.getTerrainIndices()
-            print(f"{tile.getID()} {tile.getImagePath()} {tile.getImagePosition()} {tile.getImageSize()} {[i for i in tidx]}")
+            #~ print(f"{tile.getID()} {tile.getImagePath()} {tile.getImagePosition()} {tile.getImageSize()} {[i for i in tidx]}")
+
+    layers = map.getLayers()
+    print(f"Map has {layers.size()} layers")
+    for layer in layers:
+        if layer.getType() != tmxlite.TmxLayerType.Tile:
+            continue
+        tiles = layer.getTiles()
+        print(f"- Layer \"{layer.getName()}\" ({layer.getTypeName()}) has {tiles.size()} tiles")
+
+        for y in range(map_rows):
+            for x in range(map_cols):
+                tile_index = x + (y * map_cols)
+                cur_gid = tiles[tile_index].getID();
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
