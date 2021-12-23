@@ -229,11 +229,6 @@ cdef extern from "<array>" namespace "std" nogil:
         int32_t& operator[](size_t)
 
 cdef extern from "tmxlite/Tileset.hpp" namespace "tmx" nogil:
-    cdef cppclass Terrain:
-        string name
-        uint32_t tileID
-        vector[Property] properties
-
     cdef cppclass Tileset_Tile_Frame "tmx::Tileset::Tile::Frame":
         uint32_t tileID
         uint32_t duration
@@ -254,6 +249,11 @@ cdef extern from "tmxlite/Tileset.hpp" namespace "tmx" nogil:
         Vector2u imageSize;
         Vector2u imagePosition;
         string type;
+
+    cdef cppclass Tileset_Terrain "tmx::Tileset::Terrain":
+        string name
+        uint32_t tileID
+        vector[Property] properties
 
     cdef cppclass Tileset_ObjectAlignment:
         pass
@@ -286,7 +286,7 @@ cdef extern from "tmxlite/Tileset.hpp" namespace "tmx" nogil:
         const Vector2u& getImageSize() const
         const Colour& getTransparencyColour() const
         bool hasTransparency() const
-        const vector[Terrain]& getTerrainTypes() const
+        const vector[Tileset_Terrain]& getTerrainTypes() const
         const vector[Tileset_Tile]& getTiles() const
         bool hasTile(uint32_t id) const
         const Tileset_Tile* getTile(uint32_t id) const

@@ -252,6 +252,58 @@ cdef class _TmxTileset_ConstTile:
     def getType(self):
         return deref(self.tile).type.decode('utf8')
 
+cdef class _TmxTileset_ConstTiles:
+    cdef const vector[tmxlite.Tileset_Tile] * tiles
+    def __cinit__(self):
+        self.tiles = NULL
+    @staticmethod
+    cdef create(const vector[tmxlite.Tileset_Tile] * tiles):
+        cdef _TmxTileset_ConstTiles self = _TmxTileset_ConstTiles()
+        self.tiles = tiles
+        return self
+    def size(self):
+        return deref(self.tiles).size()
+    def __len__(self):
+        return deref(self.tiles).size()
+    def __getitem__(self, size_t key):
+        tile = _TmxTileset_ConstTile()
+        tile.tile = &deref(self.tiles).at(key)
+        return tile
+
+cdef class _TmxTileset_ConstTerrain:
+    cdef const tmxlite.Tileset_Terrain * terrain
+    def __cinit__(self):
+        self.terrain = NULL
+    @staticmethod
+    cdef create(const tmxlite.Tileset_Terrain * terrain):
+        cdef _TmxTileset_ConstTerrain self = _TmxTileset_ConstTerrain()
+        self.terrain = terrain
+        return self
+    def getName(self):
+        return deref(self.terrain).name.decode('utf8')
+    def getTileID(self):
+        return deref(self.terrain).tileID
+    def getProperties(self):
+        return _TmxProperties.create(&deref(self.terrain).properties)
+
+cdef class _TmxTileset_ConstTerrains:
+    cdef const vector[tmxlite.Tileset_Terrain] * terrains
+    def __cinit__(self):
+        self.terrains = NULL
+    @staticmethod
+    cdef create(const vector[tmxlite.Tileset_Terrain] * terrains):
+        cdef _TmxTileset_ConstTerrains self = _TmxTileset_ConstTerrains()
+        self.terrains = terrains
+        return self
+    def size(self):
+        return deref(self.terrains).size()
+    def __len__(self):
+        return deref(self.terrains).size()
+    def __getitem__(self, size_t key):
+        terrain = _TmxTileset_ConstTerrain()
+        terrain.terrain = &deref(self.terrains).at(key)
+        return terrain
+
 cdef class _TmxTileset:
     cdef const tmxlite.Tileset * tileset
     def __cinit__(self):
@@ -293,8 +345,10 @@ cdef class _TmxTileset:
         return _TmxConstColour.create(&deref(self.tileset).getTransparencyColour())
     def hasTransparency(self):
         return deref(self.tileset).hasTransparency()
-    #~ const vector[Terrain]& getTerrainTypes() const
-    #~ const vector[Tileset_Tile]& getTiles() const
+    def getTerrainTypes(self):
+        return _TmxTileset_ConstTerrains.create(&deref(self.tileset).getTerrainTypes())
+    def getTiles(self):
+        return _TmxTileset_ConstTiles.create(&deref(self.tileset).getTiles())
     def hasTile(self, id : uint32_t):
         return deref(self.tileset).hasTile(id)
     def getTile(self, uint32_t id : uint32_t):
