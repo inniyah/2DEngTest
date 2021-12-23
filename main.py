@@ -105,8 +105,12 @@ def loadTmxMap(filename : str):
         twidth, theight = tileset.getTileSize()
         iwidth, iheight = tileset.getImageSize()
         print(f"Tileset \"{tileset.getName()}\" (\"{tileset.getImagePath()}\"): Tiles= {tileset.getFirstGID()} - {tileset.getLastGID()}, Tile Size= {twidth} x {theight}, Image size= {iwidth} x {iheight}")
-
-
+        id = tileset.getFirstGID()
+        while id <= tileset.getLastGID():
+            tile = tileset.getTile(id)
+            tidx = tile.getTerrainIndices()
+            print(f"{tile.getID()} {tile.getImagePath()} {tile.getImagePosition()} {tile.getImageSize()} {[i for i in tidx]}")
+            id += 1
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 

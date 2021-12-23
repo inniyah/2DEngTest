@@ -221,6 +221,37 @@ class TmxObjectShape(IntEnum):
     Polyline  = <int>tmxlite.Object_Shape_Polyline
     Text      = <int>tmxlite.Object_Shape_Text
 
+cdef class _TmxTileset_ConstTile:
+    cdef const tmxlite.Tileset_Tile * tile
+    def __cinit__(self):
+        self.tile = NULL
+    @staticmethod
+    cdef create(const tmxlite.Tileset_Tile * tile):
+        cdef _TmxTileset_ConstTile self = _TmxTileset_ConstTile()
+        self.tile = tile
+        return self
+    def getID(self):
+        return deref(self.tile).ID
+    def getTerrainIndices(self):
+        cdef const int32_t * data = &deref(self.tile).terrainIndices[0]
+        cdef const int32_t[::1] mview = <int32_t[:4]>data
+        return mview.copy()
+    def getProbability(self):
+        return deref(self.tile).probability
+    def getProperties(self):
+        return _TmxProperties.create(&deref(self.tile).properties)
+    #~ ObjectGroup objectGroup;
+    def getImagePath(self):
+        return deref(self.tile).imagePath.decode('utf8')
+    def getImageSize(self):
+        cdef const tmxlite.Vector2u * imagesize = &deref(self.tile).imageSize
+        return imagesize.x, imagesize.y
+    def getImagePosition(self):
+        cdef const tmxlite.Vector2u * imagepos = &deref(self.tile).imagePosition
+        return imagepos.x, imagepos.y
+    def getType(self):
+        return deref(self.tile).type.decode('utf8')
+
 cdef class _TmxTileset:
     cdef const tmxlite.Tileset * tileset
     def __cinit__(self):
@@ -266,7 +297,8 @@ cdef class _TmxTileset:
     #~ const vector[Tileset_Tile]& getTiles() const
     def hasTile(self, id : uint32_t):
         return deref(self.tileset).hasTile(id)
-    #~ const Tileset_Tile* getTile(uint32_t id) const
+    def getTile(self, uint32_t id : uint32_t):
+        return _TmxTileset_ConstTile.create(deref(self.tileset).getTile(id))
 
 cdef class _TmxTilesets:
     cdef const vector[tmxlite.Tileset] * tilesets

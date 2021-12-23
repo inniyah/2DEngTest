@@ -1,4 +1,4 @@
-from libc.stdint cimport uint32_t, uint16_t, uint8_t
+from libc.stdint cimport int32_t, uint32_t, int16_t, uint16_t, int8_t, uint8_t
 from libc.stdlib cimport calloc, malloc, free
 from libcpp cimport bool
 from libcpp.memory cimport unique_ptr, shared_ptr, make_shared, allocator

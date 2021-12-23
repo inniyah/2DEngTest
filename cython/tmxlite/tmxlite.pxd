@@ -3,7 +3,7 @@
 # cython: embedsignature = True
 # cython: language_level = 3
 
-from libc.stdint cimport uint32_t, uint16_t, uint8_t
+from libc.stdint cimport int32_t, uint32_t, int16_t, uint16_t, int8_t, uint8_t
 from libcpp cimport bool
 from libcpp.memory cimport unique_ptr, shared_ptr, allocator
 from libcpp.string cimport string
@@ -226,7 +226,7 @@ cdef extern from "tmxlite/TileLayer.hpp" namespace "tmx" nogil:
 cdef extern from "<array>" namespace "std" nogil:
     cdef cppclass array4 "std::array<std::int32_t, 4u>":
         array4() except+
-        int& operator[](size_t)
+        int32_t& operator[](size_t)
 
 cdef extern from "tmxlite/Tileset.hpp" namespace "tmx" nogil:
     cdef cppclass Terrain:
