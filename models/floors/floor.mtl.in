@@ -1,0 +1,2 @@
+newmtl ${MATERIAL_NAME}
+map_Kd ${MATERIAL_TEXTURE}
