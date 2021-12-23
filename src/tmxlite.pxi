@@ -134,13 +134,42 @@ cdef class _TmxTileLayer_ConstTiles:
         tile.tile = &deref(self.tiles).at(key)
         return tile
 
-cdef class _TmxChunks:
+cdef class _TmxTileLayer_ConstChunk:
+    cdef const tmxlite.TileLayer_Chunk * chnk
+    def __cinit__(self):
+        self.chnk = NULL
+    @staticmethod
+    cdef create(const tmxlite.TileLayer_Chunk * chnk):
+        cdef _TmxTileLayer_ConstChunk self = _TmxTileLayer_ConstChunk()
+        self.chnk = chnk
+        return self
+    def getPosition(self):
+        cdef const tmxlite.Vector2i * pos = &deref(self.chnk).position
+        return pos.x, pos.y
+    def getSize(self):
+        cdef const tmxlite.Vector2i * size = &deref(self.chnk).size
+        return size.x, size.y
+    def getTiles(self, size_t key):
+        return _TmxTileLayer_ConstTiles.create(&deref(self.chnk).tiles)
+
+cdef class _TmxTileLayer_ConstChunks:
     cdef const vector[tmxlite.TileLayer_Chunk] * chunks
     def __cinit__(self):
         self.chunks = NULL
+    @staticmethod
+    cdef create(const vector[tmxlite.TileLayer_Chunk] * chunks):
+        cdef _TmxTileLayer_ConstChunks self = _TmxTileLayer_ConstChunks()
+        self.chunks = chunks
+        return self
     def size(self):
-        return self.chunks.size()
-    def getTiles(self, size_t key):
+        return deref(self.chunks).size()
+    def __len__(self):
+        return deref(self.chunks).size()
+    def __getitem__(self, size_t key):
+        chnk = _TmxTileLayer_ConstChunk()
+        chnk.chnk = &deref(self.chunks).at(key)
+        return chnk
+    def getChunkTiles(self, size_t key):
         return _TmxTileLayer_ConstTiles.create(&self.chunks.at(key).tiles)
 
 cdef class _TmxTileLayer(_TmxLayer):
@@ -149,7 +178,7 @@ cdef class _TmxTileLayer(_TmxLayer):
     def getTiles(self):
         return _TmxTileLayer_ConstTiles.create(&self.layer.getLayerAs[tmxlite.TileLayer]().getTiles())
     def getChunks(self):
-        chunks = _TmxChunks()
+        chunks = _TmxTileLayer_ConstChunks()
         chunks.chunks = &self.layer.getLayerAs[tmxlite.TileLayer]().getChunks()
         return chunks
 
