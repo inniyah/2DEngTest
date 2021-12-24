@@ -2,14 +2,5 @@
   "": {
     "Type": "Floor"
   },
-  "BeachStones": {
-    "Friction": 0.8
-  },
-  "BumpyMetal": {
-    "Friction": 0.3
-  },
-  "MtlPlat2": {},
-  "grass": {},
-  "simplewall": {},
-  "terr_rock6": {}
+  "grass": {}
 }

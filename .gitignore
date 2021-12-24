@@ -60,9 +60,7 @@ __pycache__
 *.o
 *.a
 *.so
-*.exe
-*.obj
-*.lib
+*.d
 
 # Temporary stuff
 tmp

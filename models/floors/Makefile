@@ -16,21 +16,30 @@ FLOOR_PNG_SOURCES = $(shell find . -maxdepth 1 -name "*.png" | grep -v ".iso.png
 FLOOR_JPG_SOURCES = $(shell find . -maxdepth 1 -name "*.jpg")
 
 OBJ_SOURCES = $(FLOOR_PNG_SOURCES:.png=.obj) $(FLOOR_JPG_SOURCES:.jpg=.obj)
+OBJ_NAMES   = $(notdir $(OBJ_SOURCES:.obj=))
 
-TILES = $(OBJ_SOURCES:.obj=.up.png)
+TILES_UP  = $(addsuffix .up.png,$(addprefix tiles/,$(OBJ_NAMES)))
+TILES_TOP = $(addsuffix .top.png,$(addprefix tiles/,$(OBJ_NAMES)))
+TILES_ISO = $(addsuffix .iso.png,$(addprefix tiles/,$(OBJ_NAMES)))
+
+TILES =
 
 #~ TILES += \
-#~ 	$(OBJ_SOURCES:.obj=_1.iso.png) \
-#~ 	$(OBJ_SOURCES:.obj=_2.iso.png) \
-#~ 	$(OBJ_SOURCES:.obj=_3.iso.png) \
-#~ 	$(OBJ_SOURCES:.obj=_4.iso.png)
+#~ 	$(TILES_UP)
+
+#~ TILES += \
+#~ 	$(TILES_ISO:.iso.png=_1.iso.png) \
+#~ 	$(TILES_ISO:.iso.png=_2.iso.png) \
+#~ 	$(TILES_ISO:.iso.png=_3.iso.png) \
+#~ 	$(TILES_ISO:.iso.png=_4.iso.png) \
+#~ 	$(TILES_ISO)
 
 TILES += \
-	$(OBJ_SOURCES:.obj=_1.top.png) \
-	$(OBJ_SOURCES:.obj=_2.top.png) \
-	$(OBJ_SOURCES:.obj=_3.top.png) \
-	$(OBJ_SOURCES:.obj=_4.top.png) \
-	$(OBJ_SOURCES:.obj=.top.png)
+	$(TILES_TOP:.top.png=_1.top.png) \
+	$(TILES_TOP:.top.png=_2.top.png) \
+	$(TILES_TOP:.top.png=_3.top.png) \
+	$(TILES_TOP:.top.png=_4.top.png) \
+	$(TILES_TOP)
 
 all: $(OBJ_SOURCES) $(TILES) ../$(TILES_ID).top.tsx
 
@@ -63,91 +72,114 @@ $(TINYRENDERER): $(TINYRENDERER_DIR)
 		> $@
 	"$(SCRIPTS_DIR)"/add_metadata.py $@ -d metadata.json -t $(TILES_ID) -D Texture $<
 
-%.up.png: %.obj $(TINYRENDERER)
+tiles/%.up.png: %.obj $(TINYRENDERER)
+	@mkdir -p "$$(dirname '$@')"
 	$(TINYRENDERER_UP) -w $< "$@"
 	"$(SCRIPTS_DIR)"/add_metadata.py -v "$<" -d metadata.json -t $(TILES_ID) -J $(dir $<)attributes.json -D 3DModel "$<"
 	optipng "$@"
 
-%_1.iso.png: %.obj $(TINYRENDERER)
+tiles/%_1.iso.png: %.obj $(TINYRENDERER)
+	@mkdir -p "$$(dirname '$@')"
 	$(TINYRENDERER_ISO) -w    $< tmp_dir_$(notdir $@)
 	$(TINYRENDERER_ISO) -w -r $< tmp_rev_$(notdir $@)
 	composite -dissolve 60 -gravity Center tmp_dir_$(notdir $@) tmp_rev_$(notdir $@) -alpha Set $@
 	convert $@ -channel A -evaluate Multiply $(OPACITY) +channel "$@"
+	"$(SCRIPTS_DIR)"/add_metadata.py -v "$<" -d metadata.json -t $(TILES_ID) -J $(dir $<)attributes.json -D 3DModel "$<"
 	"$(SCRIPTS_DIR)"/add_metadata.py "$<" -d metadata.json -t $(TILES_ID) -D IsoTile1 $@
 	rm "tmp_dir_$(notdir $@)" "tmp_rev_$(notdir $@)"
 
-%_2.iso.png: %.obj $(TINYRENDERER)
+tiles/%_2.iso.png: %.obj $(TINYRENDERER)
+	@mkdir -p "$$(dirname '$@')"
 	$(TINYRENDERER_ISO) -w    $< tmp_dir_$(notdir $@) -a 90
 	$(TINYRENDERER_ISO) -w -r $< tmp_rev_$(notdir $@) -a 90
 	composite -dissolve 60 -gravity Center tmp_dir_$(notdir $@) tmp_rev_$(notdir $@) -alpha Set "$@"
 	convert $@ -channel A -evaluate Multiply $(OPACITY) +channel "$@"
+	"$(SCRIPTS_DIR)"/add_metadata.py -v "$<" -d metadata.json -t $(TILES_ID) -J $(dir $<)attributes.json -D 3DModel "$<"
 	"$(SCRIPTS_DIR)"/add_metadata.py "$<" -d metadata.json -t $(TILES_ID) -D IsoTile2 "$@"
 	rm "tmp_dir_$(notdir $@)" "tmp_rev_$(notdir $@)"
 
-%_3.iso.png: %.obj $(TINYRENDERER)
+tiles/%_3.iso.png: %.obj $(TINYRENDERER)
+	@mkdir -p "$$(dirname '$@')"
 	$(TINYRENDERER_ISO) -w    $< tmp_dir_$(notdir $@) -a 180
 	$(TINYRENDERER_ISO) -w -r $< tmp_rev_$(notdir $@) -a 180
 	composite -dissolve 60 -gravity Center tmp_dir_$(notdir $@) tmp_rev_$(notdir $@) -alpha Set "$@"
 	convert $@ -channel A -evaluate Multiply $(OPACITY) +channel "$@"
+	"$(SCRIPTS_DIR)"/add_metadata.py -v "$<" -d metadata.json -t $(TILES_ID) -J $(dir $<)attributes.json -D 3DModel "$<"
 	"$(SCRIPTS_DIR)"/add_metadata.py "$<" -d metadata.json -t $(TILES_ID) -D IsoTile3 "$@"
 	rm "tmp_dir_$(notdir $@)" "tmp_rev_$(notdir $@)"
 
-%_4.iso.png: %.obj $(TINYRENDERER)
+tiles/%_4.iso.png: %.obj $(TINYRENDERER)
+	@mkdir -p "$$(dirname '$@')"
 	$(TINYRENDERER_ISO) -w    $< tmp_dir_$(notdir $@) -a 270
 	$(TINYRENDERER_ISO) -w -r $< tmp_rev_$(notdir $@) -a 270
 	composite -dissolve 60 -gravity Center tmp_dir_$(notdir $@) tmp_rev_$(notdir $@) -alpha Set "$@"
 	convert $@ -channel A -evaluate Multiply $(OPACITY) +channel "$@"
+	"$(SCRIPTS_DIR)"/add_metadata.py -v "$<" -d metadata.json -t $(TILES_ID) -J $(dir $<)attributes.json -D 3DModel "$<"
 	"$(SCRIPTS_DIR)"/add_metadata.py "$<" -d metadata.json -t $(TILES_ID) -D IsoTile4 "$@"
 	rm "tmp_dir_$(notdir $@)" "tmp_rev_$(notdir $@)"
 
-%.iso.png: %_1.iso.png %_2.iso.png %_3.iso.png %_4.iso.png
-	mkdir -p tmp
+tiles/%.iso.png: tiles/%_1.iso.png tiles/%_2.iso.png tiles/%_3.iso.png tiles/%_4.iso.png
+	@mkdir -p tmp && mkdir -p "$$(dirname '$@')"
 	@echo DIR: "'$(dir $@)'", FILE: "'$(basename $(basename $(notdir $@)))'", EXT: "'$(suffix $@)'"
 	convert +append $+ $@
 	optipng $@
 
-%_1.top.png: %.obj $(TINYRENDERER)
+tiles/%_1.top.png: %.obj $(TINYRENDERER)
+	@mkdir -p "$$(dirname '$@')"
 	$(TINYRENDERER_TOP) -w $< "$@"
+	"$(SCRIPTS_DIR)"/add_metadata.py -v "$<" -d metadata.json -t $(TILES_ID) -J $(dir $<)attributes.json -D 3DModel "$<"
 	"$(SCRIPTS_DIR)"/add_metadata.py "$<" -d metadata.json -t $(TILES_ID) -D TopTile1 "$@"
 	optipng "$@"
 
-%_2.top.png: %.obj $(TINYRENDERER)
+tiles/%_2.top.png: %.obj $(TINYRENDERER)
+	@mkdir -p "$$(dirname '$@')"
 	$(TINYRENDERER_TOP) -w $< "$@" -a 90
+	"$(SCRIPTS_DIR)"/add_metadata.py -v "$<" -d metadata.json -t $(TILES_ID) -J $(dir $<)attributes.json -D 3DModel "$<"
 	"$(SCRIPTS_DIR)"/add_metadata.py "$<" -d metadata.json -t $(TILES_ID) -D TopTile2 "$@"
 	optipng "$@"
 
-%_3.top.png: %.obj $(TINYRENDERER)
+tiles/%_3.top.png: %.obj $(TINYRENDERER)
+	@mkdir -p "$$(dirname '$@')"
 	$(TINYRENDERER_TOP) -w $< "$@" -a 180
+	"$(SCRIPTS_DIR)"/add_metadata.py -v "$<" -d metadata.json -t $(TILES_ID) -J $(dir $<)attributes.json -D 3DModel "$<"
 	"$(SCRIPTS_DIR)"/add_metadata.py "$<" -d metadata.json -t $(TILES_ID) -D TopTile3 "$@"
 	optipng "$@"
 
-%_4.top.png: %.obj $(TINYRENDERER)
+tiles/%_4.top.png: %.obj $(TINYRENDERER)
+	@mkdir -p "$$(dirname '$@')"
 	$(TINYRENDERER_TOP) -w $< "$@" -a 270
+	"$(SCRIPTS_DIR)"/add_metadata.py -v "$<" -d metadata.json -t $(TILES_ID) -J $(dir $<)attributes.json -D 3DModel "$<"
 	"$(SCRIPTS_DIR)"/add_metadata.py "$<" -d metadata.json -t $(TILES_ID) -D TopTile4 "$@"
 	optipng "$@"
 
-%.top.png: %_1.top.png %_2.top.png %_3.top.png %_4.top.png
-	mkdir -p tmp
+tiles/%.top.png: tiles/%_1.top.png tiles/%_2.top.png tiles/%_3.top.png tiles/%_4.top.png
+	@mkdir -p tmp && mkdir -p "$$(dirname '$@')"
 	@echo DIR: "'$(dir $@)'", FILE: "'$(basename $(basename $(notdir $@)))'", EXT: "'$(suffix $@)'"
 	convert +append $+ $@
 	optipng $@
 
 ../$(TILES_ID).top.tsx: $(TILES) metadata.json
+	@mkdir -p "$$(dirname '$@')"
 	"$(SCRIPTS_DIR)"/generate_tsx.py -d metadata.json -i . -o .. -n "$(TILES_ID).top" -t TopTile
 
 ../$(TILES_ID).iso.tsx: $(TILES) metadata.json
+	@mkdir -p "$$(dirname '$@')"
 	"$(SCRIPTS_DIR)"/generate_tsx.py -d metadata.json -i . -o .. -n "$(TILES_ID).iso" -t IsoTile
 
 update: $(OBJ_SOURCES)
 	"$(SCRIPTS_DIR)"/update_attributes.py -J attributes.json -P '*.obj'
 
 clean:
-	@rm -fv `find . -maxdepth 1 -name "*.iso.png"`
-	@rm -fv `find . -maxdepth 1 -name "*.top.png"`
-	@rm -fv `find . -maxdepth 1 -name "*.up.png"`
-	@rm -fv `find . -maxdepth 1 -name "*.tsx"`
-	@rm -fv `find . -maxdepth 1 -name "*.log"`
-	@rm -fv `find . -maxdepth 1 -name "tmp_*.png"`
+	@rm -fv `find . -maxdepth 2 -name "*.mtl"`
+	@rm -fv `find . -maxdepth 2 -name "*.obj"`
+	@rm -fv `find . -maxdepth 2 -name "*.iso.png"`
+	@rm -fv `find . -maxdepth 2 -name "*.top.png"`
+	@rm -fv `find . -maxdepth 2 -name "*.up.png"`
+	@rm -fv `find . -maxdepth 2 -name "*.tsx"`
+	@rm -fv `find . -maxdepth 2 -name "*.log"`
+	@rm -fv `find . -maxdepth 2 -name "tmp_*.png"`
 	@rm -fv "../$(TILES_ID).top.tsx" "../$(TILES_ID).iso.tsx"
+	@if [ -d tiles ]; then rmdir --ignore-fail-on-non-empty tiles ; fi
+	@if [ -d tmp ]; then rmdir --ignore-fail-on-non-empty tmp ; fi
 
 .PHONY: all add-new-objs up update clean
