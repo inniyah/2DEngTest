@@ -1,0 +1,20 @@
+
+
+material caution_diffuse_6885d283eaa132c948f007eb685d14133f0b0d08.png
+{
+	technique
+	{
+		pass 
+		{
+			diffuse 0.8 0.8 0.8 1
+			specular 0.5 0.5 0.5 1 225
+
+			texture_unit
+			{
+				texture caution_diffuse.png
+			}
+		}
+
+	}
+
+}

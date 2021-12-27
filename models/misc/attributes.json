@@ -5,6 +5,21 @@
   "caution": {
     "Collision": "NP"
   },
+  "colmn": {
+    "Collision": "NP"
+  },
+  "escalera01": {
+    "Collision": "E1"
+  },
+  "escalera02": {
+    "Collision": "E2"
+  },
+  "escalera03": {
+    "Collision": "E3"
+  },
+  "escalera04": {
+    "Collision": "E4"
+  },
   "hwall_corner": {
     "Collision": "NP"
   },
@@ -21,6 +36,33 @@
     "Collision": "NP"
   },
   "hwall_straight": {
+    "Collision": "NP"
+  },
+  "wall": {
+  "Collision": "NP"
+  },
+  "wall_big4": {
+    "Collision": "NP"
+  },
+  "wall_buttress": {
+    "Collision": "NP"
+  },
+  "wall_buttress_top": {
+    "Collision": "NP"
+  },
+  "wall_column": {
+    "Collision": "NP"
+  },
+  "wall_diagonal": {
+    "Collision": "NP"
+  },
+  "wall_engaged": {
+    "Collision": "NP"
+  },
+  "wall_small4": {
+    "Collision": "NP"
+  },
+  "wall_small4_half": {
     "Collision": "NP"
   }
 }

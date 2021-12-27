@@ -1,0 +1,134 @@
+{
+  "F_SpiralStairsR1mA": {
+    "RefAngle": 0,
+    "Collision": "SS1"
+  },
+  "F_SpiralStairsR1mB": {
+    "RefAngle": 90,
+    "Collision": "SS2"
+  },
+  "F_SpiralStairsR1mC": {
+    "RefAngle": 180,
+    "Collision": "SS3"
+  },
+  "F_SpiralStairsR1mD": {
+    "RefAngle": 270,
+    "Collision": "SS4"
+  },
+  "F_StraightStairsA": {
+    "Collision": "E1",
+    "Collision": "SS1"
+  },
+  "F_StraightStairsB": {
+    "Collision": "E2",
+    "Collision": "SS2"
+  },
+  "F_StraightStairsC": {
+    "Collision": "E3",
+    "Collision": "SS3"
+  },
+  "F_StraightStairsD": {
+    "Collision": "E4",
+    "Collision": "SS4"
+  },
+  "G_SpiralStairsR1mA": {
+    "RefAngle": 0,
+    "Collision": "SS1"
+  },
+  "G_SpiralStairsR1mB": {
+    "RefAngle": 90,
+    "Collision": "SS2"
+  },
+  "G_SpiralStairsR1mC": {
+    "RefAngle": 180,
+    "Collision": "SS3"
+  },
+  "G_StraightStairsA": {
+    "RefAngle": 90,
+    "Collision": "SS1"
+  },
+  "G_StraightStairsB": {
+    "RefAngle": 90,
+    "Collision": "SS2"
+  },
+  "G_StraightStairsC": {
+    "RefAngle": 90,
+    "Collision": "SS3"
+  },
+  "H_SpiralStairsR1mA": {
+    "RefAngle": 0,
+    "Collision": "SS1"
+  },
+  "H_SpiralStairsR1mB": {
+    "RefAngle": 90,
+    "Collision": "SS2"
+  },
+  "H_SpiralStairsR1mC": {
+    "RefAngle": 180,
+    "Collision": "SS3"
+  },
+  "J_SpiralStairsR1mA": {
+    "RefAngle": 0,
+    "Collision": "SS1"
+  },
+  "J_SpiralStairsR1mB": {
+    "RefAngle": 90,
+    "Collision": "SS2"
+  },
+  "J_SpiralStairsR1mC": {
+    "RefAngle": 180,
+    "Collision": "SS3"
+  },
+  "J_SpiralStairsR1mD": {
+    "RefAngle": 270,
+    "Collision": "SS4"
+  },
+  "SolidBlock": {
+    "Collision": "NP"
+  },
+  "SpiralStairsWallR1mA": {
+  },
+  "SpiralStairsWallR1mB": {
+  },
+  "SpiralStairsWallR1mC": {
+  },
+  "SpiralStairsWallR1mD": {
+  },
+  "StairLanding1": {
+    "Collision": "L1"
+  },
+  "StairLanding2": {
+    "Collision": "L2"
+  },
+  "StairLanding3": {
+    "Collision": "L3"
+  },
+  "WF_SpiralStairsR1mA": {
+    "RefAngle": 0,
+    "Collision": "SS1"
+  },
+  "WF_SpiralStairsR1mB": {
+    "RefAngle": 90,
+    "Collision": "SS2"
+  },
+  "WF_SpiralStairsR1mC": {
+    "RefAngle": 180,
+    "Collision": "SS3"
+  },
+  "WF_SpiralStairsR1mD": {
+    "RefAngle": 270,
+    "Collision": "SS4"
+  },
+  "WG_SpiralStairsR1mA": {
+    "RefAngle": 0,
+    "Collision": "SS1"
+  },
+  "WG_SpiralStairsR1mB": {
+    "RefAngle": 90,
+    "Collision": "SS2"
+  },
+  "WG_SpiralStairsR1mC": {
+    "RefAngle": 180,
+    "Collision": "SS3"
+  }
+}

@@ -1,0 +1,16 @@
+material Material/RockyWall
+  {
+    technique
+    {
+      pass
+      {
+        diffuse 0.64 0.64 0.64 1
+        specular 0.5 0.5 0.5 1 96.0784
+
+        texture_unit
+        {
+          texture wall.jpg
+        }
+    }
+  }
+}

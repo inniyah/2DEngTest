@@ -1,0 +1,10 @@
+{
+  "wall_big4": {"Collision": "NP"},
+  "wall_column": {"Collision": "NP"},
+  "wall_column_small": {"Collision": "NP"},
+  "wall_engaged": {"Collision": "NP"},
+  "wall_small4": {"Collision": "NP"},
+  "wall_small4_base": {"Collision": "NP"},
+  "wall_small4_base_half": {"Collision": "NP"},
+  "wall_small4_half": {"Collision": "NP"}
+}

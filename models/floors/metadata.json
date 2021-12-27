@@ -1,13 +1,31 @@
 {
   ":seq_info": {
-    "floors": 2
+    "floors": 3
   },
   ":type_lists": {
     "floors": {
-      "1": "grass.obj"
+      "1": "grass.obj",
+      "2": "gravel.obj"
     }
   },
   "grass.obj": {
-    ":seq_id": 1
+    ":attrs_file": "./attributes.json",
+    ":seq_id": 1,
+    "@3DModel": "grass.obj",
+    "@Texture": "grass.jpg",
+    "@TopTile1": "tiles/grass_1.top.png",
+    "@TopTile2": "tiles/grass_2.top.png",
+    "@TopTile3": "tiles/grass_3.top.png",
+    "@TopTile4": "tiles/grass_4.top.png"
+  },
+  "gravel.obj": {
+    ":attrs_file": "./attributes.json",
+    ":seq_id": 2,
+    "@3DModel": "gravel.obj",
+    "@Texture": "gravel.jpg",
+    "@TopTile1": "tiles/gravel_1.top.png",
+    "@TopTile2": "tiles/gravel_2.top.png",
+    "@TopTile3": "tiles/gravel_3.top.png",
+    "@TopTile4": "tiles/gravel_4.top.png"
   }
 }
