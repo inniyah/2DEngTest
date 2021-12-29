@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="200" height="200" tilewidth="92" tileheight="64" infinite="0" nextlayerid="128" nextobjectid="1">
+ <tileset firstgid="1" source="../models/misc.top.tsx"/>
+ <tileset firstgid="214" source="../models/stairs.top.tsx"/>
+ <tileset firstgid="499" source="../models/columns.top.tsx"/>
+ <group id="16" name="Planta 01">
+  <layer id="1" name="Objetos 01" width="200" height="200">
+   <properties>
+    <property name="level" type="int" value="0"/>
+    <property name="tipo" value="w"/>
+   </properties>
+   <data encoding="base64" compression="zlib">
+   eJzt3LuO00AUBuAQcXkBHoNLgagQFUICIV5iF3rooIOWy0sh0SDRIPE2FNhSDMGcM7YTJ7Hj75NGLBMnY0vzZ3zs9a5WAAAAAAAAAAAAAAAAAAAAAAAAADAdL6q2brXLk+4RTEOdjS9V+7HV971qX1cyAvVa8S3o/7l5DZaslAH5YOnkA3LywdK1r09dtvoz0baub3Fu6vl8sfn55erfeX6RvamwbdMP56A9l+v5XcpFW7S9fHAuxj4f6jovgzlpzofGyEiTjSHrD0zdWHNa7cG56XM+dHMd/xxx/Yq5a1+PHfN8qH1dS1aYm76ZKK0VXetIzfkWc3TMOSsfzM2xzntc62WO+tQIfc6fom0OWdvAvqLn/Urrxdg1QikTQ/cNxlbPt+1n/prn/Y71u7hd4wzdNxhT9Mxf1/N+0Wu7nl91jTN032BM2Vybyvpx6PHhY9JXul7UnOdH7z10PvbZt6gPMp9WcY3bdb2ofc2q3dr2Ob8ae98+dO8K/BFN3bs9F4Fou77vPfTnR9s592KoJc2ZJR0r41jSnFnSsTKOJc2ZJR0r+2vq81utifPryv/b7tN3vfr8a4XJmb0+5n7cWavPmaYb1cS8WshH1+sAAMB5iE77o3p3brL6HAAAOG+73h+EUzrW/fNd7w+6f86pLelre0nHyjiWNGeWdKyMY0lzZknHyjiiOXM76Ozbd2j77Jt8METX8+el58ubn3et7ftsk9XY+zT1OUN8HthXz7En1bx9d+U038f1mO+rsd9ujT/0GOBQ6jn5qpqbb06Uj9rTauzXJxwfMu2/n3Nsff7GD0zBqfIBU7fvvfc+27gHzpxZPyAnH5CTD8jJB8TU5zA91g/IyQfk5ANy8sEcqM+hzPVdyMkH5OQDcvIBMfU5lFk/ICcfkJMPyMkHxNTnUGb9gJx8QE4+ICcfEFOfQ5nvcsjJB+TkA3LyATH1OZS5vgs5+YCcfEBOPiCmPocy6wfk5ANy8gE5+YCY+hzKrB+Qkw/IyQfk5ANi6nMos35ATj4gJx+QW2/a86o9rtrDqt3fvHZ9UytcGzCh2++5V7UHVXtUtWdb48HUNfV5n9ZX389TnzMHpQy83PRfHRCQG5v146JjPJiDXdaIMcaDOZAPyK1b/257sfo7n9s1el2HR31dc18+mIumPl+tyvVHVIPUdUbU1zcf6nPmoJSPQ41n/WAu5ANyx56r8sFc9L0/GN0/r2v3y+Azmxrd/UHOweeO/9c1enR/MKrPm/72vcGuMQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOBYfgPehJHd
+  </data>
+  </layer>
+ </group>
+ <group id="15" name="Planta 02" visible="0">
+  <layer id="12" name="Objetos 02" width="200" height="200" offsetx="0" offsety="-128">
+   <properties>
+    <property name="level" type="int" value="1"/>
+    <property name="tipo" value="w"/>
+   </properties>
+   <data encoding="base64" compression="zlib">
+   eJzt3U+K1EAUB+CM+OcScwqXLl16DMGz6E53ulPUuYjgRnAjeBPF7SQwgbGpV0lIulLp+j4IQ/eQrip4v65+Hbq76wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOB/DxJHLWqeG5dvqLdv/fHr7vbP/vje1VGHNc+NNgy19uPkvt9dHTVY89xoQ1RrNdRgzXPjcnzJ3DdVg6lzz23N3PaYL8f1tUv3uOPxMjjv1cR5WznH3D5vOD8uX6qe/10Vn0YRXnuxVEs109Ja2UZLNdPSWtlGSzXT0lpZb+zP/5z0G9cbF9Lj/vEeZR5z6v9b0Z9Toyd9YT7M1P/U/wEAgMuQetm/dX9eiwtdFgAAcE8t1wdhiVLXz2u5Puj6OUu19LTd0lrZRks109Ja2UZLNdPSWtlGqmb++vwgTH7+fM5R2tr56s9Z4mbhfUONve73l49X++XjUz/2h3vjL10DnMtQk2/72ny/Yz7e9GO/22l8yDn9/pzS5nzHD9Rgr3xA7cbevjQ9Nkdh/4CYfEBMPiAmH5CmP4f62D8gJh8Qkw+IyQdHoD+HPO/vQkw+ICYfEJMPSNOfQ579A2LyATH5gJh8QJr+HPLsHxCTD4jJB8TkA9KW/DbbnN9rm3ue/pyj8FwOMfmAmHxATD4gTX8Oed7fhZh8QEw+ICYfkKY/hzz7B8TkA2LyATH5gDT9OeTZPyAmHxCTD4jJB6TpzyHP/gEx+YCYfEBMPiBt7M+f3v2NjqVyjzWOpT/nCIZafdaVe04vORasNdTq865czZYcC9YaavVFV65mS44Fa63pM9aMB7Ub+/M98qE/5wjsHxCTD4jJB6Sd9h8lrg/qPziSm4nbRxkDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5rgFYxZAYQ==
+  </data>
+  </layer>
+ </group>
+</map>
