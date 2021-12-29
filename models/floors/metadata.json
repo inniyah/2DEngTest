@@ -1,12 +1,23 @@
 {
   ":seq_info": {
-    "floors": 3
+    "floors": 4
   },
   ":type_lists": {
     "floors": {
       "1": "grass.obj",
-      "2": "gravel.obj"
+      "2": "gravel.obj",
+      "3": "gbricks.obj"
     }
+  },
+  "gbricks.obj": {
+    ":attrs_file": "./attributes.json",
+    ":seq_id": 3,
+    "@3DModel": "gbricks.obj",
+    "@Texture": "gbricks.jpg",
+    "@TopTile1": "tiles/gbricks_1.top.png",
+    "@TopTile2": "tiles/gbricks_2.top.png",
+    "@TopTile3": "tiles/gbricks_3.top.png",
+    "@TopTile4": "tiles/gbricks_4.top.png"
   },
   "grass.obj": {
     ":attrs_file": "./attributes.json",

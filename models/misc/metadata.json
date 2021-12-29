@@ -1,9 +1,9 @@
 {
   ":seq_info": {
-    "models": 28
+    "misc": 28
   },
   ":type_lists": {
-    "models": {
+    "misc": {
       "1": "wall.obj",
       "10": "escalera04.obj",
       "11": "caution.obj",
