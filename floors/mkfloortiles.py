@@ -155,7 +155,9 @@ if not os.path.exists(ifname):
     print("Texture '{args.name}' not found")
     sys.exit(-1)
 
-tx_h, tx_w = 64, 92
+tx_w = 92
+tx_h = 64
+
 texture = Image.open(ifname).convert('RGBA').resize((tx_w, tx_h), Image.ANTIALIAS)
 
 # --------------------------------------
@@ -206,7 +208,30 @@ for tile_info in tiles_info:
 #~ plt.imshow(img)
 #~ plt.show()
 
+png_filename = f"tiles/{args.name}.floors.png"
+
 os.makedirs("tiles", exist_ok=True)
-img.save(f"tiles/{args.name}.floors.png")
+img.save(png_filename)
 
 del pixels
+
+# --------------------------------------
+
+tiles_name = f"{args.name}.floors"
+tsx_filename = f"{args.name}.floors.tsx"
+num_of_objects = len(tiles_info)
+
+with open(tsx_filename, 'w') as file_output:
+    print(f'<?xml version="1.0" encoding="UTF-8"?>', file=file_output)
+    print(f'<tileset version="1.2" tiledversion="1.3.3" name="{tiles_name}" tilewidth="{tx_w}" tileheight="{tx_h}" tilecount="{len(tiles_info)}" columns="{n}">', file=file_output)
+    print(f' <image source="{png_filename}" width="{n * tx_w}" height="{m * tx_h}"/>', file=file_output)
+
+    for tile_id, tile_info in enumerate(tiles_info):
+        print(f' <tile id="{tile_id}">', file=file_output)
+        print(f'  <properties>', file=file_output)
+        print(f'   <property name="AlphaModel" value="{tile_info["TileName"]}"/>', file=file_output)
+        print(f'   <property name="Texture" value="{ifname}"/>', file=file_output)
+        print(f'  </properties>', file=file_output)
+        print(f' </tile>', file=file_output)
+
+    print(f'</tileset>', file=file_output)
