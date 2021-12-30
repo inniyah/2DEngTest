@@ -39,6 +39,8 @@ if __name__ == "__main__":
 
             print(f'<?xml version="1.0" encoding="UTF-8"?>', file=file_output)
             print(f'<tileset version="1.2" tiledversion="1.3.3" name="{tiles_name}" tilewidth="128" tileheight="224" tilecount="{num_of_objects}" columns="0">', file=file_output)
+            if args.type == 'TopTile':
+                print(f' <tileoffset x="-18" y="15"/>', file=file_output)
             print(f' <grid orientation="orthogonal" width="1" height="1"/>', file=file_output)
 
             for tile_id in sorted(tiles_list.keys()):

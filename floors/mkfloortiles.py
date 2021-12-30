@@ -17,6 +17,7 @@ from PIL import Image
 
 parser = argparse.ArgumentParser(description="Process obj 3d models")
 parser.add_argument("-n", "--name", help="tiles name", default=None, required=True)
+parser.add_argument("-l", "--level", help="max level", default=1, required=False)
 args = parser.parse_args()
 
 if args.name is None:
@@ -42,6 +43,9 @@ with open('landh/landh.csv', mode='r') as csv_file:
         line_count += 1
     print(f'Processed {line_count} lines.')
     print(f'Found {len(tiles_info)} tiles.')
+
+tiles_info = [ tile_info for tile_info in tiles_info if int(tile_info['Level']) <= int(args.level) ]
+print(f'Using {len(tiles_info)} tiles.')
 
 # --------------------------------------
 
@@ -84,13 +88,13 @@ m = 2.
 y0 = 0. - 0.05
 y1 = 1. + 0.05
 
-#cA = 4*(1. - m)
-#cB = -3.*cA/2.
-#cC = (cA + 2.)/2
+cA = 4*(1. - m)
+cB = -3.*cA/2.
+cC = (cA + 2.)/2
 
-cA = 4. * (y1 - y0 - m)
-cB = 6. * (m + y0 - y1)
-cC = 3. * (y1 - y0) - 2 * m
+#cA = 4. * (y1 - y0 - m)
+#cB = 6. * (m + y0 - y1)
+#cC = 3. * (y1 - y0) - 2 * m
 
 print(cA, cB, cC)
 
