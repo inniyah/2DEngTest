@@ -44,7 +44,7 @@ with open('landh/landh.csv', mode='r') as csv_file:
     print(f'Processed {line_count} lines.')
     print(f'Found {len(tiles_info)} tiles.')
 
-tiles_info = [ tile_info for tile_info in tiles_info if int(tile_info['Level']) <= int(args.level) ]
+tiles_info = [ tile_info for tile_info in tiles_info if int(tile_info['Level']) <= int(args.level) and int(tile_info['Level']) >= 0]
 print(f'Using {len(tiles_info)} tiles.')
 
 # --------------------------------------
