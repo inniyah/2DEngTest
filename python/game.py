@@ -9,6 +9,11 @@ class Game:
         self.game_eng = gonlet.GameEngine()
         self.game_eng.setEventManager(self)
         self.game_eng.printRenderers()
+        #keys
+        self.down=False
+        self.up=False
+        self.left=False
+        self.right=False
 
     def __del__(self):
         self.game_eng.reset()
@@ -27,6 +32,7 @@ class Game:
         self.pos_y = height // 2
 
         while self.game_eng.processEvents():
+            self.moveplayer()
             self.game_eng.clearScreen()
             img.blit(self.game_eng, self.pos_x, self.pos_y)
             self.game_eng.flipScreen()
@@ -34,18 +40,36 @@ class Game:
         self.game_eng.quit()
         logging.info("Game finished!")
 
+    def moveplayer(self):
+        if self.left:
+            self.pos_x -= 1
+        if self.right:
+            self.pos_x += 1
+        if self.up:
+            self.pos_y -= 1
+        if self.down:
+            self.pos_y += 1
+    
     def onKeyDown(self, event):
         sym = event.getKeysymSym()
         print(f"Key Down: {sym}")
         if sym == gonlet.SDLK_LEFT:
-             self.pos_x -= 1
+             self.left=True
         if sym == gonlet.SDLK_RIGHT:
-             self.pos_x += 1
+             self.right=True
         if sym == gonlet.SDLK_UP:
-             self.pos_y -= 1
+             self.up=True
         if sym == gonlet.SDLK_DOWN:
-             self.pos_y += 1
+             self.down=True
 
     def onKeyUp(self, event):
         sym = event.getKeysymSym()
         print(f"Key Up: {sym}")
+        if sym == gonlet.SDLK_LEFT:
+             self.left=False
+        if sym == gonlet.SDLK_RIGHT:
+             self.right=False
+        if sym == gonlet.SDLK_UP:
+             self.up=False
+        if sym == gonlet.SDLK_DOWN:
+             self.down=False
