@@ -28,7 +28,7 @@ class Game:
         img.load("img/small_test.png")
         chart=gonlet.Chart()
         chart.load("assets/CharTemplate.json")
-        s=chart.getSprite('01.png')
+        s=chart.getSprite('5-1')
 
         width, height = self.game_eng.getScreenSize()
         self.pos_x = width // 2

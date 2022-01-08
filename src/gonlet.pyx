@@ -340,9 +340,7 @@ cdef class _Chart:
         del data['master']
         
         for i in data:
-            data[i]=[0.0, 0.0, 64.0, 96.0]
             self.rects[i]=SDL2_gpu.GPU_Rect(data[i][0],data[i][1],data[i][2],data[i][3])
-            print (float(data[i][2]))
     
     cdef _getSprite(self, name : str):
         Sprite= _Sprite()

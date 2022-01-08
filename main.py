@@ -3,13 +3,11 @@
 import argparse
 import logging
 import os
-import json
 import sys
 
 MY_PATH = os.path.normpath(os.path.abspath(os.path.dirname(__file__)))
 sys.path.append(os.path.abspath(os.path.join(MY_PATH, 'python')))
 
-from funcs import printAsJson
 
 MY_PATH = os.path.normpath(os.path.abspath(os.path.dirname(__file__)))
 
