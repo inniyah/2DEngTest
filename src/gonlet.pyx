@@ -1,3 +1,5 @@
+import json
+
 cimport sdl2.SDL2 as SDL2
 cimport sdl2.SDL2_gpu as SDL2_gpu
 
@@ -183,7 +185,6 @@ cdef class _GameEngine:
 
         return not done
 
-
 cdef class _GameImage:
     cdef SDL2_gpu.GPU_Image * _image
 
@@ -212,6 +213,9 @@ cdef class _GameImage:
     def blit(self, _GameEngine eng, pos_x, pos_y):
         cdef SDL2_gpu.GPU_Target * screen = eng._screen
         SDL2_gpu.GPU_Blit(self._image, NULL, screen, pos_x, pos_y)
+    
+    #def blitrect(self,_GameEngine eng,
+    #    GPU_BlitRect(GPU_Image* image, GPU_Rect* src_rect, GPU_Target* target, GPU_Rect* dest_rect)
 
     def test(self, _GameEngine eng):
         cdef SDL2_gpu.GPU_Target * screen = eng._screen
@@ -271,6 +275,90 @@ cdef class _GameImage:
 
         SDL2_gpu.GPU_Flip(screen)
 
+cdef class _Sprite:
+    cdef SDL2_gpu.GPU_Rect Rect
+    cdef SDL2_gpu.GPU_Image * _image
+    
+    def __cinit__(self):
+        self._image = NULL
+    
+    cdef create (self, SDL2_gpu.GPU_Image *image, x,y,w,h):
+        self._image = image
+        self.Rect.x=x
+        self.Rect.y=y
+        self.Rect.h=h
+        self.Rect.w=w
+    
+    cdef setimg(self,_GameImage img):
+        cdef _image=self.img._image
+    
+    
+    def blit(self, _GameEngine eng, pos_x, pos_y):
+        cdef SDL2_gpu.GPU_Target * screen = eng._screen
+        cdef SDL2_gpu.GPU_Rect target
+        target.x=pos_x
+        target.y=pos_y
+        target.h=self.Rect.h
+        target.w=self.Rect.w
+        
+        SDL2_gpu.GPU_BlitRect(self._image, &self.Rect, screen, &target)
+
+cdef class _Chart:
+    
+    cdef SDL2_gpu.GPU_Image * _image
+
+    def __cinit__(self):
+        self._image = NULL
+        self.rects={}
+    
+    def __dealloc___(self):
+        if self._image == NULL:
+            SDL2_gpu.GPU_FreeImage(self._image)
+
+    def reset(self):
+        if self._image == NULL:
+            SDL2_gpu.GPU_FreeImage(self._image)
+        self._image = NULL
+
+    def loadimg(self, filename : str):
+        self.reset()
+
+        self._image = SDL2_gpu.GPU_LoadImage(filename.encode('utf8'))
+        if self._image == NULL:
+            SDL2_gpu.GPU_LogError("GPU_LoadImage Failed!")
+            return -1
+
+        SDL2_gpu.GPU_SetSnapMode(self._image, SDL2_gpu.GPU_SNAP_NONE)
+    
+    def load(self, filename : str):
+        with open(filename) as f:
+            data=json.load(f)
+        
+        dir=filename[0:filename.rfind('/')+1]
+        #Cargamos la imagen
+        self.loadimg(dir+data['master'])
+        del data['master']
+        
+        for i in data:
+            data[i]=[0.0, 0.0, 64.0, 96.0]
+            self.rects[i]=SDL2_gpu.GPU_Rect(data[i][0],data[i][1],data[i][2],data[i][3])
+            print (float(data[i][2]))
+    
+    cdef _getSprite(self, name : str):
+        Sprite= _Sprite()
+        Sprite.Rect=self.rects[name]
+        Sprite._image=self._image
+        return Sprite
+    
+    def getSprite(self, name : str):
+        return self._getSprite(name)
+
+
+class Sprite(_Sprite):
+    pass
+
+class Chart(_Chart):
+    pass
 
 class GameEngine(_GameEngine):
     pass

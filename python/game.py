@@ -26,6 +26,9 @@ class Game:
 
         img = gonlet.GameImage()
         img.load("img/small_test.png")
+        chart=gonlet.Chart()
+        chart.load("assets/CharTemplate.json")
+        s=chart.getSprite('01.png')
 
         width, height = self.game_eng.getScreenSize()
         self.pos_x = width // 2
@@ -35,6 +38,7 @@ class Game:
             self.moveplayer()
             self.game_eng.clearScreen()
             img.blit(self.game_eng, self.pos_x, self.pos_y)
+            s.blit(self.game_eng, 100, 100)
             self.game_eng.flipScreen()
 
         self.game_eng.quit()
