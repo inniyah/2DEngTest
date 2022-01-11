@@ -24,11 +24,18 @@ class Game:
         self.game_eng.init()
         self.game_eng.printCurrentRenderer()
 
-        img = gonlet.GameImage()
-        img.load("img/small_test.png")
+        #img = gonlet.GameImage()
+        #img.load("img/small_test.png")
+        self.pos=0
+        self.lasttimer=0.0
         chart=gonlet.Chart()
         chart.load("assets/CharTemplate.json")
         s=chart.getSprite('5-1')
+        self.imgdown=[chart.getSprite('0-0'), chart.getSprite('1-0'), chart.getSprite('2-0')]
+        self.imgleft=[chart.getSprite('0-1'), chart.getSprite('1-1'), chart.getSprite('2-1')]
+        self.imgright=[chart.getSprite('0-2'), chart.getSprite('1-2'), chart.getSprite('2-2')]
+        self.imgup=[chart.getSprite('0-3'), chart.getSprite('1-3'), chart.getSprite('2-3')]
+        self.img=self.imgdown
 
         width, height = self.game_eng.getScreenSize()
         self.pos_x = width // 2
@@ -37,7 +44,7 @@ class Game:
         while self.game_eng.processEvents():
             self.moveplayer()
             self.game_eng.clearScreen()
-            img.blit(self.game_eng, self.pos_x, self.pos_y)
+            self.img[int(self.pos)].blit(self.game_eng, self.pos_x, self.pos_y)
             s.blit(self.game_eng, 100, 100)
             self.game_eng.flipScreen()
 
@@ -45,14 +52,29 @@ class Game:
         logging.info("Game finished!")
 
     def moveplayer(self):
+        timer=self.game_eng.getTicks()
+        inc=timer-self.lasttimer
+        self.lasttimer=timer
+    
         if self.left:
-            self.pos_x -= 1
+            self.pos_x -= inc*.1
+            self.pos+=inc*.005
+            self.img=self.imgleft
         if self.right:
-            self.pos_x += 1
+            self.pos_x += inc*.1
+            self.pos+=inc*.005
+            self.img=self.imgright
         if self.up:
-            self.pos_y -= 1
+            self.pos_y -= inc*.1
+            self.pos+=inc*.005
+            self.img=self.imgup
         if self.down:
-            self.pos_y += 1
+            self.pos_y += inc*.1
+            self.pos+=inc*.005
+            self.img=self.imgdown
+        
+        if self.pos>=3:
+            self.pos=0
     
     def onKeyDown(self, event):
         sym = event.getKeysymSym()
