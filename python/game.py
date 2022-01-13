@@ -31,10 +31,10 @@ class Game:
         chart=gonlet.Chart()
         chart.load("assets/CharTemplate.json")
         s=chart.getSprite('5-1')
-        self.imgdown=[chart.getSprite('0-0'), chart.getSprite('1-0'), chart.getSprite('2-0')]
-        self.imgleft=[chart.getSprite('0-1'), chart.getSprite('1-1'), chart.getSprite('2-1')]
-        self.imgright=[chart.getSprite('0-2'), chart.getSprite('1-2'), chart.getSprite('2-2')]
-        self.imgup=[chart.getSprite('0-3'), chart.getSprite('1-3'), chart.getSprite('2-3')]
+        self.imgdown=[chart.getSprite('0-0'), chart.getSprite('1-0'), chart.getSprite('0-0'), chart.getSprite('2-0')]
+        self.imgleft=[chart.getSprite('0-1'), chart.getSprite('1-1'),chart.getSprite('0-1'),  chart.getSprite('2-1')]
+        self.imgright=[chart.getSprite('0-2'), chart.getSprite('1-2'),chart.getSprite('0-2'),  chart.getSprite('2-2')]
+        self.imgup=[chart.getSprite('0-3'), chart.getSprite('1-3'),chart.getSprite('0-3'),  chart.getSprite('2-3')]
         self.img=self.imgdown
 
         width, height = self.game_eng.getScreenSize()
@@ -58,19 +58,19 @@ class Game:
     
         if self.left:
             self.pos_x -= inc*.1
-            self.pos+=inc*.005
+            self.pos+=inc*.007
             self.img=self.imgleft
         if self.right:
             self.pos_x += inc*.1
-            self.pos+=inc*.005
+            self.pos+=inc*.007
             self.img=self.imgright
         if self.up:
             self.pos_y -= inc*.1
-            self.pos+=inc*.005
+            self.pos+=inc*.007
             self.img=self.imgup
         if self.down:
             self.pos_y += inc*.1
-            self.pos+=inc*.005
+            self.pos+=inc*.007
             self.img=self.imgdown
         
         if self.pos>=3:
