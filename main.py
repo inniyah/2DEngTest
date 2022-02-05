@@ -19,6 +19,7 @@ import gonlet
 import tmxlite
 
 from game import Game
+from shadertest import runShader
 
 def run_game():
     g = Game()
@@ -139,7 +140,7 @@ def main():
     args = parser.parse_args()
 
     if args.test is None:
-        tests = [ 'game' ]
+        tests = [ 'shadertest' ]
     else:
         tests = [ args.test ]
 
@@ -151,6 +152,9 @@ def main():
             printTmxMapInfo("assets/map/example.tmx")
         if test == 'loadtmx':
             loadTmxMap("assets/map/example.tmx")
+        if test=='shadertest':
+            a=runShader()
+            a.run()
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 

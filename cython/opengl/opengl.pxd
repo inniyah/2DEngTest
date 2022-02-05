@@ -29,7 +29,7 @@
 ##         https://github.com/KhronosGroup/OpenGL-Registry
 ##     
 
-cdef extern from "<gl.h>":
+cdef extern from "<GL/gl.h>":
   ctypedef unsigned int GLenum
   ctypedef unsigned char GLboolean
   ctypedef unsigned int GLbitfield

@@ -79,16 +79,17 @@ LIBS=
 
 OBJS=
 
-PYX_NAMES= gonlet tmxlite
+PYX_NAMES= gonlet shaders tmxlite
 
 PYX_SRCS= $(PYX_NAMES:%=src/%.pyx)
 PYX_CPPS= $(subst .pyx,.cpp,$(PYX_SRCS))
 PYX_OBJS= $(subst .pyx,.o,$(PYX_SRCS))
 
-all: tmxlite.so gonlet.so
+all: tmxlite.so gonlet.so shaders.so
 
 gonlet.so: src/gonlet.o
 tmxlite.so: src/tmxlite.o
+shaders.so: src/shaders.o
 
 %.bin:
 	$(LD) $(CPPSTD) $(CSTD) $(LDFLAGS) $(PKG_CONFIG_LDFLAGS) -o $@ $+ $(LIBS) $(PKG_CONFIG_LIBS)
