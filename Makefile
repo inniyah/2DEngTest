@@ -3,7 +3,7 @@
 # sudo apt install pkg-config cython3 libpython3-dev libsdl2-dev libsdl2-image-dev
 # Also install: libsdl2-gpu-dev libtmxlite-dev
 
-PACKAGES= python3-embed sdl2 SDL2_image SDL2_gpu tmxlite
+PACKAGES= python3-embed sdl2 SDL2_image SDL2_gpu tmxlite zlib libxml-2.0 libzstd-dev
 
 NUMCPUS=$(shell grep -c '^processor' /proc/cpuinfo)
 
@@ -73,9 +73,11 @@ INCS= \
 	-Iinclude
 
 CYINCS= \
-	-Icython
+	-Icython \
+	-Isrc
 
-LIBS=
+LIBS= \
+	-lzstd
 
 OBJS=
 
@@ -85,11 +87,21 @@ PYX_SRCS= $(PYX_NAMES:%=src/%.pyx)
 PYX_CPPS= $(subst .pyx,.cpp,$(PYX_SRCS))
 PYX_OBJS= $(subst .pyx,.o,$(PYX_SRCS))
 
-all: tmxlite.so gonlet.so shaders.so
+all: tmxlite.so gonlet.so shaders.so ctmx.so
 
 gonlet.so: src/gonlet.o
 tmxlite.so: src/tmxlite.o
 shaders.so: src/shaders.o
+
+TMX_OBJS= \
+	src/tmx/tmx.o \
+	src/tmx/tmx_err.o \
+	src/tmx/tmx_hash.o \
+	src/tmx/tmx_mem.o \
+	src/tmx/tmx_utils.o \
+	src/tmx/tmx_xml.o
+
+ctmx.so: src/ctmx.o $(TMX_OBJS)
 
 %.bin:
 	$(LD) $(CPPSTD) $(CSTD) $(LDFLAGS) $(PKG_CONFIG_LDFLAGS) -o $@ $+ $(LIBS) $(PKG_CONFIG_LIBS)
