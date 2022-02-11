@@ -11,4 +11,16 @@ cimport cpython.array
 from cython.operator cimport dereference as deref
 from enum import IntEnum
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+cimport hub
+
+def get():
+    return hub.get_singleton()
+
+def set(new_val):
+    hub.set_singleton(new_val)
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
 include "tmxlite.pxi"

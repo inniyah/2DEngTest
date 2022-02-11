@@ -15,6 +15,7 @@ logging.basicConfig(level=logging.INFO)
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+import hub
 import gonlet
 import tmxlite
 
@@ -152,6 +153,9 @@ def main():
             printTmxMapInfo("assets/map/example.tmx")
         if test == 'loadtmx':
             loadTmxMap("assets/map/example.tmx")
+        if test == 'hub':
+            hub.set(21)
+            print("singleton: ", [ hub.get(), gonlet.get() ])
         if test=='shadertest':
             a=runShader()
             a.run()

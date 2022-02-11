@@ -14,7 +14,21 @@ from cpython.ref cimport PyObject
 from cython.operator cimport dereference as deref
 from enum import IntEnum
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+cimport hub
+
+def get():
+    return hub.get_singleton()
+
+def set(new_val):
+    hub.set_singleton(new_val)
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
 include "sdl2_constants.pxi"
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Thread-safe solution using c++11
 # See: https://stackoverflow.com/questions/40976880/canonical-way-to-generate-random-numbers-in-cython
