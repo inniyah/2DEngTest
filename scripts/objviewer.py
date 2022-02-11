@@ -46,6 +46,11 @@ class OBJ:
                 mtl[values[0]] = values[1]
                 imagefile = os.path.join(dirname, mtl['map_Kd'])
                 mtl['texture_Kd'] = cls.loadTexture(imagefile)
+            elif values[0] == 'map_Ka':
+                # load the texture referred to by this declaration
+                mtl[values[0]] = values[1]
+                imagefile = os.path.join(dirname, mtl['map_Ka'])
+                mtl['texture_Ka'] = cls.loadTexture(imagefile)
             else:
                 mtl[values[0]] = list(map(float, values[1:]))
         return contents
