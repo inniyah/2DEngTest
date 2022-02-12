@@ -21,10 +21,7 @@ import ctmx
 
 from game import Game
 from shadertest import runShader
-
-def run_game():
-    g = Game()
-    g.run()
+from tmxgame import TmxGame
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -148,7 +145,9 @@ def main():
     for test in tests:
         logging.info(f"Running test: {test}")
         if test == 'game':
-            run_game()
+            g = Game()
+            g.run()
+            del g
         if test == 'printtmx':
             printTmxMapInfo("assets/map/example.tmx")
         if test == 'loadtmx':
@@ -159,9 +158,10 @@ def main():
         if test=='shadertest':
             a=runShader()
             a.run()
-        if test == 'tmx':
-            test = ctmx.test("assets/map/orthogonal-outside.tmx")
-            test.render_map()
+        if test == 'tmxgame':
+            g = TmxGame()
+            g.run()
+            del g
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 

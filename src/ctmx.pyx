@@ -36,6 +36,16 @@ cimport sdl2.SDL2_gpu as SDL2_gpu
 
 cimport tmx.tmx as ctmx
 
+cdef extern from *:
+    """
+    static inline SDL_Color tmx_col_bytes_to_SDL_Color(uint32_t tmx_color) {
+        tmx_col_bytes col = tmx_col_to_bytes(tmx_color);
+        SDL_Color sdl_color = {.r = col.r, .g = col.g, .b = col.b, .a = 255};
+        return sdl_color;
+    }
+    """
+    SDL2.SDL_Color tmx_col_bytes_to_SDL_Color(uint32_t tmx_col)
+
 cdef class tmx_map_orient:
     O_NONE = ctmx.O_NONE
     O_ORT = ctmx.O_ORT
@@ -238,42 +248,71 @@ cdef class _test:
     cdef draw_objects(self, ctmx.tmx_object_group *objgr):
         print("draw_objects")
 
-        cdef ctmx.tmx_col_bytes col = ctmx.tmx_col_to_bytes(objgr.color)
-        #~ SDL_Color color = {.r = col.r, .g = col.g, .b = col.b, .a = 255};
+        #~ cdef ctmx.tmx_col_bytes col = ctmx.tmx_col_to_bytes(objgr.color)
+        cdef SDL2.SDL_Color color = tmx_col_bytes_to_SDL_Color(objgr.color)
+
+        cdef double **points = NULL
+        cdef int pointsc = 0
+        cdef int i = 0
 
         cdef ctmx.tmx_object *head = objgr.head
         while head != NULL:
             if head.visible:
                 if head.obj_type == ctmx.OT_SQUARE:
                     print("OT_SQUARE")
-                    #~ GPU_Rectangle(screen, head->x, head->y, head->x + head->width, head->y + head->height, color);
+                    if self._screen != NULL:
+                       SDL2_gpu.GPU_Rectangle(self._screen,
+                           head.x,
+                           head.y,
+                           head.x + head.width,
+                           head.y + head.height,
+                           color)
                 elif head.obj_type == ctmx.OT_POLYGON:
                     print("OT_POLYGON")
-                    self.draw_polygon(head.content.shape.points, head.x, head.y, head.content.shape.points_len)
+                    if self._screen != NULL:
+                        points = head.content.shape.points
+                        pointsc = head.content.shape.points_len
+                        for i in range(1, pointsc):
+                            SDL2_gpu.GPU_Line(self._screen,
+                                head.x + points[i - 1][0],
+                                head.y + points[i - 1][1],
+                                head.x + points[i][0],
+                                head.y + points[i][1],
+                                color)
+                        SDL2_gpu.GPU_Line(self._screen,
+                            head.x + points[0][0],
+                            head.y + points[0][1],
+                            head.x + points[pointsc - 1][0],
+                            head.y + points[pointsc - 1][1],
+                            color)
                 elif head.obj_type == ctmx.OT_POLYLINE:
                     print("OT_POLYLINE")
-                    self.draw_polyline(head.content.shape.points, head.x, head.y, head.content.shape.points_len)
+                    if self._screen != NULL:
+                        points = head.content.shape.points
+                        pointsc = head.content.shape.points_len
+                        for i in range(1, pointsc):
+                            SDL2_gpu.GPU_Line(self._screen,
+                                head.x + points[i - 1][0],
+                                head.y + points[i - 1][1],
+                                head.x + points[i][0],
+                                head.y + points[i][1],
+                                color)
                 elif head.obj_type == ctmx.OT_ELLIPSE:
                     print("OT_ELLIPSE")
-                    #~ GPU_Ellipse(screen, head->x + head->width/2.0, head->y + head->height/2.0, head->width/2.0, head->height/2.0, 360.0, color)
+                    if self._screen != NULL:
+                        SDL2_gpu.GPU_Ellipse(self._screen,
+                           head.x + head.width / 2.0,
+                           head.y + head.height / 2.0,
+                           head.width / 2.0,
+                           head.height / 2.0,
+                           360.0, color)
             head = head.next;
-
-    cdef draw_polyline(self, double **points, double x, double y, int pointsc):
-        print("draw_polyline")
-        cdef int i
-        for i in range(1, pointsc):
-            #~ GPU_Line(screen, x+points[i-1][0], y+points[i-1][1], x+points[i][0], y+points[i][1], color)
-            pass
-
-    cdef draw_polygon(self, double **points, double x, double y, int pointsc):
-        print("draw_polygon")
-        self.draw_polyline(points, x, y, pointsc)
-        if pointsc > 2:
-            #~ GPU_Line(screen, x+points[0][0], y+points[0][1], x+points[pointsc-1][0], y+points[pointsc-1][1], color)
-            pass
 
 class test(_test):
     def __init__(self, filename : str = None):
         if not filename is None:
             self.load(filename)
 
+    def render(self, screen):
+        self.putScreenCapsule(screen)
+        self.render_map()
