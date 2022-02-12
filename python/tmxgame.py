@@ -21,7 +21,7 @@ class TmxGame:
         self.game_eng.printCurrentRenderer()
 
         test = ctmx.test("assets/map/orthogonal-outside.tmx")
-        test.render_map()
+        test.putScreenCapsule(self.game_eng.getScreenCapsule())
 
         self.lasttimer = 0.0
 
@@ -35,7 +35,7 @@ class TmxGame:
             self.lasttimer=timer
 
             self.game_eng.clearScreen()
-
+            test.render_map()
             self.game_eng.flipScreen()
 
         self.game_eng.quit()
