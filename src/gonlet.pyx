@@ -1,7 +1,7 @@
-import json
-
-cimport sdl2.SDL2 as SDL2
-cimport sdl2.SDL2_gpu as SDL2_gpu
+# cython: profile=False
+# cython: embedsignature = True
+# cython: language_level = 3
+# distutils: language = c++
 
 from libc.stdint cimport uint32_t, uint16_t, uint8_t
 from libc.stdlib cimport calloc, malloc, free
@@ -12,7 +12,13 @@ from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 from cpython.ref cimport PyObject
 from cython.operator cimport dereference as deref
+from cpython.pycapsule cimport PyCapsule_New, PyCapsule_IsValid, PyCapsule_GetPointer, PyCapsule_GetName
 from enum import IntEnum
+
+cimport sdl2.SDL2 as SDL2
+cimport sdl2.SDL2_gpu as SDL2_gpu
+
+import json
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -85,6 +91,11 @@ cdef class _Event:
         return self._event.key.keysym.mod
 
 
+#~ cdef void free_ptr(object cap):
+#~    # This should probably have some error checking in
+#~    # or at very least clear any errors raised once it's done
+#~    free(PyCapsule_GetPointer(cap, PyCapsule_GetName(cap)))
+
 cdef class _GameEngine:
     cdef SDL2_gpu.GPU_Target * _screen
 
@@ -101,6 +112,10 @@ cdef class _GameEngine:
             SDL2_gpu.GPU_FreeTarget(self._screen)
         self._screen = NULL
         self._event_manager = self
+
+    def getScreenCapsule(self):
+        cdef const char *name = "SDL2_gpu.GPU_Target"
+        return PyCapsule_New(<void *>self._screen, name, NULL)
 
     def setEventManager(self, event_manager):
         self._event_manager = event_manager

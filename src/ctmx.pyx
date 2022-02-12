@@ -14,6 +14,7 @@ from cpython.ref cimport PyObject
 from cython cimport view
 cimport cpython.array
 from cython.operator cimport dereference as deref
+from cpython.pycapsule cimport PyCapsule_New, PyCapsule_IsValid, PyCapsule_GetPointer, PyCapsule_GetName
 from enum import IntEnum
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -25,6 +26,11 @@ def get():
 
 def set(new_val):
     hub.set_singleton(new_val)
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+cimport sdl2.SDL2 as SDL2
+cimport sdl2.SDL2_gpu as SDL2_gpu
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -130,30 +136,39 @@ cdef class tmx_error_codes:
 
 cdef class _test:
 
-    cdef ctmx.tmx_map * map
+    cdef ctmx.tmx_map * _map
+    cdef SDL2_gpu.GPU_Target * _screen
 
     def __cinit__(self):
-        self.map = NULL
+        self._map = NULL
+        self._screen = NULL
 
     def __dealloc___(self):
-        if self.map == NULL:
-            ctmx.tmx_map_free(self.map);
+        if self._map == NULL:
+            ctmx.tmx_map_free(self._map);
 
     def reset(self):
-        if self.map == NULL:
-            ctmx.tmx_map_free(self.map);
-        self.map = NULL
+        if self._map == NULL:
+            ctmx.tmx_map_free(self._map);
+        self._map = NULL
+        self._screen = NULL
+
+    def putScreenCapsule(self, screen):
+        cdef const char *name = "SDL2_gpu.GPU_Target"
+        if not PyCapsule_IsValid(screen, name):
+            raise ValueError("invalid pointer to parameters")
+        self._screen = <SDL2_gpu.GPU_Target *>PyCapsule_GetPointer(screen, name)
 
     def load(self, filename):
         self.reset()
-        self.map = ctmx.tmx_load(filename.encode('utf8'))
-        if not self.map:
+        self._map = ctmx.tmx_load(filename.encode('utf8'))
+        if not self._map:
             raise SystemExit(f"Error loading map: {ctmx.tmx_strerr()}")
 
     def render_map(self):
-        cdef ctmx.tmx_col_bytes col = ctmx.tmx_col_to_bytes(self.map.backgroundcolor)
+        cdef ctmx.tmx_col_bytes col = ctmx.tmx_col_to_bytes(self._map.backgroundcolor)
         #~ GPU_ClearRGBA(screen, col.r, col.g, col.b, col.a)
-        self.draw_all_layers(self.map.ly_head)
+        self.draw_all_layers(self._map.ly_head)
 
     cdef draw_all_layers(self, ctmx.tmx_layer *layers):
         while layers:
@@ -192,21 +207,21 @@ cdef class _test:
         cdef void* image
 
         op = layer.opacity
-        for i in range(self.map.height):
-            for j in range(self.map.width):
-                gid = (layer.content.gids[(i * self.map.width) + j]) & ctmx.TMX_FLIP_BITS_REMOVAL
-                if self.map.tiles[gid] != NULL:
-                    ts = self.map.tiles[gid].tileset;
-                    im = self.map.tiles[gid].image;
-                    x  = self.map.tiles[gid].ul_x;
-                    y  = self.map.tiles[gid].ul_y;
+        for i in range(self._map.height):
+            for j in range(self._map.width):
+                gid = (layer.content.gids[(i * self._map.width) + j]) & ctmx.TMX_FLIP_BITS_REMOVAL
+                if self._map.tiles[gid] != NULL:
+                    ts = self._map.tiles[gid].tileset;
+                    im = self._map.tiles[gid].image;
+                    x  = self._map.tiles[gid].ul_x;
+                    y  = self._map.tiles[gid].ul_y;
                     w  = ts.tile_width;
                     h  = ts.tile_height;
                     if im != NULL:
                         image = im.resource_image
                     else:
                         image = ts.image.resource_image
-                    flags = (layer.content.gids[(i * self.map.width) + j]) & ~ctmx.TMX_FLIP_BITS_REMOVAL
+                    flags = (layer.content.gids[(i * self._map.width) + j]) & ~ctmx.TMX_FLIP_BITS_REMOVAL
                     self.draw_tile(image, x, y, w, h, j * ts.tile_width, i * ts.tile_height, op, flags)
 
     cdef draw_tile(self, void *image, unsigned int sx, unsigned int sy, unsigned int sw, unsigned int sh, unsigned int dx, unsigned int dy, float opacity, unsigned int flags):
