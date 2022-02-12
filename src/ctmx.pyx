@@ -16,6 +16,18 @@ cimport cpython.array
 from cython.operator cimport dereference as deref
 from enum import IntEnum
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+cimport hub
+
+def get():
+    return hub.get_singleton()
+
+def set(new_val):
+    hub.set_singleton(new_val)
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
 cimport tmx.tmx as ctmx
 
 cdef class tmx_map_orient:
@@ -113,3 +125,140 @@ cdef class tmx_error_codes:
     E_ZSDATA = ctmx.E_ZSDATA
     E_CDATA = ctmx.E_CDATA
     E_MISSEL = ctmx.E_MISSEL
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+cdef class _test:
+
+    cdef ctmx.tmx_map * map
+
+    def __cinit__(self):
+        self.map = NULL
+
+    def __dealloc___(self):
+        if self.map == NULL:
+            ctmx.tmx_map_free(self.map);
+
+    def reset(self):
+        if self.map == NULL:
+            ctmx.tmx_map_free(self.map);
+        self.map = NULL
+
+    def load(self, filename):
+        self.reset()
+        self.map = ctmx.tmx_load(filename.encode('utf8'))
+        if not self.map:
+            raise SystemExit(f"Error loading map: {ctmx.tmx_strerr()}")
+
+    def render_map(self):
+        cdef ctmx.tmx_col_bytes col = ctmx.tmx_col_to_bytes(self.map.backgroundcolor)
+        #~ GPU_ClearRGBA(screen, col.r, col.g, col.b, col.a)
+        self.draw_all_layers(self.map.ly_head)
+
+    cdef draw_all_layers(self, ctmx.tmx_layer *layers):
+        while layers:
+            if layers.visible:
+                if layers.type == ctmx.L_GROUP:
+                    print(f"Drawing Group Layer: '{layers.name.decode('utf8')}'")
+                    self.draw_all_layers(layers.content.group_head)
+                elif layers.type == ctmx.L_OBJGR:
+                    print(f"Drawing Objects Layer: '{layers.name.decode('utf8')}'")
+                    self.draw_objects(layers.content.objgr)
+                elif layers.type == ctmx.L_IMAGE:
+                    print(f"Drawing Image Layer: '{layers.name.decode('utf8')}'")
+                    self.draw_image_layer(layers.content.image)
+                elif layers.type == ctmx.L_LAYER:
+                    print(f"Drawing Tiled Layer: '{layers.name.decode('utf8')}'")
+                    self.draw_layer(layers)
+            layers = layers.next
+
+    cdef draw_image_layer(self, ctmx.tmx_image *image):
+        print("draw_image_layer")
+        #~ GPU_Image *texture = (GPU_Image*)image->resource_image; // Texture loaded by libTMX
+        #~ GPU_Rect dim;
+        #~ dim.x = dim.y = 0;
+        #~ dim.w = texture->w;
+        #~ dim.h = texture->h;
+        #~ GPU_Blit(texture, &dim, screen, dim.x, dim.y);
+
+    cdef draw_layer(self, ctmx.tmx_layer *layer):
+        print("draw_layer")
+
+        cdef unsigned long i, j
+        cdef unsigned int gid, x, y, w, h, flags
+        cdef float op
+        cdef ctmx.tmx_tileset *ts
+        cdef ctmx.tmx_image *im
+        cdef void* image
+
+        op = layer.opacity
+        for i in range(self.map.height):
+            for j in range(self.map.width):
+                gid = (layer.content.gids[(i * self.map.width) + j]) & ctmx.TMX_FLIP_BITS_REMOVAL
+                if self.map.tiles[gid] != NULL:
+                    ts = self.map.tiles[gid].tileset;
+                    im = self.map.tiles[gid].image;
+                    x  = self.map.tiles[gid].ul_x;
+                    y  = self.map.tiles[gid].ul_y;
+                    w  = ts.tile_width;
+                    h  = ts.tile_height;
+                    if im != NULL:
+                        image = im.resource_image
+                    else:
+                        image = ts.image.resource_image
+                    flags = (layer.content.gids[(i * self.map.width) + j]) & ~ctmx.TMX_FLIP_BITS_REMOVAL
+                    self.draw_tile(image, x, y, w, h, j * ts.tile_width, i * ts.tile_height, op, flags)
+
+    cdef draw_tile(self, void *image, unsigned int sx, unsigned int sy, unsigned int sw, unsigned int sh, unsigned int dx, unsigned int dy, float opacity, unsigned int flags):
+        print("draw_tile")
+        #~ GPU_Rect src_rect, dest_rect;
+        #~ src_rect.x = sx;
+        #~ src_rect.y = sy;
+        #~ src_rect.w = dest_rect.w = sw;
+        #~ src_rect.h = dest_rect.h = sh;
+        #~ dest_rect.x = dx;
+        #~ dest_rect.y = dy;
+        #~ GPU_BlitRect((GPU_Image*)image, &src_rect, screen, &dest_rect);
+
+    cdef draw_objects(self, ctmx.tmx_object_group *objgr):
+        print("draw_objects")
+
+        cdef ctmx.tmx_col_bytes col = ctmx.tmx_col_to_bytes(objgr.color)
+        #~ SDL_Color color = {.r = col.r, .g = col.g, .b = col.b, .a = 255};
+
+        cdef ctmx.tmx_object *head = objgr.head
+        while head != NULL:
+            if head.visible:
+                if head.obj_type == ctmx.OT_SQUARE:
+                    print("OT_SQUARE")
+                    #~ GPU_Rectangle(screen, head->x, head->y, head->x + head->width, head->y + head->height, color);
+                elif head.obj_type == ctmx.OT_POLYGON:
+                    print("OT_POLYGON")
+                    self.draw_polygon(head.content.shape.points, head.x, head.y, head.content.shape.points_len)
+                elif head.obj_type == ctmx.OT_POLYLINE:
+                    print("OT_POLYLINE")
+                    self.draw_polyline(head.content.shape.points, head.x, head.y, head.content.shape.points_len)
+                elif head.obj_type == ctmx.OT_ELLIPSE:
+                    print("OT_ELLIPSE")
+                    #~ GPU_Ellipse(screen, head->x + head->width/2.0, head->y + head->height/2.0, head->width/2.0, head->height/2.0, 360.0, color)
+            head = head.next;
+
+    cdef draw_polyline(self, double **points, double x, double y, int pointsc):
+        print("draw_polyline")
+        cdef int i
+        for i in range(1, pointsc):
+            #~ GPU_Line(screen, x+points[i-1][0], y+points[i-1][1], x+points[i][0], y+points[i][1], color)
+            pass
+
+    cdef draw_polygon(self, double **points, double x, double y, int pointsc):
+        print("draw_polygon")
+        self.draw_polyline(points, x, y, pointsc)
+        if pointsc > 2:
+            #~ GPU_Line(screen, x+points[0][0], y+points[0][1], x+points[pointsc-1][0], y+points[pointsc-1][1], color)
+            pass
+
+class test(_test):
+    def __init__(self, filename : str = None):
+        if not filename is None:
+            self.load(filename)
+

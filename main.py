@@ -15,9 +15,9 @@ logging.basicConfig(level=logging.INFO)
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-import hub
 import gonlet
 import tmxlite
+import ctmx
 
 from game import Game
 from shadertest import runShader
@@ -154,11 +154,14 @@ def main():
         if test == 'loadtmx':
             loadTmxMap("assets/map/example.tmx")
         if test == 'hub':
-            hub.set(21)
-            print("singleton: ", [ hub.get(), gonlet.get() ])
+            gonlet.set(22)
+            print("singleton: ", [ gonlet.get(), tmxlite.get() ])
         if test=='shadertest':
             a=runShader()
             a.run()
+        if test == 'tmx':
+            test = ctmx.test("assets/map/orthogonal-outside.tmx")
+            test.render_map()
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 

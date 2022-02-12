@@ -14,6 +14,11 @@ from libcpp.utility cimport pair
 from cpython.ref cimport PyObject
 
 cdef extern from "tmx/tmx.h" namespace "":
+    cdef const unsigned int TMX_FLIPPED_HORIZONTALLY "TMX_FLIPPED_HORIZONTALLY"
+    cdef const unsigned int TMX_FLIPPED_VERTICALLY   "TMX_FLIPPED_VERTICALLY"
+    cdef const unsigned int TMX_FLIPPED_DIAGONALLY   "TMX_FLIPPED_DIAGONALLY"
+    cdef const unsigned int TMX_FLIP_BITS_REMOVAL    "TMX_FLIP_BITS_REMOVAL"
+
     ctypedef void tmx_properties
     ctypedef void tmx_resource_manager
     ctypedef int (*tmx_read_functor)(void *userdata, char *buffer, int len)
@@ -204,6 +209,11 @@ cdef extern from "tmx/tmx.h" namespace "":
         tmx_vertical_align valign
         char *text
 
+    cdef union tmx_object_content "::tmx_object::content":
+        int gid
+        tmx_shape *shape
+        tmx_text *text
+
     cdef cppclass tmx_object:
         unsigned int id
         tmx_obj_type obj_type
@@ -211,10 +221,7 @@ cdef extern from "tmx/tmx.h" namespace "":
         double y
         double width
         double height
-        union content:
-                int gid
-                tmx_shape *shape
-                tmx_text *text
+        tmx_object_content content
         int visible
         double rotation
         char *name
@@ -233,6 +240,12 @@ cdef extern from "tmx/tmx.h" namespace "":
         tmx_tileset_list *tileset_ref
         tmx_object *object
 
+    cdef union tmx_layer_content "::tmx_layer::content":
+        uint32_t *gids
+        tmx_object_group *objgr
+        tmx_image *image
+        tmx_layer *group_head
+
     cdef cppclass tmx_layer:
         int id
         char *name
@@ -244,11 +257,7 @@ cdef extern from "tmx/tmx.h" namespace "":
         double parallaxy
         uint32_t tintcolor
         tmx_layer_type type
-        union content:
-                uint32_t *gids
-                tmx_object_group *objgr
-                tmx_image *image
-                tmx_layer *group_head
+        tmx_layer_content content
         tmx_user_data user_data
         tmx_properties *properties
         tmx_layer *next
