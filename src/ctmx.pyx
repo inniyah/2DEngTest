@@ -217,9 +217,9 @@ cdef class _test:
 
         cdef SDL2_gpu.GPU_Image *texture = <SDL2_gpu.GPU_Image*>image.resource_image
         cdef SDL2_gpu.GPU_Rect dim
-        dim.x = dim.y = 0;
-        dim.w = texture.w;
-        dim.h = texture.h;
+        dim.x = dim.y = 0
+        dim.w = texture.w
+        dim.h = texture.h
         if self._screen != NULL:
             SDL2_gpu.GPU_Blit(texture, &dim, self._screen, dim.x, dim.y)
 
@@ -262,7 +262,12 @@ cdef class _test:
         dest_rect.x = dx;
         dest_rect.y = dy;
         if self._screen != NULL:
-            SDL2_gpu.GPU_BlitRect(<SDL2_gpu.GPU_Image*>image, &src_rect, self._screen, &dest_rect)
+            if flags == ctmx.TMX_FLIPPED_HORIZONTALLY:
+                SDL2_gpu.GPU_BlitRectX(<SDL2_gpu.GPU_Image*>image, &src_rect, self._screen, &dest_rect, 0., 0., 0., SDL2_gpu.GPU_FLIP_HORIZONTAL)
+            elif flags == ctmx.TMX_FLIPPED_VERTICALLY:
+                SDL2_gpu.GPU_BlitRectX(<SDL2_gpu.GPU_Image*>image, &src_rect, self._screen, &dest_rect, 0., 0., 0., SDL2_gpu.GPU_FLIP_VERTICAL)
+            else:
+                SDL2_gpu.GPU_BlitRect(<SDL2_gpu.GPU_Image*>image, &src_rect, self._screen, &dest_rect)
 
     cdef draw_objects(self, ctmx.tmx_object_group *objgr):
         #~ print("draw_objects")
