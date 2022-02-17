@@ -253,6 +253,8 @@ cdef class _test:
 
     cdef draw_tile(self, void *image, unsigned int sx, unsigned int sy, unsigned int sw, unsigned int sh, unsigned int dx, unsigned int dy, float opacity, unsigned int flags):
         #~ print("draw_tile")
+        if self._screen == NULL:
+            return
 
         cdef SDL2_gpu.GPU_Rect src_rect, dest_rect
         src_rect.x = sx;
@@ -261,13 +263,25 @@ cdef class _test:
         src_rect.h = dest_rect.h = sh;
         dest_rect.x = dx;
         dest_rect.y = dy;
-        if self._screen != NULL:
-            if flags == ctmx.TMX_FLIPPED_HORIZONTALLY:
-                SDL2_gpu.GPU_BlitRectX(<SDL2_gpu.GPU_Image*>image, &src_rect, self._screen, &dest_rect, 0., 0., 0., SDL2_gpu.GPU_FLIP_HORIZONTAL)
-            elif flags == ctmx.TMX_FLIPPED_VERTICALLY:
-                SDL2_gpu.GPU_BlitRectX(<SDL2_gpu.GPU_Image*>image, &src_rect, self._screen, &dest_rect, 0., 0., 0., SDL2_gpu.GPU_FLIP_VERTICAL)
-            else:
-                SDL2_gpu.GPU_BlitRect(<SDL2_gpu.GPU_Image*>image, &src_rect, self._screen, &dest_rect)
+
+        cdef SDL2_gpu.GPU_FlipEnum flip = SDL2_gpu.GPU_FLIP_NONE
+        if flags & ctmx.TMX_FLIPPED_HORIZONTALLY:
+            flip |= SDL2_gpu.GPU_FLIP_HORIZONTAL
+        if flags & ctmx.TMX_FLIPPED_VERTICALLY:
+            flip |= SDL2_gpu.GPU_FLIP_VERTICAL
+
+        if not flags:
+            SDL2_gpu.GPU_BlitRect(<SDL2_gpu.GPU_Image*>image, &src_rect, self._screen, &dest_rect)
+        elif not (flags & ctmx.TMX_FLIPPED_DIAGONALLY):
+            SDL2_gpu.GPU_BlitRectX(<SDL2_gpu.GPU_Image*>image, &src_rect, self._screen, &dest_rect, 0., 0., 0., flip)
+        else:
+            flip = SDL2_gpu.GPU_FLIP_VERTICAL ^ [
+                SDL2_gpu.GPU_FLIP_NONE,
+                SDL2_gpu.GPU_FLIP_HORIZONTAL,
+                SDL2_gpu.GPU_FLIP_VERTICAL,
+                SDL2_gpu.GPU_FLIP_HORIZONTAL | SDL2_gpu.GPU_FLIP_VERTICAL,
+            ][flags >> 30]
+            SDL2_gpu.GPU_BlitRectX(<SDL2_gpu.GPU_Image*>image, &src_rect, self._screen, &dest_rect, 90., sh / 2., sw / 2., flip)
 
     cdef draw_objects(self, ctmx.tmx_object_group *objgr):
         #~ print("draw_objects")
