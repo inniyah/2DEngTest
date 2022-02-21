@@ -138,7 +138,7 @@ def main():
     args = parser.parse_args()
 
     if args.test is None:
-        tests = [ 'shadertest' ]
+        tests = [ 'game' ]
     else:
         tests = [ args.test ]
 
