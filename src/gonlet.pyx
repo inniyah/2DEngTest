@@ -162,25 +162,15 @@ cdef class _GameEngine:
     def getTicks():
         return SDL2.SDL_GetTicks()
 
-    def EnableDepthTest(self):
-        SDL2_gpu.GPU_SetDepthFunction(self._screen,SDL2_gpu.GPU_LESS)
-        SDL2_gpu.GPU_AddDepthBuffer(self._screen)
-        SDL2_gpu.GPU_SetDepthTest(self._screen,SDL2_gpu.GPU_TRUE)
-        SDL2_gpu.GPU_SetDepthWrite(self._screen,SDL2_gpu.GPU_TRUE)
-        #SDL2_gpu.GPU_SetDepthFunction(self._screen,SDL2_gpu.GPU_LESS)
-
-
-    def setZ(self,z:float):
+    def setZ(self, z:float):
         #SDL2_gpu.GPU_MatrixMode(self._screen,SDL2_gpu.GPU_MODEL)
         #SDL2_gpu.GPU_PushMatrix()
         #SDL2_gpu.GPU_Translate(0, 0, z)
         
         #Set z in camera
-        cdef SDL2_gpu.GPU_Camera camera
-        camera=SDL2_gpu.GPU_GetCamera(self._screen)
+        cdef SDL2_gpu.GPU_Camera camera = SDL2_gpu.GPU_GetCamera(self._screen)
         camera.z=z
-        SDL2_gpu.GPU_EnableCamera(self._screen,SDL2_gpu.GPU_TRUE)
-        SDL2_gpu.GPU_SetCamera(self._screen,&camera)
+        SDL2_gpu.GPU_SetCamera(self._screen, &camera)
 
     def getScreenSize(self):
         return self._screen.w, self._screen.h
@@ -200,6 +190,13 @@ cdef class _GameEngine:
         if self._screen == NULL:
             SDL2_gpu.GPU_LogError("GPU_Init Failed!")
             return -1
+
+        SDL2_gpu.GPU_SetDepthFunction(self._screen,SDL2_gpu.GPU_LESS)
+        SDL2_gpu.GPU_AddDepthBuffer(self._screen)
+        SDL2_gpu.GPU_SetDepthTest(self._screen,SDL2_gpu.GPU_TRUE)
+        SDL2_gpu.GPU_SetDepthWrite(self._screen,SDL2_gpu.GPU_TRUE)
+        SDL2_gpu.GPU_EnableCamera(self._screen, SDL2_gpu.GPU_TRUE)
+
 
     def quit(self):
         SDL2_gpu.GPU_Quit()

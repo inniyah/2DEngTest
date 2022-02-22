@@ -9,8 +9,6 @@ class Game:
         self.game_eng = gonlet.GameEngine()
         self.game_eng.setEventManager(self)
         self.game_eng.printRenderers()
-        print ("enable depth test")
-        self.game_eng.EnableDepthTest()
         
         #keys
         self.down=False
@@ -47,13 +45,16 @@ class Game:
         while self.game_eng.processEvents():
             self.moveplayer()
             self.game_eng.clearScreen()
+
             self.game_eng.setZ(1)
             self.img[int(self.pos)].blit(self.game_eng, self.pos_x, self.pos_y)
+
             self.game_eng.setZ(-1)
             s.blit(self.game_eng, 100, 100)
+
             self.game_eng.setZ(2)
             s.blit(self.game_eng, 200, 200)
-            self.game_eng.setZ(-2)
+
             self.game_eng.flipScreen()
 
         self.game_eng.quit()
