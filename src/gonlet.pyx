@@ -256,6 +256,23 @@ cdef class _GameImage:
 
         SDL2_gpu.GPU_SetSnapMode(self._image, SDL2_gpu.GPU_SNAP_NONE)
 
+    def createnew(self,width,height):
+       self._image= SDL2_gpu.GPU_CreateImage(width, height, SDL2_gpu.GPU_FORMAT_RGBA)
+
+    def clear(self):
+        SDL2_gpu.GPU_Clear(self._image.target)
+
+    def loadtarget(self):
+        SDL2_gpu.GPU_LoadTarget(self._image)
+    
+    def blitontarget(self,_GameImage target,pos_x,pos_y):
+        cdef SDL2_gpu.GPU_Target *  screen= target._image.target
+        SDL2_gpu.GPU_Blit(self._image, NULL, screen, pos_x, pos_y)
+    
+    def getImageCapsule(self):
+        cdef const char *name = "SDL2_gpu.GPU_Image"
+        return PyCapsule_New(<void *>self._image, name, NULL)
+
     def blit(self, _GameEngine eng, pos_x, pos_y):
         cdef SDL2_gpu.GPU_Target * screen = eng._screen
         SDL2_gpu.GPU_Blit(self._image, NULL, screen, pos_x, pos_y)
@@ -341,13 +358,14 @@ cdef class _Sprite:
     
     def blit(self, _GameEngine eng, pos_x, pos_y):
         cdef SDL2_gpu.GPU_Target * screen = eng._screen
-        cdef SDL2_gpu.GPU_Rect target
-        target.x=pos_x
-        target.y=pos_y
-        target.h=self.Rect.h
-        target.w=self.Rect.w
+        #cdef SDL2_gpu.GPU_Rect target
+        #target.x=pos_x
+        #target.y=pos_y
+        #target.h=self.Rect.h
+        #target.w=self.Rect.w
+        SDL2_gpu.GPU_Blit(self._image, &self.Rect, screen, pos_x, pos_y)
         
-        SDL2_gpu.GPU_BlitRect(self._image, &self.Rect, screen, &target)
+        #SDL2_gpu.GPU_BlitRect(self._image, &self.Rect, screen, &target)
 
 cdef class _Chart:
     
@@ -375,6 +393,9 @@ cdef class _Chart:
             return -1
 
         SDL2_gpu.GPU_SetSnapMode(self._image, SDL2_gpu.GPU_SNAP_NONE)
+        SDL2_gpu.GPU_SetBlendMode(self._image,SDL2_gpu.GPU_BLEND_NORMAL_ADD_ALPHA)
+        SDL2_gpu.GPU_SetImageFilter( self._image, SDL2_gpu.GPU_FILTER_NEAREST )
+        #SDL2_gpu.GPU_SetBlendFunction(self._image, SDL2_gpu.GPU_FUNC_SRC_ALPHA, SDL2_gpu.GPU_FUNC_ONE_MINUS_SRC_ALPHA, SDL2_gpu.GPU_FUNC_ONE, SDL2_gpu.GPU_FUNC_ZERO )
     
     def load(self, filename : str):
         with open(filename) as f:

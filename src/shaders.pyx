@@ -2,6 +2,7 @@ cimport sdl2.SDL2 as SDL2
 cimport sdl2.SDL2_gpu as SDL2_gpu
 #cimport cython.opengl.opengl as GL
 from opengl.opengl cimport GLfloat
+from cpython.pycapsule cimport PyCapsule_New, PyCapsule_IsValid, PyCapsule_GetPointer, PyCapsule_GetName
 
 
 include "sdl2_constants.pxi"
@@ -39,13 +40,13 @@ cdef class _shader:
         self.freeImg()
     
     
-    def create(self,string id,string v_str,string f_str):
-        v=SDL2_gpu.GPU_LoadShader(SDL2_gpu.GPU_VERTEX_SHADER, v_str.c_str())
+    def create(self,v_str : str,f_str : str):
+        v=SDL2_gpu.GPU_LoadShader(SDL2_gpu.GPU_VERTEX_SHADER, v_str.encode('utf8'))
         
         if not v:
             print ("Failed to load vertex shader: {}".format(SDL2_gpu.GPU_GetShaderMessage()))
         
-        f=SDL2_gpu.GPU_LoadShader(SDL2_gpu.GPU_FRAGMENT_SHADER, f_str.c_str())
+        f=SDL2_gpu.GPU_LoadShader(SDL2_gpu.GPU_FRAGMENT_SHADER, f_str.encode('utf8'))
         
         if not f:
             print ("Failed to load fragment shader: {}".format(SDL2_gpu.GPU_GetShaderMessage()))
@@ -68,8 +69,10 @@ cdef class _shader:
     def freeImg(self):
         SDL2_gpu.GPU_FreeImage(self.img)
     
-    def setImgShader(self):
-        SDL2_gpu.GPU_SetShaderImage(self.img, self.getVar("tex1"), 1)
+    def setImgShader(self,var:str,capsule):
+        cdef const char *name = "SDL2_gpu.GPU_Image"
+        cdef SDL2_gpu.GPU_Image * img = <SDL2_gpu.GPU_Image *> PyCapsule_GetPointer (capsule,name) 
+        SDL2_gpu.GPU_SetShaderImage(self.img, self.getVar(var), 1)
 
     
     def addVariable(self,idV: str):
@@ -90,7 +93,17 @@ cdef class _shader:
         SDL2_gpu.GPU_SetUniformf(self.getVar("globalTime"), time)
         self.setImgShader()
         SDL2_gpu.GPU_SetUniformfv(self.getVar("resolution"),2,1,self.resolution)
-        print (self.resolution)
+    
+    def SetUniformi(self,var:str,int b):
+        SDL2_gpu.GPU_SetUniformi(self.getVar(var),b)
+    
+    def SetUniformf(self,var:str,float b):
+        SDL2_gpu.GPU_SetUniformf(self.getVar(var),b)
+    
+    def SetUniformvec2(self,var:str,data):
+        cdef float v[2] 
+        v=data
+        SDL2_gpu.GPU_SetUniformfv(self.getVar(var),2,1,v)
     
     def deactivate(self):
         SDL2_gpu.GPU_DeactivateShaderProgram()

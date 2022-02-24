@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import logging
+import shaders
 
 import gonlet
 
@@ -24,6 +25,13 @@ class Game:
         logging.info("Starting game!")
         self.game_eng.init()
         self.game_eng.printCurrentRenderer()
+        
+        self.shad=shaders.shader()
+
+        self.shad.create("shaders/v1.vert", "shaders/s1.frag")
+        self.shad.addVariable("tex0")
+        self.shad.activate()
+        #self.shad.deactivate()
 
         #img = gonlet.GameImage()
         #img.load("img/small_test.png")
@@ -87,7 +95,7 @@ class Game:
     
     def onKeyDown(self, event):
         sym = event.getKeysymSym()
-        print(f"Key Down: {sym}")
+        #print(f"Key Down: {sym}")
         if sym == gonlet.SDLK_LEFT:
              self.left=True
         if sym == gonlet.SDLK_RIGHT:
@@ -99,7 +107,7 @@ class Game:
 
     def onKeyUp(self, event):
         sym = event.getKeysymSym()
-        print(f"Key Up: {sym}")
+        #print(f"Key Up: {sym}")
         if sym == gonlet.SDLK_LEFT:
              self.left=False
         if sym == gonlet.SDLK_RIGHT:
