@@ -196,6 +196,14 @@ cdef class _GameEngine:
         SDL2_gpu.GPU_SetDepthTest(self._screen,SDL2_gpu.GPU_TRUE)
         SDL2_gpu.GPU_SetDepthWrite(self._screen,SDL2_gpu.GPU_TRUE)
         SDL2_gpu.GPU_EnableCamera(self._screen, SDL2_gpu.GPU_TRUE)
+    
+    def drawRect(self,x1:float,y1:float,x2:float,y2:float):
+        cdef SDL2_gpu.SDL_Color color=SDL2_gpu.GPU_MakeColor(0,255,0,255)
+        SDL2_gpu.GPU_RectangleFilled(self._screen, x1, y1, x2, y2, color)
+    
+    def drawCircle(self,x:float,y:float,radius:float,r:int,g:int,b:int):
+        cdef SDL2_gpu.SDL_Color color=SDL2_gpu.GPU_MakeColor(r,g,b,255)
+        SDL2_gpu.GPU_CircleFilled(self._screen, x, y, radius, color)
 
 
     def quit(self):

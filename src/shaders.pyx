@@ -72,7 +72,7 @@ cdef class _shader:
     def setImgShader(self,var:str,capsule):
         cdef const char *name = "SDL2_gpu.GPU_Image"
         cdef SDL2_gpu.GPU_Image * img = <SDL2_gpu.GPU_Image *> PyCapsule_GetPointer (capsule,name) 
-        SDL2_gpu.GPU_SetShaderImage(self.img, self.getVar(var), 1)
+        SDL2_gpu.GPU_SetShaderImage(img, self.getVar(var), 1)
 
     
     def addVariable(self,idV: str):
@@ -104,6 +104,21 @@ cdef class _shader:
         cdef float v[2] 
         v=data
         SDL2_gpu.GPU_SetUniformfv(self.getVar(var),2,1,v)
+
+    def SetUniformvec3(self,var:str,data):
+        cdef float v[3] 
+        v=data
+        SDL2_gpu.GPU_SetUniformfv(self.getVar(var),3,1,v)
+    
+    def SetUniformambient(self,var:str,data):
+        cdef float v[9] 
+        v = data
+        SDL2_gpu.GPU_SetUniformfv(self.getVar(var),3,3,v)
+    
+    def SetUniformlights(self,var:str,data):
+        cdef float v[6] 
+        v = data
+        SDL2_gpu.GPU_SetUniformfv(self.getVar(var),3,2,v)
     
     def deactivate(self):
         SDL2_gpu.GPU_DeactivateShaderProgram()
