@@ -58,7 +58,7 @@ class Lights:
 
         while self.game_eng.processEvents():
             #ponemos la luz
-            self.shad.SetUniformlights("lights", [x,x/2,50.0 #posición
+            self.shad.SetUniformlights("lights", [x, x/2, 20.0 #posición
             , 5000.0, 2500.0, 2500.0]) #color y potencia
             
             

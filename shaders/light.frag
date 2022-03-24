@@ -20,7 +20,9 @@ void main()
     vec3 sunlightdir=normalize(-ambient[0]);
     
     vec3 Normal = normalize(texture(tex1, texCoord).rgb);
-    Normal.z=Normal.z/2;
+    Normal.x = Normal.x - 0.5;
+    Normal.y = Normal.y - 0.5;
+    Normal.z = Normal.z / 2.0;
     vec3 Color=texture(tex0, texCoord).rgb;
     
     float cosTheta = clamp(dot( Normal,sunlightdir ),0,1);
@@ -41,7 +43,7 @@ void main()
     vec3 eyepos=vec3( screensize/2-fragpos.xy,50);
     vec3 E=normalize(eyepos-fragpos.xyz);
     float cosAlfa=clamp(dot( E,R ),0,1);
-    vec3 specularcolor=vec3(Color*lights[1]* pow(cosAlfa,0.5)/(distance*distance));
+    vec3 specularcolor=vec3(Color*lights[1] * pow(cosAlfa, 5.0)/(distance*distance));
     //specularcolor=vec3(0.0,0.0,0.0);
     //difusecolor=vec3(0.0,0.0,0.0);
     
