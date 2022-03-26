@@ -2,6 +2,7 @@
 
 import logging
 import shaders
+import math, random
 
 import gonlet
 
@@ -32,6 +33,7 @@ class Lights:
         self.shad.create("shaders/v1.vert", "shaders/light.frag")
         self.shad.addVariable("tex0") #textura de los colores
         self.shad.addVariable("tex1") #textura de las normales
+        self.shad.addVariable("tex2") #textura de las alturas
         self.shad.addVariable("ambient") #va a ser una matriz con todas las variables ambientales (lightdir, lightcolor y ambientcolor)
         self.shad.addVariable("lights") #va a ser una matriz (posiciones, colores de luces) 
         self.shad.addVariable("screensize") #tamaño de la pantalla
@@ -41,41 +43,53 @@ class Lights:
         
         # asignamos las variables ambeintales
         self.shad.SetUniformambient("ambient", [0.5, -0.0, -1.0, #lightdir
-        0.5, 0.3, 1.0, #lightcolor
-        0.2, 0.2, 0.2]) #ambientcolor
+        0.5, 0.5, 0.5, #lightcolor
+        0.1, 0.1, 0.1]) #ambientcolor
         #self.shad.deactivate()
 
         normal = gonlet.GameImage()
-        normal.load("assets/normal1.png")
+        normal.load("assets/VTiles1_Normals.png")
+        heighttex = gonlet.GameImage()
+        heighttex.load("assets/VTiles1_Depth.png")
         color = gonlet.GameImage()
-        color.load("assets/color1.png")
+        color.load("assets/VTiles1_Color.png")
         
         width, height = self.game_eng.getScreenSize()
         
         self.shad.SetUniformvec2("screensize", [width, height])
         
-        x=0.0
+        a=0.0
+        centrox=width//2
+        centroy=height//2
+        radio=100
+        
+        self.shad.setImgShader("tex1", normal.getImageCapsule())
+        self.shad.setImgShader("tex2", heighttex.getImageCapsule())
 
         while self.game_eng.processEvents():
             #ponemos la luz
-            self.shad.SetUniformlights("lights", [x, x/2, 20.0 #posición
+            #self.shad.SetUniformlights("lights", [x, x/2, 20.0 #posición
+            #, 5000.0, 2500.0, 2500.0]) #color y potencia
+            #x=x+0.05
+            
+            self.shad.SetUniformlights("lights", [centrox+radio*math.cos(a), centroy+radio*math.sin(a), 70.0 #posición
             , 5000.0, 2500.0, 2500.0]) #color y potencia
+            a+=0.001
+            #radio+=random.random()*2-1
             
-            
-            x=x+0.05
             t=self.game_eng.getTicks()
             self.shad.SetUniformi("TIME", t/200)
             self.game_eng.clearScreen()
             
             self.game_eng.setZ(1)
             
-            self.shad.setImgShader("tex1", normal.getImageCapsule())
+
             
             color.blit(self.game_eng, width // 2, height // 2)
             
             self.shad.deactivate()
             self.game_eng.setZ(0)
-            self.game_eng.drawCircle(x, x/2, 10, 255, 255, 255)
+            self.game_eng.drawCircle(centrox+radio*math.cos(a), centroy+radio*math.sin(a), 10, 255, 255, 255)
             self.shad.activate()
             
             self.game_eng.flipScreen()
