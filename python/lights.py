@@ -61,7 +61,7 @@ class Lights:
         a=0.0
         centrox=width//2
         centroy=height//2
-        radio=100
+        radio=1
         
         self.shad.setImgShader("tex1", normal.getImageCapsule())
         self.shad.setImgShader("tex2", heighttex.getImageCapsule())
@@ -75,7 +75,7 @@ class Lights:
             self.shad.SetUniformlights("lights", [centrox+radio*math.cos(a), centroy+radio*math.sin(a), 70.0 #posición
             , 5000.0, 2500.0, 2500.0]) #color y potencia
             a+=0.001
-            #radio+=random.random()*2-1
+            radio+=0.01
             
             t=self.game_eng.getTicks()
             self.shad.SetUniformi("TIME", t/200)
