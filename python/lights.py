@@ -68,12 +68,12 @@ class Lights:
 
         while self.game_eng.processEvents():
             #ponemos la luz
-            #self.shad.SetUniformlights("lights", [x, x/2, 20.0 #posición
-            #, 5000.0, 2500.0, 2500.0]) #color y potencia
-            #x=x+0.05
             
-            self.shad.SetUniformlights("lights", [centrox+radio*math.cos(a), centroy+radio*math.sin(a), 70.0 #posición
-            , 5000.0, 2500.0, 2500.0]) #color y potencia
+            self.shad.SetUniformlights("lights", [centrox+radio*math.cos(a), centroy+radio*math.sin(a), 70.0 #posición 1
+            , 5000.0, 2500.0, 2500.0, #color y potencia 1 
+            centrox + 100 +radio*math.cos(a), centroy + 100 +radio*math.sin(a), 70.0 #posición 2
+            , 0.0, 5000.0, 0.0 #color y potencia 2
+            ]) 
             a+=0.001
             radio+=0.01
             
@@ -90,6 +90,7 @@ class Lights:
             self.shad.deactivate()
             self.game_eng.setZ(0)
             self.game_eng.drawCircle(centrox+radio*math.cos(a), centroy+radio*math.sin(a), 10, 255, 255, 255)
+            self.game_eng.drawCircle(centrox+100+radio*math.cos(a), centroy+100+radio*math.sin(a), 10, 0, 255, 0)
             self.shad.activate()
             
             self.game_eng.flipScreen()

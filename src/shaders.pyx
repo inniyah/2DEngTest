@@ -116,9 +116,9 @@ cdef class _shader:
         SDL2_gpu.GPU_SetUniformfv(self.getVar(var),3,3,v)
     
     def SetUniformlights(self,var:str,data):
-        cdef float v[6] 
+        cdef float v[6*2] 
         v = data
-        SDL2_gpu.GPU_SetUniformfv(self.getVar(var),3,2,v)
+        SDL2_gpu.GPU_SetUniformfv(self.getVar(var),3,4,v)
     
     def deactivate(self):
         SDL2_gpu.GPU_DeactivateShaderProgram()
