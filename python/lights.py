@@ -27,25 +27,29 @@ class Lights:
         self.game_eng.init()
         self.game_eng.printCurrentRenderer()
         
-        self.shad=shaders.shader()
+        self.shad=shaders.LightShader()
+        width, height = self.game_eng.getScreenSize()
 
-        #self.shad.create("shaders/v1.vert", "shaders/s1.frag")
-        self.shad.create("shaders/v1.vert", "shaders/light.frag")
-        self.shad.addVariable("tex0") #textura de los colores
-        self.shad.addVariable("tex1") #textura de las normales
-        self.shad.addVariable("tex2") #textura de las alturas
-        self.shad.addVariable("ambient") #va a ser una matriz con todas las variables ambientales (lightdir, lightcolor y ambientcolor)
-        self.shad.addVariable("lights") #va a ser una matriz (posiciones, colores de luces) 
-        self.shad.addVariable("screensize") #tamaño de la pantalla
-        
-        self.shad.addVariable("TIME")
+        self.shad.init([width, height])
         self.shad.activate()
+        #self.shad=shaders.shader()
+        #self.shad.create("shaders/v1.vert", "shaders/light.frag")
+        #self.shad.addVariable("tex0") #textura de los colores
+        #self.shad.addVariable("tex1") #textura de las normales
+        #self.shad.addVariable("tex2") #textura de las alturas
+        #self.shad.addVariable("ambient") #va a ser una matriz con todas las variables ambientales (lightdir, lightcolor y ambientcolor)
+        #self.shad.addVariable("lights") #va a ser una matriz (posiciones, colores de luces) 
+        #self.shad.addVariable("screensize") #tamaño de la pantalla
+        #self.shad.addVariable("TIME")
+
+        self.shad.activate()
+        #self.shad.SetUniformvec2("screensize", [width, height])
+
         
         # asignamos las variables ambeintales
         self.shad.SetUniformambient("ambient", [0.5, -0.0, -1.0, #lightdir
         0.5, 0.5, 0.5, #lightcolor
         0.1, 0.1, 0.1]) #ambientcolor
-        #self.shad.deactivate()
 
         normal = gonlet.GameImage()
         normal.load("assets/VTiles1_Normals.png")
@@ -53,21 +57,20 @@ class Lights:
         heighttex.load("assets/VTiles1_Depth.png")
         color = gonlet.GameImage()
         color.load("assets/VTiles1_Color.png")
-        
-        width, height = self.game_eng.getScreenSize()
-        
-        self.shad.SetUniformvec2("screensize", [width, height])
+        self.shad.setImgNormal(normal.getImageCapsule())
+        self.shad.setImgDepth(heighttex.getImageCapsule())
         
         a=0.0
         centrox=width//2
         centroy=height//2
         radio=1
-        
-        self.shad.setImgShader("tex1", normal.getImageCapsule())
-        self.shad.setImgShader("tex2", heighttex.getImageCapsule())
+
+        #self.shad.setImgShader("tex1", normal.getImageCapsule())
+        #self.shad.setImgShader("tex2", heighttex.getImageCapsule())
 
         while self.game_eng.processEvents():
             #ponemos la luz
+            self.shad.activate()
             
             self.shad.SetUniformlights("lights", [centrox+radio*math.cos(a), centroy+radio*math.sin(a), 70.0 #posición 1
             , 5000.0, 2500.0, 2500.0, #color y potencia 1 
@@ -77,13 +80,11 @@ class Lights:
             a+=0.001
             radio+=0.01
             
-            t=self.game_eng.getTicks()
-            self.shad.SetUniformi("TIME", t/200)
+            #t=self.game_eng.getTicks()
+            #self.shad.SetUniformi("TIME", t/200)
             self.game_eng.clearScreen()
             
             self.game_eng.setZ(1)
-            
-
             
             color.blit(self.game_eng, width // 2, height // 2)
             

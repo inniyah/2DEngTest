@@ -17,7 +17,6 @@ from libcpp.utility cimport pair
 import gonlet
 
 cdef class _shader:
-
     cdef  SDL2_gpu.GPU_Image * img
     cdef SDL2_gpu.GPU_ShaderBlock block
     cdef uint32_t v
@@ -27,18 +26,9 @@ cdef class _shader:
     
     def __cinit__(self):
         self.variables={}
-        self.resolution=[1920.,1080.]
-        #self.id=string()
-        #self.v, self.f, self.p=Uint32(),Uint32(),Uint32()
-        #self.variables=NULL
-        #self.block=NULL
-        #vector[string,Uint32] self.variables
-        #GPU_ShaderBlock self.block
-        pass
     
     def __dealloc___(self):
         self.freeImg()
-    
     
     def create(self,v_str : str,f_str : str):
         v=SDL2_gpu.GPU_LoadShader(SDL2_gpu.GPU_VERTEX_SHADER, v_str.encode('utf8'))
@@ -123,7 +113,87 @@ cdef class _shader:
     def deactivate(self):
         SDL2_gpu.GPU_DeactivateShaderProgram()
 
+cdef class _LightShader():
+    
+    cdef SDL2_gpu.GPU_ShaderBlock block
+    #cdef uint32_t v
+    #cdef uint32_t f
+    cdef uint32_t p
+    
+    def __cinit__(self):
+        self.variables={}
+
+    def __dealloc___(self):
+        pass
+    
+    def getVar(self,idV:str):
+        return self.variables[idV]
+    
+    def init(self,screensize):
+        #inicializamos el shader, cargando cada uno de los shaders
+        v=SDL2_gpu.GPU_LoadShader(SDL2_gpu.GPU_VERTEX_SHADER, "shaders/v1.vert".encode('utf8'))
+        
+        if not v:
+            print ("Failed to load vertex shader: {}".format(SDL2_gpu.GPU_GetShaderMessage()))
+        
+        f=SDL2_gpu.GPU_LoadShader(SDL2_gpu.GPU_FRAGMENT_SHADER, "shaders/light.frag".encode('utf8'))
+        
+        if not f:
+            print ("Failed to load fragment shader: {}".format(SDL2_gpu.GPU_GetShaderMessage()))
+        
+        self.p=SDL2_gpu.GPU_LinkShaders(v, f)
+        
+        if not self.p:
+            print ("Failed to link shader: {}".format(SDL2_gpu.GPU_GetShaderMessage()))
+        
+        self.block = SDL2_gpu.GPU_LoadShaderBlock(self.p, "gpu_Vertex", "gpu_TexCoord", NULL, "gpu_ModelViewProjectionMatrix")
+        
+        #vamos a definir las variables del shader
+        self.variables["tex0"]=SDL2_gpu.GPU_GetUniformLocation(self.p, "tex0".encode('utf8'))
+        self.variables["tex1"]=SDL2_gpu.GPU_GetUniformLocation(self.p, "tex1".encode('utf8'))
+        self.variables["tex2"]=SDL2_gpu.GPU_GetUniformLocation(self.p, "tex2".encode('utf8'))
+        self.variables["ambient"]=SDL2_gpu.GPU_GetUniformLocation(self.p, "ambient".encode('utf8'))
+        self.variables["lights"]=SDL2_gpu.GPU_GetUniformLocation(self.p, "lights".encode('utf8'))
+        self.variables["screensize"]=SDL2_gpu.GPU_GetUniformLocation(self.p, "screensize".encode('utf8'))
+        
+        self.activate()
+        #vamos a poner el screensize
+        cdef float ss[2] 
+        ss=screensize
+        SDL2_gpu.GPU_SetUniformfv(self.getVar("screensize"),2,1,ss)
+    
+    def setImgNormal(self,capsule):
+        cdef const char *name = "SDL2_gpu.GPU_Image"
+        cdef SDL2_gpu.GPU_Image * img = <SDL2_gpu.GPU_Image *> PyCapsule_GetPointer (capsule,name) 
+        SDL2_gpu.GPU_SetShaderImage(img, self.getVar("tex1"), 1)
+    
+    def setImgDepth(self,capsule):
+        cdef const char *name = "SDL2_gpu.GPU_Image"
+        cdef SDL2_gpu.GPU_Image * img = <SDL2_gpu.GPU_Image *> PyCapsule_GetPointer (capsule,name) 
+        SDL2_gpu.GPU_SetShaderImage(img, self.getVar("tex2"), 1)
+    
+    def activate(self):
+        SDL2_gpu.GPU_ActivateShaderProgram(self.p, &self.block)
+    
+    def deactivate(self):
+        SDL2_gpu.GPU_DeactivateShaderProgram()
+    
+    def getId(self):
+        return id
+    
+    def SetUniformambient(self,var:str,data):
+        cdef float v[9] 
+        v = data
+        SDL2_gpu.GPU_SetUniformfv(self.getVar(var),3,3,v)
+    
+    def SetUniformlights(self,var:str,data):
+        cdef float v[6*2] 
+        v = data
+        SDL2_gpu.GPU_SetUniformfv(self.getVar(var),3,4,v)
 
 class shader(_shader):
+    pass
+
+class LightShader(_LightShader):
     pass
     
