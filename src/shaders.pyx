@@ -116,9 +116,9 @@ cdef class _shader:
 cdef class _LightShader():
     
     cdef SDL2_gpu.GPU_ShaderBlock block
-    #cdef uint32_t v
-    #cdef uint32_t f
     cdef uint32_t p
+    cdef float ambient[9]
+    cdef float lights[3*2*10] #Datos necesarios para 10 luces
     
     def __cinit__(self):
         self.variables={}
@@ -180,6 +180,36 @@ cdef class _LightShader():
     
     def getId(self):
         return id
+    
+    def setSunLightDir(self,dir):
+        self.ambient[0]=dir[0]
+        self.ambient[1]=dir[1]
+        self.ambient[2]=dir[2]
+    
+    def setSunLightColor(self,color):
+        self.ambient[3]=color[0]
+        self.ambient[4]=color[1]
+        self.ambient[5]=color[2]
+    
+    def setAmbientColor(self,color):
+        self.ambient[6]=color[0]
+        self.ambient[7]=color[1]
+        self.ambient[8]=color[2]
+    
+    def setLightPos(self,n:int,pos):
+        self.lights[6*n]=pos[0]
+        self.lights[6*n+1]=pos[1]
+        self.lights[6*n+2]=pos[2]
+
+    def setLightColor(self,n:int,color):
+        self.lights[6*n+3]=color[0]
+        self.lights[6*n+4]=color[1]
+        self.lights[6*n+5]=color[2]
+
+    
+    def sendDataShader(self):
+        SDL2_gpu.GPU_SetUniformfv(self.getVar("ambient"),3,3,self.ambient)
+        SDL2_gpu.GPU_SetUniformfv(self.getVar("lights"),3,20,self.lights)
     
     def SetUniformambient(self,var:str,data):
         cdef float v[9] 

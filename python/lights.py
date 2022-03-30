@@ -46,10 +46,10 @@ class Lights:
         #self.shad.SetUniformvec2("screensize", [width, height])
 
         
-        # asignamos las variables ambeintales
-        self.shad.SetUniformambient("ambient", [0.5, -0.0, -1.0, #lightdir
-        0.5, 0.5, 0.5, #lightcolor
-        0.1, 0.1, 0.1]) #ambientcolor
+        # asignamos las variables ambientales
+        self.shad.setSunLightDir([0.5, -0.0, -1.0])
+        self.shad.setSunLightColor([0.5, 0.5, 0.5])
+        self.shad.setAmbientColor([0.1, 0.1, 0.1])
 
         normal = gonlet.GameImage()
         normal.load("assets/VTiles1_Normals.png")
@@ -71,12 +71,22 @@ class Lights:
         while self.game_eng.processEvents():
             #ponemos la luz
             self.shad.activate()
+            self.shad.setLightPos(0, [centrox+radio*math.cos(a), centroy+radio*math.sin(a), 70.0])
+            self.shad.setLightColor(0, [5000.0, 2500.0, 2500.0])
+            self.shad.setLightPos(1, [centrox + 100 +radio*math.cos(a), centroy + 100 +radio*math.sin(a), 70.0 ])
+            self.shad.setLightColor(1, [0.0, 5000.0, 0.0])
             
-            self.shad.SetUniformlights("lights", [centrox+radio*math.cos(a), centroy+radio*math.sin(a), 70.0 #posición 1
-            , 5000.0, 2500.0, 2500.0, #color y potencia 1 
-            centrox + 100 +radio*math.cos(a), centroy + 100 +radio*math.sin(a), 70.0 #posición 2
-            , 0.0, 5000.0, 0.0 #color y potencia 2
-            ]) 
+            self.shad.setLightPos(2, [centrox - 100 +radio*math.cos(a), centroy - 100 +radio*math.sin(a), 70.0 ])
+            self.shad.setLightColor(2, [0.0, 0.0, 5000.0])
+            
+            self.shad.setLightPos(3, [centrox - 100 +radio*math.cos(a), centroy + 100 +radio*math.sin(a), 70.0 ])
+            self.shad.setLightColor(3, [0.0, 5000.0, 5000.0])
+            
+            self.shad.setLightPos(4, [centrox + 100 +radio*math.cos(a), centroy - 100 +radio*math.sin(a), 70.0 ])
+            self.shad.setLightColor(4, [0.0, 5000.0, 5000.0])
+            
+            self.shad.sendDataShader()
+            
             a+=0.001
             radio+=0.01
             
@@ -92,6 +102,9 @@ class Lights:
             self.game_eng.setZ(0)
             self.game_eng.drawCircle(centrox+radio*math.cos(a), centroy+radio*math.sin(a), 10, 255, 255, 255)
             self.game_eng.drawCircle(centrox+100+radio*math.cos(a), centroy+100+radio*math.sin(a), 10, 0, 255, 0)
+            self.game_eng.drawCircle(centrox-100+radio*math.cos(a), centroy-100+radio*math.sin(a), 10, 0, 0, 255)
+            self.game_eng.drawCircle(centrox-100+radio*math.cos(a), centroy+100+radio*math.sin(a), 10, 0, 255, 255)
+            self.game_eng.drawCircle(centrox+100+radio*math.cos(a), centroy-100+radio*math.sin(a), 10, 0, 255, 255)
             self.shad.activate()
             
             self.game_eng.flipScreen()

@@ -11,7 +11,7 @@ uniform sampler2D tex2; //depth texture
 uniform vec3 lightdir;
 uniform vec3 lightpos;
 uniform vec3 [3] ambient;
-uniform vec3 [4] lights;
+uniform vec3 [20] lights; //para 10 luces
 uniform vec2 screensize;
 
 float difuseangle(vec3 Normal,vec3 lightdir)
@@ -56,7 +56,7 @@ void main()
     // lights[1] color de la luz
     // Calculamos el vector que va desde la superficie hacia la luz
     vec3 lightcolor= vec3(ambient[2]+Color*ambient[1]*difuseangle(Normal,sunlightdir)+Color*ambient[1]*specularangle(E,reflect(-sunlightdir,Normal)));
-    for (int i=0;i<=1;i++)
+    for (int i=0;i<=9;i++)
     {
         vec3 lightdir=lights[i*2]-fragpos ;
         float distance=length(lightdir);
