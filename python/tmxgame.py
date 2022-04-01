@@ -20,7 +20,8 @@ class TmxGame:
         self.game_eng.init()
         self.game_eng.printCurrentRenderer()
 
-        test = ctmx.test("assets/map/orthogonal-outside.tmx")
+        #test = ctmx.test("assets/map/orthogonal-outside.tmx")
+        test = ctmx.test("assets/map/VTiles1.tmx")
         test.putScreenCapsule(self.game_eng.getScreenCapsule())
 
         self.lasttimer = 0.0

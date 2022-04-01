@@ -38,17 +38,38 @@ cimport tmx.tmx as ctmx
 
 cdef extern from *:
     """
-    static void* SDL_tex_loader(const char *path) {
+    //~ static void* SDL_tex_loader(const char *path) {
+    //~     GPU_Image *image = GPU_LoadImage(path);
+    //~     return image;
+    //~ }
+    //~ static void setup_tmx_img_funcs(void) {
+    //~     tmx_img_load_func = SDL_tex_loader;
+    //~     tmx_img_free_func = (void (*)(void*))GPU_FreeImage;
+    //~ }
+    typedef struct ctmx_tex_data_s {
+        GPU_Image *image;
+    } ctmx_tex_data;
+    static void* ctmx_tex_load(const char *path) {
+        printf("Loading '%s'\\n", path);
+        ctmx_tex_data * data = (ctmx_tex_data*)malloc(sizeof(ctmx_tex_data));
         GPU_Image *image = GPU_LoadImage(path);
-        return image;
+        data->image = image;
+        return data;
+    }
+    static void ctmx_tex_free(void *ptr) {
+        ctmx_tex_data * data = (ctmx_tex_data*)ptr;
+        if (data->image) GPU_FreeImage(data->image);
     }
     static void setup_tmx_img_funcs(void) {
-        tmx_img_load_func = SDL_tex_loader;
-        tmx_img_free_func = (void (*)(void*))GPU_FreeImage;
+        tmx_img_load_func = ctmx_tex_load;
+        tmx_img_free_func = ctmx_tex_free;
     }
     """
     void* SDL_tex_loader(const char *path)
     void setup_tmx_img_funcs()
+
+cdef cppclass ctmx_tex_data:
+    SDL2_gpu.GPU_Image *image
 
 cdef extern from *:
     """
@@ -234,7 +255,7 @@ cdef class _test:
         cdef void* image
 
         op = layer.opacity
-        for i in range(self._map.height):
+        for i in reversed(range(self._map.height)):
             for j in range(self._map.width):
                 gid = (layer.content.gids[(i * self._map.width) + j]) & ctmx.TMX_FLIP_BITS_REMOVAL
                 if self._map.tiles[gid] != NULL:
@@ -249,7 +270,7 @@ cdef class _test:
                     else:
                         image = ts.image.resource_image
                     flags = (layer.content.gids[(i * self._map.width) + j]) & ~ctmx.TMX_FLIP_BITS_REMOVAL
-                    self.draw_tile(image, x, y, w, h, j * ts.tile_width, i * ts.tile_height, op, flags)
+                    self.draw_tile(image, x, y, w, h, j * self._map.tile_width, i * self._map.tile_height, op, flags)
 
     cdef draw_tile(self, void *image, unsigned int sx, unsigned int sy, unsigned int sw, unsigned int sh, unsigned int dx, unsigned int dy, float opacity, unsigned int flags):
         #~ print("draw_tile")
@@ -265,22 +286,23 @@ cdef class _test:
         dest_rect.y = dy;
 
         cdef SDL2_gpu.GPU_FlipEnum flip = SDL2_gpu.GPU_FLIP_NONE
+        cdef ctmx_tex_data *tex_data = <ctmx_tex_data*>image;
 
         if not flags:
-            SDL2_gpu.GPU_BlitRect(<SDL2_gpu.GPU_Image*>image, &src_rect, self._screen, &dest_rect)
+            SDL2_gpu.GPU_BlitRect(tex_data.image, &src_rect, self._screen, &dest_rect)
         elif not (flags & ctmx.TMX_FLIPPED_DIAGONALLY):
             if flags & ctmx.TMX_FLIPPED_HORIZONTALLY:
                 flip |= SDL2_gpu.GPU_FLIP_HORIZONTAL
             if flags & ctmx.TMX_FLIPPED_VERTICALLY:
                 flip |= SDL2_gpu.GPU_FLIP_VERTICAL
-            SDL2_gpu.GPU_BlitRectX(<SDL2_gpu.GPU_Image*>image, &src_rect, self._screen, &dest_rect, 0., 0., 0., flip)
+            SDL2_gpu.GPU_BlitRectX(tex_data.image, &src_rect, self._screen, &dest_rect, 0., 0., 0., flip)
         else:
             flip = SDL2_gpu.GPU_FLIP_VERTICAL
             if flags & ctmx.TMX_FLIPPED_HORIZONTALLY:
                 flip ^= SDL2_gpu.GPU_FLIP_VERTICAL
             if flags & ctmx.TMX_FLIPPED_VERTICALLY:
                 flip ^= SDL2_gpu.GPU_FLIP_HORIZONTAL
-            SDL2_gpu.GPU_BlitRectX(<SDL2_gpu.GPU_Image*>image, &src_rect, self._screen, &dest_rect, 90., sh / 2., sw / 2., flip)
+            SDL2_gpu.GPU_BlitRectX(tex_data.image, &src_rect, self._screen, &dest_rect, 90., sh / 2., sw / 2., flip)
 
     cdef draw_objects(self, ctmx.tmx_object_group *objgr):
         #~ print("draw_objects")
