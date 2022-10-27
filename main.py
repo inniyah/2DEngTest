@@ -18,6 +18,7 @@ logging.basicConfig(level=logging.INFO)
 import gonlet
 import tmxlite
 import ctmx
+import raylib
 
 from lights import Lights
 from game import Game
@@ -127,6 +128,12 @@ def loadTmxMap(filename : str):
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+def runRaylib():
+    test = raylib.test()
+    test.run()
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-q", "--quiet", help="set logging to ERROR",
@@ -168,6 +175,8 @@ def main():
             g = TmxGame()
             g.run()
             del g
+        if test == 'raylib':
+            runRaylib()
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 

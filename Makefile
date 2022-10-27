@@ -3,7 +3,7 @@
 # sudo apt install pkg-config cython3 libpython3-dev libsdl2-dev libsdl2-image-dev libzstd-dev
 # Also install: libsdl2-gpu-dev libtmxlite-dev
 
-PACKAGES= python3-embed sdl2 SDL2_image SDL2_gpu tmxlite zlib libxml-2.0
+PACKAGES= python3-embed sdl2 SDL2_image SDL2_gpu tmxlite zlib libxml-2.0 imgui raylib
 
 NUMCPUS=$(shell grep -c '^processor' /proc/cpuinfo)
 
@@ -85,13 +85,13 @@ LIBS= \
 
 OBJS=
 
-PYX_NAMES= hub gonlet shaders tmxlite
+PYX_NAMES= hub gonlet shaders tmxlite pyimgui
 
 PYX_SRCS= $(PYX_NAMES:%=src/%.pyx)
 PYX_CPPS= $(subst .pyx,.cpp,$(PYX_SRCS))
 PYX_OBJS= $(subst .pyx,.o,$(PYX_SRCS))
 
-all: hub.so tmxlite.so gonlet.so shaders.so ctmx.so
+all: hub.so tmxlite.so gonlet.so shaders.so ctmx.so raylib.so
 
 hub.so: src/hub.o src/hub_core.o
 gonlet.so: src/gonlet.o
@@ -107,6 +107,10 @@ TMX_OBJS= \
 	src/tmx/tmx_xml.o
 
 ctmx.so: src/ctmx.o $(TMX_OBJS)
+
+pyimgui.so: src/pyimgui.o src/imgui/AnsiTextColored.o
+
+raylib.so: src/raylib.o
 
 %.bin:
 	$(LD) $(CPPSTD) $(CSTD) $(LDFLAGS) $(PKG_CONFIG_LDFLAGS) -o $@ $+ $(LIBS) $(PKG_CONFIG_LIBS)
