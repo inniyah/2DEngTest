@@ -488,8 +488,8 @@ static int parse_layer(xmlTextReaderPtr reader, tmx_layer **layer_headadr, int m
 		res->id = atoi(value);
 		tmx_free_func(value);
 	} else {
-		tmx_err(E_MISSEL, "xml parser: missing 'id' attribute in the 'layer' element");
-		return 0;
+		//~ tmx_err(E_MISSEL, "xml parser: missing 'id' attribute in the 'layer' element");
+		//~ return 0;
 	}
 
 	if ((value = (char*)xmlTextReaderGetAttribute(reader, (xmlChar*)"name"))) { /* name */
