@@ -30,7 +30,7 @@ cdef class _shader:
     def __dealloc___(self):
         self.freeImg()
     
-    def create(self,v_str : str,f_str : str):
+    def create(self, v_str : str, f_str : str):
         v=SDL2_gpu.GPU_LoadShader(SDL2_gpu.GPU_VERTEX_SHADER, v_str.encode('utf8'))
         
         if not v:
@@ -50,7 +50,7 @@ cdef class _shader:
 
         #debe cambiarse por una imagen del gonlet
     
-    def addImg(self,path : str):
+    def addImg(self, path : str):
         print ("loading: {}".format(path))
         self.img = SDL2_gpu.GPU_LoadImage(path.encode('utf8'))
         SDL2_gpu.GPU_SetSnapMode(self.img, SDL2_gpu.GPU_SNAP_NONE)
@@ -59,17 +59,17 @@ cdef class _shader:
     def freeImg(self):
         SDL2_gpu.GPU_FreeImage(self.img)
     
-    def setImgShader(self,var:str,capsule):
+    def setImgShader(self, var:str, capsule):
         cdef const char *name = "SDL2_gpu.GPU_Image"
         cdef SDL2_gpu.GPU_Image * img = <SDL2_gpu.GPU_Image *> PyCapsule_GetPointer (capsule,name) 
         SDL2_gpu.GPU_SetShaderImage(img, self.getVar(var), 1)
 
     
-    def addVariable(self,idV: str):
+    def addVariable(self, idV : str):
         location = SDL2_gpu.GPU_GetUniformLocation(self.p, idV.encode('utf8'))
         self.variables[idV]=location
     
-    def getVar(self,idV:str):
+    def getVar(self, idV : str):
         return self.variables[idV]
     
     def getId(self):

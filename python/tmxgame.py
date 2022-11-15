@@ -4,6 +4,7 @@ import logging
 
 import gonlet
 import ctmx
+import shaders
 
 class TmxGame:
     def __init__(self):
@@ -20,7 +21,14 @@ class TmxGame:
         self.game_eng.init()
         self.game_eng.printCurrentRenderer()
 
-        #test = ctmx.test("assets/map/orthogonal-outside.tmx")
+        self.shad=shaders.shader()
+
+        self.shad.create("shaders/v1.vert", "shaders/s1.frag")
+        self.shad.addVariable("tex0")
+        self.shad.activate()
+        #~ self.shad.deactivate()
+
+        #~ test = ctmx.test("assets/map/orthogonal-outside.tmx")
         test = ctmx.test("assets/map/VTiles1.tmx")
         test.putScreenCapsule(self.game_eng.getScreenCapsule())
 

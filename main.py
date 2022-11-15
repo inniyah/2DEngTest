@@ -8,9 +8,6 @@ import sys
 MY_PATH = os.path.normpath(os.path.abspath(os.path.dirname(__file__)))
 sys.path.append(os.path.abspath(os.path.join(MY_PATH, 'python')))
 
-
-MY_PATH = os.path.normpath(os.path.abspath(os.path.dirname(__file__)))
-
 logging.basicConfig(level=logging.INFO)
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
