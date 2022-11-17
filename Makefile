@@ -5,7 +5,13 @@
 
 PACKAGES= python3-embed sdl2 SDL2_image SDL2_gpu tmxlite zlib libxml-2.0 imgui raylib
 
-NUMCPUS=$(shell grep -c '^processor' /proc/cpuinfo)
+NUM_CPUS ?= $(shell grep -c '^processor' /proc/cpuinfo)
+
+ARCH_NAME := $(shell '$(TRGT)gcc' -dumpmachine)
+
+# See: https://peps.python.org/pep-3149/
+PYMOD_SOABI := $(shell python3 -c "import sysconfig; print(sysconfig.get_config_var('SOABI'));")
+PYMOD_SUFFIX := $(shell python3 -c "import sysconfig; print(sysconfig.get_config_var('EXT_SUFFIX'));")
 
 TRGT=
 
@@ -91,12 +97,24 @@ PYX_SRCS= $(PYX_NAMES:%=src/%.pyx)
 PYX_CPPS= $(subst .pyx,.cpp,$(PYX_SRCS))
 PYX_OBJS= $(subst .pyx,.o,$(PYX_SRCS))
 
-all: hub.so tmxlite.so gonlet.so shaders.so ctmx.so raylib.so
+all: \
+	hub$(PYMOD_SUFFIX) \
+	tmxlite$(PYMOD_SUFFIX) \
+	gonlet$(PYMOD_SUFFIX) \
+	shaders$(PYMOD_SUFFIX) \
+	ctmx$(PYMOD_SUFFIX) \
+	raylib$(PYMOD_SUFFIX)
 
-hub.so: src/hub.o src/hub_core.o
-gonlet.so: src/gonlet.o
-tmxlite.so: src/tmxlite.o
-shaders.so: src/shaders.o
+HUB_OBJS= \
+	src/hub_core.o
+
+hub$(PYMOD_SUFFIX): src/hub.o $(HUB_OBJS)
+
+GONLET_OBJS= 
+gonlet$(PYMOD_SUFFIX): src/gonlet.o $(GONLET_OBJS)
+
+SHADERS_OBJS= 
+shaders$(PYMOD_SUFFIX): src/shaders.o $(SHADERS_OBJS)
 
 TMX_OBJS= \
 	src/tmx/tmx.o \
@@ -106,14 +124,24 @@ TMX_OBJS= \
 	src/tmx/tmx_utils.o \
 	src/tmx/tmx_xml.o
 
-ctmx.so: src/ctmx.o $(TMX_OBJS)
+ctmx$(PYMOD_SUFFIX): src/ctmx.o $(TMX_OBJS)
 
-pyimgui.so: src/pyimgui.o src/imgui/AnsiTextColored.o
+TMXLITE_OBJS= 
+tmxlite$(PYMOD_SUFFIX): src/tmxlite.o $(TMXLITE_OBJS)
 
-raylib.so: src/raylib.o
+RAYLIB_OBJS= 
+raylib$(PYMOD_SUFFIX): src/raylib.o $(RAYLIB_OBJS)
+
+IMGUI_OBJS= \
+	src/imgui/AnsiTextColored.o
+
+pyimgui$(PYMOD_SUFFIX): src/pyimgui.o $(IMGUI_OBJS)
 
 %.bin:
 	$(LD) $(CPPSTD) $(CSTD) $(LDFLAGS) $(PKG_CONFIG_LDFLAGS) -o $@ $+ $(LIBS) $(PKG_CONFIG_LIBS)
+
+%$(PYMOD_SUFFIX):
+	$(LD) -shared $(CPPSTD) $(CSTD) $(LDFLAGS) $(PKG_CONFIG_LDFLAGS) -o $@ $+ $(LIBS) $(PKG_CONFIG_LIBS)
 
 %.so:
 	$(LD) -shared $(CPPSTD) $(CSTD) $(LDFLAGS) $(PKG_CONFIG_LDFLAGS) -o $@ $+ $(LIBS) $(PKG_CONFIG_LIBS)
